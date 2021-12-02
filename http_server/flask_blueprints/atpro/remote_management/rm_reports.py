@@ -57,7 +57,7 @@ def generate_html_reports_combo(ip_list):
         html_final_combo_return += "\n" + rm_cached_variables.html_report_end
     except Exception as error:
         logger.primary_logger.error("Sensor Control - Unable to Generate Combo Report: " + str(error))
-        html_final_combo_return = "Generation Error: " + str(error)
+        html_final_combo_return = "Combo Report Generation Error"
     rm_cached_variables.html_combo_report = html_final_combo_return
 
 
