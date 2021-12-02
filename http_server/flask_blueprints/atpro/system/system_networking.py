@@ -30,7 +30,7 @@ from operations_modules import network_wifi
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, sanitize_text
 
 html_atpro_system_networking_routes = Blueprint("html_atpro_system_networking_routes", __name__)
 
@@ -140,7 +140,7 @@ def html_atpro_set_ipv4_config():
         title_message = "Function Disabled"
         message = "Function Disabled in Demo mode"
     else:
-        hostname = request.form.get("ip_hostname")
+        hostname = sanitize_text(request.form.get("ip_hostname"))
         if app_validation_checks.hostname_is_valid(hostname):
             if app_cached_variables.running_with_root:
                 app_cached_variables.hostname = hostname
