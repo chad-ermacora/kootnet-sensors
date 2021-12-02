@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import re
 import zipfile
 from random import randint
 from datetime import datetime
@@ -105,8 +106,10 @@ def html_atpro_sensor_settings_database_management():
             if str(request.form.get("db_backups")) == "download_backup_db":
                 backup_db_folder = file_locations.database_backup_folder + "/"
                 db_selected_name = str(request.form.get("DatabaseBackupSelection"))
-                db_full_path = backup_db_folder + db_selected_name
-                return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
+                if re.match(r'^[a-zA-Z0-9_.-]*$', db_selected_name):
+                    db_full_path = backup_db_folder + db_selected_name
+                    return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
+                return "Invalid DB Name Selected"
             elif str(request.form.get("db_management")) == "rename_db":
                 old_name = db_full_path.split("/")[-1]
                 new_name = get_clean_db_name(str(request.form.get("rename_db")))
