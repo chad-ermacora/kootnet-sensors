@@ -53,12 +53,7 @@ def get_message_page(title, message="", page_url="sensor-dashboard", full_reload
 
 
 def get_clean_db_name(db_text_name, find_unique_name=True):
-    final_db_name = ""
-    for letter in db_text_name:
-        if re.match("^[A-Za-z0-9_.-]*$", letter):
-            final_db_name += letter
-    if final_db_name == "":
-        final_db_name = "No_Name"
+    final_db_name = sanitize_text(db_text_name)
     if final_db_name.split(".")[-1] == "sqlite":
         final_db_name = final_db_name[:-7]
 
@@ -75,25 +70,30 @@ def get_clean_db_name(db_text_name, find_unique_name=True):
 
 
 def get_clean_ip_list_name(ip_list_name):
-    final_ip_list_name = ""
-    if ip_list_name is not None:
-        for letter in ip_list_name:
-            if re.match("^[A-Za-z0-9_.-]*$", letter):
-                final_ip_list_name += letter
+    final_ip_list_name = sanitize_text(ip_list_name)
+    if final_ip_list_name.split(".")[-1] == "txt":
+        final_ip_list_name = final_ip_list_name[:-4]
 
-        if final_ip_list_name == "":
-            final_ip_list_name = "No_Name"
-
-        if final_ip_list_name.split(".")[-1] == "txt":
-            final_ip_list_name = final_ip_list_name[:-4]
-
-        custom_ip_list_names = app_config_access.sensor_control_config.custom_ip_list_names
-        count_num = 1
-        if final_ip_list_name + ".txt" in custom_ip_list_names:
-            while final_ip_list_name + str(count_num) + ".txt" in custom_ip_list_names:
-                count_num += 1
-            final_ip_list_name = final_ip_list_name + str(count_num)
+    custom_ip_list_names = app_config_access.sensor_control_config.custom_ip_list_names
+    count_num = 1
+    if final_ip_list_name + ".txt" in custom_ip_list_names:
+        while final_ip_list_name + str(count_num) + ".txt" in custom_ip_list_names:
+            count_num += 1
+        final_ip_list_name = final_ip_list_name + str(count_num)
     return final_ip_list_name + ".txt"
+
+
+def sanitize_text(text_variable):
+    text_variable = str(text_variable)
+    final_db_name = ""
+    for letter in text_variable:
+        if re.match("^[A-Za-z0-9_.-]*$", letter):
+            final_db_name += letter
+    while ".." in final_db_name:
+        final_db_name = final_db_name.replace("..", ".")
+    if final_db_name == "":
+        final_db_name = "No_Name"
+    return final_db_name
 
 
 def get_uptime_str():
