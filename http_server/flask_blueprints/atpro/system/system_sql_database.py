@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import re
 import zipfile
 from random import randint
 from datetime import datetime
@@ -32,7 +31,8 @@ from operations_modules.app_generic_functions import get_file_content, get_list_
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
     get_main_db_first_last_date, universal_database_structure_check
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_clean_db_name, get_html_atpro_index
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_clean_db_name, \
+    get_html_atpro_index, sanitize_text
 
 html_atpro_system_sql_db_routes = Blueprint("html_atpro_system_sql_db_routes", __name__)
 uploaded_databases_folder = file_locations.uploaded_databases_folder
@@ -102,15 +102,14 @@ def html_atpro_sensor_settings_database_management():
     if request.method == "POST":
         upload_db_folder = uploaded_databases_folder + "/"
         try:
-            db_full_path = upload_db_folder + str(request.form.get("db_selected"))
-            if str(request.form.get("db_backups")) == "download_backup_db":
+            db_full_path = upload_db_folder + sanitize_text(request.form.get("db_selected"))
+            if sanitize_text(request.form.get("db_backups")) == "download_backup_db":
                 backup_db_folder = file_locations.database_backup_folder + "/"
-                db_selected_name = str(request.form.get("DatabaseBackupSelection"))
-                if re.match(r'^[a-zA-Z0-9_.-]*$', db_selected_name):
-                    db_full_path = backup_db_folder + db_selected_name
+                db_selected_name = sanitize_text(request.form.get("DatabaseBackupSelection"))
+                db_full_path = backup_db_folder + db_selected_name
+                if db_selected_name in app_cached_variables.zipped_db_backup_list:
                     return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
-                return "Invalid DB Name Selected"
-            elif str(request.form.get("db_management")) == "rename_db":
+            elif sanitize_text(request.form.get("db_management")) == "rename_db":
                 old_name = db_full_path.split("/")[-1]
                 new_name = get_clean_db_name(str(request.form.get("rename_db")))
                 new_db_full_path = upload_db_folder + new_name
@@ -119,16 +118,16 @@ def html_atpro_sensor_settings_database_management():
                 app_cached_variables.uploaded_databases_list = uploaded_db_filenames
                 msg = "Database renamed from " + old_name + " to " + new_name
                 return get_message_page("Database Renamed", msg, page_url="sensor-system", skip_menu_select=True)
-            elif str(request.form.get("db_management")) == "shrink_db":
-                selected_database = str(request.form.get("SQLDatabaseSelection"))
+            elif sanitize_text(request.form.get("db_management")) == "shrink_db":
+                selected_database = sanitize_text(request.form.get("SQLDatabaseSelection"))
                 return _vacuum_database(selected_database)
-            elif str(request.form.get("db_management")) == "delete_db":
+            elif sanitize_text(request.form.get("db_management")) == "delete_db":
                 os.remove(db_full_path)
                 uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
                 app_cached_variables.uploaded_databases_list = uploaded_db_filenames
-                msg = str(request.form.get("db_selected")) + " Database has been deleted"
+                msg = sanitize_text(request.form.get("db_selected")) + " Database has been deleted"
                 return get_message_page("Database Deleted", msg, page_url="sensor-system", skip_menu_select=True)
-            elif str(request.form.get("db_management")) == "delete_backup_db":
+            elif sanitize_text(request.form.get("db_management")) == "delete_backup_db":
                 db_full_path = file_locations.database_backup_folder + "/" + str(request.form.get("db_selected"))
                 os.remove(db_full_path)
                 backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.database_backup_folder)
