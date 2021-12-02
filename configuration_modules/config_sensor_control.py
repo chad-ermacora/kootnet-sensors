@@ -161,9 +161,9 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         online_ip_list = []
         threaded_checks = []
         try:
-            for ip in raw_ip_list:
-                if app_validation_checks.ip_address_is_valid(ip):
-                    valid_ip_list.append(ip)
+            for sensor_address in raw_ip_list:
+                if app_validation_checks.sensor_address_is_valid(sensor_address):
+                    valid_ip_list.append(sensor_address)
             for address in valid_ip_list:
                 threaded_checks.append(Thread(target=self._check_address, args=[address]))
             for thread in threaded_checks:
