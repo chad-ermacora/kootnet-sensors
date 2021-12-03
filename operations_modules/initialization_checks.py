@@ -169,6 +169,8 @@ def _create_secondary_python_venv():
                 logger.primary_logger.info(" - Creating Kootnet Sensor's Upgrade & TCT Python Virtual Environment")
                 os.system("python3 -m venv " + upgrade_env_dir)
                 os.system(upgrade_env_dir + "bin/python3 -m pip install requests")
-                logger.primary_logger.info(" - Python Virtual Environment Created Successfully")
+                log_msg = " - Kootnet Sensor's Upgrade & TCT Python Virtual Environment Created Successfully"
+                logger.primary_logger.info(log_msg)
         except Exception as error:
-            logger.primary_logger.critical("-- Unable to create Python virtual environment for upgrades: " + str(error))
+            log_msg = "-- Kootnet Sensor's Upgrade & TCT Python Virtual Environment Creation Failed: "
+            logger.primary_logger.critical(log_msg + str(error))
