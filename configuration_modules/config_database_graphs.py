@@ -43,8 +43,8 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
 
         self.sql_recording_type = app_cached_variables.database_variables.table_interval
         self.render_engine = "OpenGL"  # or CPU
-        self.max_graph_data_points = 200000
-        self.skip_data_between_plots = 12
+        self.max_graph_data_points = 100000
+        self.skip_data_between_plots = 3
         self.date_time_hours_offset = 0.0
 
         self.graph_start_date = "2019-07-01 00:00:00"
@@ -58,22 +58,22 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.graph_db_table = app_cached_variables.database_variables.table_interval
         self.plotly_graph_saved_location = file_locations.plotly_graph_interval
 
-        self.db_graph_uptime = 0
+        self.db_graph_uptime = 1
         self.db_graph_cpu_temp = 1
         self.db_graph_env_temp = 1
-        self.db_graph_pressure = 0
-        self.db_graph_altitude = 0
-        self.db_graph_humidity = 0
-        self.db_graph_dew_point = 0
-        self.db_graph_distance = 0
-        self.db_graph_gas = 0
-        self.db_graph_particulate_matter = 0
-        self.db_graph_lumen = 0
-        self.db_graph_colours = 0
-        self.db_graph_ultra_violet = 0
-        self.db_graph_acc = 0
-        self.db_graph_mag = 0
-        self.db_graph_gyro = 0
+        self.db_graph_pressure = 1
+        self.db_graph_altitude = 1
+        self.db_graph_humidity = 1
+        self.db_graph_dew_point = 1
+        self.db_graph_distance = 1
+        self.db_graph_gas = 1
+        self.db_graph_particulate_matter = 1
+        self.db_graph_lumen = 1
+        self.db_graph_colours = 1
+        self.db_graph_ultra_violet = 1
+        self.db_graph_acc = 1
+        self.db_graph_mag = 1
+        self.db_graph_gyro = 1
 
         self.update_configuration_settings_list()
         if load_from_file:
