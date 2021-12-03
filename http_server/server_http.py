@@ -55,7 +55,7 @@ from http_server.flask_blueprints.local_sensor_downloads import html_local_downl
 from http_server.flask_blueprints.get_set_raw_configurations import html_get_set_config_routes
 from http_server.flask_blueprints.system_commands import html_system_commands_routes
 from http_server.flask_blueprints.sensor_checkin_server import html_sensor_check_ins_routes
-
+from http_server.server_http_generic_functions import set_http_auth_from_file
 https_import_error_msg = ""
 https_import_errors = True
 try:
@@ -106,6 +106,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_system_commands_routes)
         app.register_blueprint(html_sensor_check_ins_routes)
 
+        set_http_auth_from_file()
         thread_function(update_cached_variables)
 
         try:

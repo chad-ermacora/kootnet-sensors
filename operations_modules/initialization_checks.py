@@ -27,7 +27,6 @@ from operations_modules.app_generic_functions import write_file_to_disk, thread_
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
     run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
-from http_server.server_http_generic_functions import set_http_auth_from_file
 
 
 def run_program_start_checks():
@@ -40,13 +39,13 @@ def run_program_start_checks():
     _check_ssl_files()
     _set_file_permissions()
     _add_tct_terminal_alias()
-    thread_function(_create_secondary_python_venv)
+    run_configuration_upgrade_checks()
+    logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
     if software_version.old_version != software_version.version:
         run_database_integrity_check(file_locations.sensor_database, quick=False)
         run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
         run_database_integrity_check(file_locations.mqtt_subscriber_database, quick=False)
-        run_configuration_upgrade_checks()
         thread_function(check_checkin_database_structure)
         thread_function(check_mqtt_subscriber_database_structure)
     else:
@@ -54,8 +53,7 @@ def run_program_start_checks():
         run_database_integrity_check(file_locations.sensor_checkin_database)
         run_database_integrity_check(file_locations.mqtt_subscriber_database)
     thread_function(check_main_database_structure)
-    set_http_auth_from_file()
-    logger.primary_logger.info(" -- Pre-Start Initializations Complete")
+    thread_function(_create_secondary_python_venv)
 
 
 def _check_sensor_id():
