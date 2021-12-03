@@ -40,26 +40,26 @@ class CreateLiveGraphsConfiguration(CreateGeneralConfiguration):
         self.graph_sensor_address = None
         self.live_graph_update_interval = 5
         self.graphs_per_row = "6"
-        self.max_graph_data_points = 240
+        self.max_graph_data_points = 720  # 1 hour long graphs, assuming 5 seconds for the update interval
         self.enable_ssl_verification = 1
-        self.enable_performance_mode = 0
+        self.enable_performance_mode = 1
 
-        self.live_graph_uptime = 0
+        self.live_graph_uptime = 1
         self.live_graph_cpu_temp = 1
         self.live_graph_env_temp = 1
-        self.live_graph_pressure = 0
-        self.live_graph_altitude = 0
-        self.live_graph_humidity = 0
-        self.live_graph_dew_point = 0
-        self.live_graph_distance = 0
-        self.live_graph_gas = 0
-        self.live_graph_particulate_matter = 0
-        self.live_graph_lumen = 0
-        self.live_graph_colours = 0
-        self.live_graph_ultra_violet = 0
-        self.live_graph_acc = 0
-        self.live_graph_mag = 0
-        self.live_graph_gyro = 0
+        self.live_graph_pressure = 1
+        self.live_graph_altitude = 1
+        self.live_graph_humidity = 1
+        self.live_graph_dew_point = 1
+        self.live_graph_distance = 1
+        self.live_graph_gas = 1
+        self.live_graph_particulate_matter = 1
+        self.live_graph_lumen = 1
+        self.live_graph_colours = 1
+        self.live_graph_ultra_violet = 1
+        self.live_graph_acc = 1
+        self.live_graph_mag = 1
+        self.live_graph_gyro = 1
 
         self.update_configuration_settings_list()
         if load_from_file:
