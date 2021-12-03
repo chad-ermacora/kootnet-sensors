@@ -31,14 +31,31 @@ class CreateATProMenuNotificationClass:
         self.notification_count = 0
         self.notification_str = ""
 
+        self._default_login_enabled = None
+        self._upgrade_in_progress_dic_name = None
         self._restart_service_enabled = 0
         self._reboot_system_enabled = 0
         self._upgrade_program_enabled = 0
-        self._upgrade_in_progress_dic_name = None
 
     def add_custom_message(self, msg, click_msg, js_action=js_function_okay_prompt, icon="fas fa-info-circle"):
-        self._add_notification_entry([msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
-                                     js_action=js_action, icon=icon)
+        return self._add_notification_entry(
+            [msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
+            js_action=js_action, icon=icon
+        )
+
+    def manage_default_login_detected(self, enable=True):
+        if enable and self._default_login_enabled is None:
+            click_msg = "Default login of Kootnet/sensors has been detected. "
+            click_msg += "Please goto System -> Change Login and update the login"
+            notification_short_msg = "Warning: Default Login Detected<br>Click Here for more information"
+            self._default_login_enabled = self._add_notification_entry(
+                [notification_short_msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
+                js_action=js_function_okay_prompt, icon="fas fa-exclamation-triangle"
+            )
+        if not enable and self._default_login_enabled is not None:
+            del self._notifications_dic[self._default_login_enabled]
+            self._default_login_enabled = None
+            self._update_notification_str()
 
     def manage_ks_upgrade(self, upgrade_type_short_str="", upgrade_type_long_str="", enable=True):
         if enable:
@@ -48,9 +65,10 @@ class CreateATProMenuNotificationClass:
             js_action = js_function_okay_prompt
             icon = "fas fa-info-circle"
 
-            self._upgrade_in_progress_dic_name = "notification" + str(len(self._notifications_dic))
-            self._add_notification_entry([msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
-                                         js_action=js_action, icon=icon)
+            self._upgrade_in_progress_dic_name = self._add_notification_entry(
+                [msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
+                js_action=js_action, icon=icon
+            )
         else:
             if self._upgrade_in_progress_dic_name is not None:
                 del self._notifications_dic[self._upgrade_in_progress_dic_name]
@@ -117,9 +135,10 @@ class CreateATProMenuNotificationClass:
         return_text = return_text.replace("{{ JSAction }}", js_action)
         return_text = return_text.replace("{{ Icon }}", icon)
 
-        notification_name = "notification" + str(len(self._notifications_dic))
+        notification_name = "notification" + str(self.notification_count + 1)
         self._notifications_dic.update({notification_name: return_text})
         self._update_notification_str()
+        return notification_name
 
     def _update_notification_str(self):
         self.notification_count = len(self._notifications_dic)

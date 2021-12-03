@@ -20,7 +20,8 @@ import os
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import create_password_hash
+from operations_modules.app_generic_functions import create_password_hash, verify_password_to_hash
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
@@ -79,12 +80,20 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password, logging
             app_cached_variables.http_flask_user = new_http_flask_user
             app_cached_variables.http_flask_password_hash = new_hash
             app_cached_variables.http_flask_password_salt = salt
+
             with open(file_locations.flask_login_user, "w") as auth_file:
                 auth_file.write(new_http_flask_user)
             with open(file_locations.flask_login_hash, "wb") as auth_file:
                 auth_file.write(new_hash)
             with open(file_locations.flask_login_hash_salt, "wb") as auth_file:
                 auth_file.write(salt)
+
+            default_password = default_http_flask_password
+            if default_http_flask_user == new_http_flask_user and verify_password_to_hash(default_password):
+                atpro_notifications.manage_default_login_detected()
+            else:
+                atpro_notifications.manage_default_login_detected(enable=False)
+
             if logging_enabled:
                 logger.primary_logger.info("New Web Portal Username & Password Set")
     except Exception as error:

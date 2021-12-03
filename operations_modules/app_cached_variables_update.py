@@ -26,7 +26,8 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_file_content, \
-    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files, get_md5_hash_of_file
+    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files, get_md5_hash_of_file, \
+    verify_password_to_hash
 from operations_modules.http_generic_network import get_http_regular_file, check_http_file_exist
 from operations_modules import network_ip
 from operations_modules import network_wifi
@@ -35,6 +36,7 @@ from operations_modules.sqlite_database import sql_execute_get_data, create_tabl
 from operations_modules import software_version
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
+from http_server.server_http_generic_functions import default_http_flask_user, default_http_flask_password
 
 db_v = app_cached_variables.database_variables
 first_run = True
@@ -46,17 +48,21 @@ def update_cached_variables():
     if first_run:
         first_run = False
         thread_function(_update_ks_info_table_data)
+        demo_mode = app_config_access.primary_config.demo_mode
         if not app_cached_variables.running_with_root:
             click_msg = "Without root access, the following functions will be unavailable - "
             click_msg += "HW Sensors, Network Configurations, Upgrade & Power commands"
             icon = "fas fa-exclamation-triangle"
             notification_short_msg = "Warning: Not running with root<br>Click Here for more information"
             atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg, icon=icon)
-        if app_config_access.primary_config.demo_mode:
+        if demo_mode:
             click_msg = "In Demo mode, there are no login prompts and the following functions will be unavailable - "
             click_msg += "Network Configurations, SSL, Change Login, Upgrade & Power commands"
             notification_short_msg = "Info: Running in Demo mode<br>Click Here for more information"
             atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg)
+        if default_http_flask_user == app_cached_variables.http_flask_user and not demo_mode:
+            if verify_password_to_hash(default_http_flask_password):
+                atpro_notifications.manage_default_login_detected()
 
     if app_cached_variables.current_platform == "Linux":
         try:
