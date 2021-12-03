@@ -286,12 +286,15 @@ def _remove_stale_failed_login_entries():
     :return:
     """
     while True:
-        stale_ip_addresses = []
-        for ip_address, data_list in app_cached_variables.failed_flask_logins_dic.items():
-            if datetime.utcnow() - data_list[0] > timedelta(hours=2):
-                stale_ip_addresses.append(ip_address)
-        for stale_ip in stale_ip_addresses:
-            del app_cached_variables.failed_flask_logins_dic[stale_ip]
+        try:
+            stale_ip_addresses = []
+            for ip_address, data_list in app_cached_variables.failed_flask_logins_dic.items():
+                if datetime.utcnow() - data_list[0] > timedelta(hours=2):
+                    stale_ip_addresses.append(ip_address)
+            for stale_ip in stale_ip_addresses:
+                del app_cached_variables.failed_flask_logins_dic[stale_ip]
+        except Exception as error:
+            logger.network_logger.error("Removing Stale Failed HTTP Logins: " + str(error))
         sleep(86400)
 
 
@@ -302,24 +305,26 @@ def _remove_stale_http_logins():
     :return: Nothing
     """
     while True:
-        stale_http_login_ids = []
-        for login_id, login_id_datetime in app_cached_variables.http_flask_login_session_ids.items():
-            if datetime.utcnow() - login_id_datetime > timedelta(hours=12):
-                stale_http_login_ids.append(login_id)
-        for stale_id in stale_http_login_ids:
-            del app_cached_variables.http_flask_login_session_ids[stale_id]
+        try:
+            stale_http_login_ids = []
+            for login_id, login_id_datetime in app_cached_variables.http_flask_login_session_ids.items():
+                if datetime.utcnow() - login_id_datetime > timedelta(hours=12):
+                    stale_http_login_ids.append(login_id)
+            for stale_id in stale_http_login_ids:
+                del app_cached_variables.http_flask_login_session_ids[stale_id]
+        except Exception as error:
+            logger.network_logger.error("Removing Stale HTTP Logins: " + str(error))
         sleep(1800)
 
 
 def _update_cached_ip():
-    ip_address = "0.0.0.0"
+    ip_address = "127.0.0.1"
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip_address = str(s.getsockname()[0])
-        s.close()
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            ip_address = str(sock.getsockname()[0])
     except Exception as error:
-        logger.sensors_logger.warning("Error caching IP Address: " + str(error))
+        logger.sensors_logger.debug("Error caching IP Address: " + str(error))
     app_cached_variables.ip = ip_address
 
 
