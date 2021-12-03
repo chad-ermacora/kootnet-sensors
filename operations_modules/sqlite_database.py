@@ -348,7 +348,7 @@ def get_sql_element(sql_data):
             else:
                 return str(entry1)
     except Exception as error:
-        logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
+        logger.network_logger.debug("Error extracting SQL data: " + str(error))
         return "Error"
     return ""
 
