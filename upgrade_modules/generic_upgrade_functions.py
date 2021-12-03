@@ -233,9 +233,11 @@ def reset_all_configurations(log_reset=True):
     reset_sensor_control_config(log_reset=log_reset)
 
 
-def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True):
+def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True, new_location=None):
     """ Creates configuration class, loads the config and saves it without logging. """
     new_config_instance = configuration_creation_class(load_from_file=False)
+    if new_location is not None:
+        new_config_instance.config_file_location = new_location
     try:
         old_config_text = get_file_content(new_config_instance.config_file_location)
         new_config_instance.set_config_with_str(old_config_text)
@@ -257,6 +259,10 @@ def load_and_save_all_configs_silently():
            CreateSensorControlConfiguration, CreateCheckinConfiguration]
     for config in ccl:
         upgrade_config_load_and_save(config, upgrade_msg=False)
+    new_location = file_locations.email_db_graph_config
+    upgrade_config_load_and_save(CreateDatabaseGraphsConfiguration, upgrade_msg=False, new_location=new_location)
+    new_location = file_locations.email_reports_config
+    upgrade_config_load_and_save(CreateSensorControlConfiguration, upgrade_msg=False, new_location=new_location)
 
 
 def upgrade_python_pip_modules():
