@@ -38,7 +38,6 @@ def run_program_start_checks():
     logger.primary_logger.info(" -- Pre-Start Initializations Started")
     _check_sensor_id()
     _check_ssl_files()
-    set_http_auth_from_file()
     _set_file_permissions()
     _add_tct_terminal_alias()
     thread_function(_create_secondary_python_venv)
@@ -55,6 +54,7 @@ def run_program_start_checks():
         run_database_integrity_check(file_locations.sensor_checkin_database)
         run_database_integrity_check(file_locations.mqtt_subscriber_database)
     thread_function(check_main_database_structure)
+    set_http_auth_from_file()
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
 
