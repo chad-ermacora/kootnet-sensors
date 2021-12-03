@@ -22,7 +22,6 @@ from operations_modules import file_locations
 from operations_modules import logger
 from operations_modules.app_cached_variables import database_variables as db_v
 from operations_modules.app_generic_functions import adjust_datetime
-from configuration_modules.app_config_access import primary_config
 
 
 class CreateOtherDataEntry:
@@ -322,7 +321,7 @@ def get_one_db_entry(table_name, column_name, order="DESC", database=file_locati
     return get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database))
 
 
-def get_main_db_first_last_date():
+def get_main_db_first_last_date(utc0_hour_offset=0):
     """ Returns First and Last recorded date in the SQL Database as a String. """
     sql_query = "SELECT Min(" + str(db_v.all_tables_datetime) + ") AS First, " + \
                 "Max(" + str(db_v.all_tables_datetime) + ") AS Last " + \
@@ -331,8 +330,8 @@ def get_main_db_first_last_date():
     textbox_db_dates = "Database Access Error: "
     try:
         first_date, last_date = sql_execute_get_data(sql_query)[0]
-        first_date = adjust_datetime(first_date, primary_config.utc0_hour_offset)
-        last_date = adjust_datetime(last_date, primary_config.utc0_hour_offset)
+        first_date = adjust_datetime(first_date, utc0_hour_offset)
+        last_date = adjust_datetime(last_date, utc0_hour_offset)
         textbox_db_dates = str(first_date) + " < -- > " + str(last_date)
     except Exception as error:
         logger.primary_logger.error("Get First & Last DateTime from Interval Recording DB Failed: " + str(error))

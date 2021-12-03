@@ -57,7 +57,7 @@ def html_atpro_settings_db_information():
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
         SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
-        SQLDatabaseDateRange=get_main_db_first_last_date(),
+        SQLDatabaseDateRange=get_main_db_first_last_date(app_config_access.primary_config.utc0_hour_offset),
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         ZipMainDBCreated=_get_file_creation_date(file_locations.database_zipped),
         ZipMainDBFileSize=get_file_size(file_locations.database_zipped),
