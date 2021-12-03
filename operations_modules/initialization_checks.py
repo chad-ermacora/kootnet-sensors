@@ -46,13 +46,13 @@ def run_program_start_checks():
         run_database_integrity_check(file_locations.sensor_database, quick=False)
         run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
         run_database_integrity_check(file_locations.mqtt_subscriber_database, quick=False)
+        thread_function(check_main_database_structure)
         thread_function(check_checkin_database_structure)
         thread_function(check_mqtt_subscriber_database_structure)
     else:
         run_database_integrity_check(file_locations.sensor_database)
         run_database_integrity_check(file_locations.sensor_checkin_database)
         run_database_integrity_check(file_locations.mqtt_subscriber_database)
-    thread_function(check_main_database_structure)
     thread_function(_create_secondary_python_venv)
 
 
