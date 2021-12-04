@@ -3,7 +3,6 @@
 spidev
 RPi.GPIO
 gpiozero
-pyserial
 smbus
 smbus2
 luma.core

@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-import serial
+from sensor_modules.drivers import pyserial as serial
 import struct
 import time
 
