@@ -42,11 +42,13 @@ def html_atpro_sensor_settings_main():
     if request.method == "POST":
         app_config_access.primary_config.update_with_html_request(request)
         app_config_access.primary_config.save_config_to_file()
+        config_name = "Main"
         if request.form.get("ip_web_port") is None:
+            config_name = "Automatic HTTP Upgrade"
             app_cached_variables.restart_automatic_upgrades_thread = True
-        if app_config_access.primary_config.web_portal_port_changed:
+        elif app_config_access.primary_config.web_portal_port_changed:
             atpro_notifications.manage_service_restart()
-        return get_message_page("Main Settings Updated", page_url="sensor-settings")
+        return get_message_page(config_name + " Settings Updated", page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
     enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_feature)
