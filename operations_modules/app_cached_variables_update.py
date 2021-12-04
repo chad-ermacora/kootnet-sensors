@@ -51,7 +51,7 @@ def update_cached_variables():
         demo_mode = app_config_access.primary_config.demo_mode
         if not app_cached_variables.running_with_root:
             click_msg = "Without root access, the following functions will be unavailable - "
-            click_msg += "HW Sensors, Network Configurations, Upgrade & Power commands"
+            click_msg += "Hardware Sensors, Network Configurations, Upgrade & Power commands"
             icon = "fas fa-exclamation-triangle"
             notification_short_msg = "Warning: Not running with root<br>Click Here for more information"
             atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg, icon=icon)
