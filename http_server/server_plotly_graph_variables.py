@@ -63,7 +63,6 @@ class CreateGraphData:
         self.selected_sensors_list = graph_config.get_enabled_graph_sensors_list()
 
         # Filled with sensor data to be graphed later in the process. [[Sensor Data], [Sensor Datetime entries]]
-        temperature_text = "Temperature in °C (Celsius)"
         self.graph_data_dic = {
             db_v.sensor_name: [[], [], "Sensor Names over Time", "Sensor Name", mark_generic_dot],
             db_v.sensor_uptime: [[], [], "Sensor Uptime in Minutes", "Sensor Uptime", mark_generic_dot],
