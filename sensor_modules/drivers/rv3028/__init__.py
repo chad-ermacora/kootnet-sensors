@@ -443,7 +443,7 @@ class RV3028:
 
 if __name__ == "__main__":
 
-    import smbus
+    from sensor_modules.drivers.smbus2 import smbus2 as smbus
     bus = smbus.SMBus(1)
     rtc = RV3028(i2c_dev=bus)
     print('Part ID: {0[0]} Revision: {0[1]}'.format(rtc.get_id()))

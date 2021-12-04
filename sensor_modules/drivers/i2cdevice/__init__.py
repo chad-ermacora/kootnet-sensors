@@ -162,7 +162,7 @@ class Device(object):
         self._i2c = i2c_dev
 
         if self._i2c is None:
-            import smbus
+            from sensor_modules.drivers.smbus2 import smbus2 as smbus
             self._i2c = smbus.SMBus(1)
 
         for register in registers:

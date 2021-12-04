@@ -48,7 +48,7 @@ class SGP30:
         self._i2c_dev = i2c_dev
         self._i2c_msg = i2c_msg
         if self._i2c_dev is None:
-            from smbus2 import SMBus, i2c_msg
+            from sensor_modules.drivers.smbus2.smbus2 import SMBus, i2c_msg
             self._i2c_msg = i2c_msg
             self._i2c_dev = SMBus(1)
 

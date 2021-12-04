@@ -434,7 +434,7 @@ class MSA301:
 
 
 if __name__ == "__main__":
-    import smbus
+    from sensor_modules.drivers.smbus2 import smbus2 as smbus
 
     bus = smbus.SMBus(1)
     accel = MSA301(i2c_dev=bus)

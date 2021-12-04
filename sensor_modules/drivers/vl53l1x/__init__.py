@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from ctypes import CDLL, CFUNCTYPE, POINTER, c_int, c_uint, pointer, c_ubyte, c_uint8, c_uint32
-from smbus2 import SMBus, i2c_msg
+from sensor_modules.drivers.smbus2.smbus2 import SMBus, i2c_msg
 import os
 import site
 import glob

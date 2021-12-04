@@ -3,8 +3,6 @@
 spidev
 RPi.GPIO
 gpiozero
-smbus
-smbus2
 luma.core
 luma.oled
 # Other requirements related to the sensors
