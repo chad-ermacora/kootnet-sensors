@@ -12,7 +12,6 @@ click
 itsdangerous
 Jinja2
 pycparser
-pyusb
 pyftdi
 colorzero
 zope.event

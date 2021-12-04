@@ -36,7 +36,6 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
       ${PYTHON_MODULES_DIR}/Werkzeug-2.0.1-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/Jinja2-3.0.1-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/pycparser-2.20-py2.py3-none-any.whl \
-      ${PYTHON_MODULES_DIR}/pyusb-1.0.2-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/pyftdi-0.51.2-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/colorzero-1.1-py2.py3-none-any.whl
       ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/Flask-2.0.2-py3-none-any.whl \
