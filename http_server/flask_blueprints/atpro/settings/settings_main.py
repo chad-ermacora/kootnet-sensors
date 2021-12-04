@@ -25,6 +25,7 @@ from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
 
@@ -41,9 +42,11 @@ def html_atpro_sensor_settings_main():
     if request.method == "POST":
         app_config_access.primary_config.update_with_html_request(request)
         app_config_access.primary_config.save_config_to_file()
-        app_cached_variables.restart_automatic_upgrades_thread = True
-        msg = "If you changed the Web Portal HTTPS Port Number, you will need to restart the program"
-        return get_message_page("Main Settings Updated", msg, page_url="sensor-settings")
+        if request.form.get("ip_web_port") is None:
+            app_cached_variables.restart_automatic_upgrades_thread = True
+        if app_config_access.primary_config.web_portal_port_changed:
+            atpro_notifications.manage_service_restart()
+        return get_message_page("Main Settings Updated", page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
     enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_feature)

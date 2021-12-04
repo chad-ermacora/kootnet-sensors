@@ -45,6 +45,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         self.flask_http_ip = ""
         self.web_portal_port = 10065
+        self.web_portal_port_changed = 0
 
         self.enable_automatic_upgrades_feature = 0
         self.enable_automatic_upgrades_minor = 0
@@ -82,6 +83,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             if html_request.form.get("enable_dev_auto_upgrades") is not None:
                 self.enable_automatic_upgrades_developmental = 1
         else:
+            old_port = self.web_portal_port
+
             self.enable_debug_logging = 0
             if html_request.form.get("debug_logging") is not None:
                 self.enable_debug_logging = 1
@@ -93,6 +96,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                 self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
             if html_request.form.get("ip_web_port") is not None:
                 self.web_portal_port = int(html_request.form.get("ip_web_port"))
+                if old_port != self.web_portal_port:
+                    self.web_portal_port_changed = 1
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
