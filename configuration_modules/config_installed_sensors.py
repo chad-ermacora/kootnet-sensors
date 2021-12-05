@@ -79,11 +79,11 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
         self.w1_therm_sensor = 0
 
+        self.check_for_raspberry_pi()
         self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
-            self.config_settings_names[2] = self.get_raspberry_pi_model()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
@@ -95,63 +95,58 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
         self.__init__(load_from_file=False)
         if running_with_root:
-            try:
-                if html_request.form.get("raspberry_pi") is not None:
-                    self.raspberry_pi = 1
-                if html_request.form.get("raspberry_pi_sense_hat") is not None:
-                    self.raspberry_pi_sense_hat = 1
-                if html_request.form.get("pimoroni_bh1745") is not None:
-                    self.pimoroni_bh1745 = 1
-                if html_request.form.get("pimoroni_as7262") is not None:
-                    self.pimoroni_as7262 = 1
-                if html_request.form.get("pimoroni_mcp9600") is not None:
-                    self.pimoroni_mcp9600 = 1
-                if html_request.form.get("pimoroni_bmp280") is not None:
-                    self.pimoroni_bmp280 = 1
-                if html_request.form.get("pimoroni_bme280") is not None:
-                    self.pimoroni_bme280 = 1
-                if html_request.form.get("pimoroni_bme680") is not None:
-                    self.pimoroni_bme680 = 1
-                if html_request.form.get("pimoroni_enviro") is not None:
-                    self.pimoroni_enviro = 1
-                if html_request.form.get("pimoroni_enviro2") is not None:
-                    self.pimoroni_enviro2 = 1
-                if html_request.form.get("pimoroni_enviroplus") is not None:
-                    self.pimoroni_enviroplus = 1
-                if html_request.form.get("pimoroni_sgp30") is not None:
-                    self.pimoroni_sgp30 = 1
-                if html_request.form.get("pimoroni_pms5003") is not None:
-                    self.pimoroni_pms5003 = 1
-                if html_request.form.get("pimoroni_msa301") is not None:
-                    self.pimoroni_msa301 = 1
-                if html_request.form.get("pimoroni_lsm303d") is not None:
-                    self.pimoroni_lsm303d = 1
-                if html_request.form.get("pimoroni_icm20948") is not None:
-                    self.pimoroni_icm20948 = 1
-                if html_request.form.get("pimoroni_vl53l1x") is not None:
-                    self.pimoroni_vl53l1x = 1
-                if html_request.form.get("pimoroni_ltr_559") is not None:
-                    self.pimoroni_ltr_559 = 1
-                if html_request.form.get("pimoroni_veml6075") is not None:
-                    self.pimoroni_veml6075 = 1
-                if html_request.form.get("pimoroni_mics6814") is not None:
-                    self.pimoroni_mics6814 = 1
-                if html_request.form.get("pimoroni_matrix_11x7") is not None:
-                    self.pimoroni_matrix_11x7 = 1
-                if html_request.form.get("pimoroni_st7735") is not None:
-                    self.pimoroni_st7735 = 1
-                if html_request.form.get("pimoroni_mono_oled_luma") is not None:
-                    self.pimoroni_mono_oled_luma = 1
-                if html_request.form.get("pimoroni_rv3028") is not None:
-                    self.pimoroni_rv3028 = 1
-                if html_request.form.get("pimoroni_pa1010d") is not None:
-                    self.pimoroni_pa1010d = 1
-                if html_request.form.get("sensirion_sps30") is not None:
-                    self.sensirion_sps30 = 1
-                if html_request.form.get("w1thermsensor") is not None:
-                    self.w1_therm_sensor = 1
-            except Exception as error:
-                logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+            if html_request.form.get("raspberry_pi_sense_hat") is not None:
+                self.raspberry_pi_sense_hat = 1
+            if html_request.form.get("pimoroni_bh1745") is not None:
+                self.pimoroni_bh1745 = 1
+            if html_request.form.get("pimoroni_as7262") is not None:
+                self.pimoroni_as7262 = 1
+            if html_request.form.get("pimoroni_mcp9600") is not None:
+                self.pimoroni_mcp9600 = 1
+            if html_request.form.get("pimoroni_bmp280") is not None:
+                self.pimoroni_bmp280 = 1
+            if html_request.form.get("pimoroni_bme280") is not None:
+                self.pimoroni_bme280 = 1
+            if html_request.form.get("pimoroni_bme680") is not None:
+                self.pimoroni_bme680 = 1
+            if html_request.form.get("pimoroni_enviro") is not None:
+                self.pimoroni_enviro = 1
+            if html_request.form.get("pimoroni_enviro2") is not None:
+                self.pimoroni_enviro2 = 1
+            if html_request.form.get("pimoroni_enviroplus") is not None:
+                self.pimoroni_enviroplus = 1
+            if html_request.form.get("pimoroni_sgp30") is not None:
+                self.pimoroni_sgp30 = 1
+            if html_request.form.get("pimoroni_pms5003") is not None:
+                self.pimoroni_pms5003 = 1
+            if html_request.form.get("pimoroni_msa301") is not None:
+                self.pimoroni_msa301 = 1
+            if html_request.form.get("pimoroni_lsm303d") is not None:
+                self.pimoroni_lsm303d = 1
+            if html_request.form.get("pimoroni_icm20948") is not None:
+                self.pimoroni_icm20948 = 1
+            if html_request.form.get("pimoroni_vl53l1x") is not None:
+                self.pimoroni_vl53l1x = 1
+            if html_request.form.get("pimoroni_ltr_559") is not None:
+                self.pimoroni_ltr_559 = 1
+            if html_request.form.get("pimoroni_veml6075") is not None:
+                self.pimoroni_veml6075 = 1
+            if html_request.form.get("pimoroni_mics6814") is not None:
+                self.pimoroni_mics6814 = 1
+            if html_request.form.get("pimoroni_matrix_11x7") is not None:
+                self.pimoroni_matrix_11x7 = 1
+            if html_request.form.get("pimoroni_st7735") is not None:
+                self.pimoroni_st7735 = 1
+            if html_request.form.get("pimoroni_mono_oled_luma") is not None:
+                self.pimoroni_mono_oled_luma = 1
+            if html_request.form.get("pimoroni_rv3028") is not None:
+                self.pimoroni_rv3028 = 1
+            if html_request.form.get("pimoroni_pa1010d") is not None:
+                self.pimoroni_pa1010d = 1
+            if html_request.form.get("sensirion_sps30") is not None:
+                self.sensirion_sps30 = 1
+            if html_request.form.get("w1thermsensor") is not None:
+                self.w1_therm_sensor = 1
         if html_request.form.get("kootnet_dummy_sensor") is not None:
             self.kootnet_dummy_sensor = 1
         self.update_configuration_settings_list()
@@ -192,8 +187,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     def _update_variables_from_settings_list(self):
         try:
             self.kootnet_dummy_sensor = int(self.config_settings[0])
-            self.linux_system = int(self.config_settings[1])
-            self.raspberry_pi = int(self.config_settings[2])
+            # self.linux_system = int(self.config_settings[1])  Removed - only Linux is supported
+            # self.raspberry_pi = int(self.config_settings[2])  Removed - it now auto-detects
             self.raspberry_pi_sense_hat = int(self.config_settings[3])
             self.pimoroni_bh1745 = int(self.config_settings[4])
             self.pimoroni_as7262 = int(self.config_settings[5])
@@ -227,15 +222,18 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 logger.primary_logger.info("Saving Installed Sensors.")
                 self.save_config_to_file()
 
-    def get_raspberry_pi_model(self):
-        """ Returns the local Raspberry Pi model. """
-
-        if self.raspberry_pi and os.path.isfile("/proc/device-tree/model"):
-            try:
-                pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
+    def check_for_raspberry_pi(self):
+        """ Checks if running on a Raspberry Pi """
+        pi_version = "Raspberry Pi not detected"
+        try:
+            if os.path.isfile("/proc/device-tree/model"):
+                pi_version = str(check_output("cat /proc/device-tree/model", shell=True).decode())
                 logger.primary_logger.debug("Pi Version: " + str(pi_version))
                 if str(pi_version)[:12] == "Raspberry Pi":
-                    return str(pi_version)
-            except Exception as error:
-                logger.primary_logger.warning("Unable to get Raspberry Pi Model: " + str(error))
-        return "Raspberry Pi"
+                    self.raspberry_pi = 1
+                else:
+                    self.raspberry_pi = 0
+        except Exception as error:
+            logger.primary_logger.warning("Detect Raspberry Pi Failed: " + str(error))
+            self.raspberry_pi = 0
+        self.config_settings_names[2] = pi_version
