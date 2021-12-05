@@ -304,17 +304,16 @@ def upgrade_python_pip_modules():
 
 def _pip_upgrades_thread(requirements_list):
     logger.primary_logger.info("Python3 Module Upgrades Started")
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "pip"])
-        for requirement in requirements_list:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "pip"])
+    for requirement in requirements_list:
+        try:
             requirement = requirement.strip()
             if requirement[0] != "#":
                 subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", requirement.strip()])
-        logger.primary_logger.info("Python3 Module Upgrades Complete")
-        os.system(app_cached_variables.bash_commands["RestartService"])
-    except Exception as error:
-        logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
-    app_cached_variables.pip_ready_for_upgrades = True
+                logger.primary_logger.info("Python3 Module Upgrades Complete")
+        except Exception as error:
+            logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
+    os.system(app_cached_variables.bash_commands["RestartService"])
 
 
 def upgrade_linux_os():
