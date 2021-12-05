@@ -37,7 +37,7 @@ def check_and_install_required_python_modules():
         installed_python_module_list.append(py_module.key)
 
     module_lists = [requirements_location]
-    if app_cached_variables.running_with_root and _running_on_pi():
+    if app_cached_variables.running_with_root and running_on_pi():
         module_lists.append(hw_requirements_location)
     required_modules_list = _add_pip_modules_to_list(module_lists)
     for requirement in required_modules_list:
@@ -58,7 +58,7 @@ def _add_pip_modules_to_list(requirements_locations_list):
     return modules_list
 
 
-def _running_on_pi():
+def running_on_pi():
     pi_version = str(subprocess.check_output("cat /proc/device-tree/model", shell=True).decode())
     if str(pi_version)[:12] == "Raspberry Pi":
         return True
