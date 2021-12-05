@@ -1,4 +1,11 @@
 # Required Sensor Program Modules
+# --- Required for Flask
+Werkzeug
+Jinja2
+MarkupSafe
+itsdangerous
+click
+# ---
 flask
 Flask-Compress
 gevent
@@ -12,7 +19,7 @@ numpy
 guizero
 # ---
 # All Commented out Sensor Hardware Modules are included in the main app
-# luma.core luma.oled are actually installed later in the Debian installer postinst script
+# luma.core luma.oled are actually installed on demand when Pimoroni 1.12" OLED is enabled
 # ---
 #luma.core
 #luma.oled

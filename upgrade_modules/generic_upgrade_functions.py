@@ -17,6 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import sys
+import subprocess
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -265,6 +267,22 @@ def load_and_save_all_configs_silently():
     upgrade_config_load_and_save(CreateSensorControlConfiguration, upgrade_msg=False, new_location=new_location)
 
 
+def load_pip_module_on_demand(module_name, module_import_str, from_list=None):
+    try:
+        if from_list is not None:
+            return __import__(module_import_str, fromlist=from_list)
+        return __import__(module_import_str)
+    except ImportError:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", module_name])
+            if from_list is not None:
+                return __import__(module_import_str, fromlist=from_list)
+            return __import__(module_import_str)
+        except Exception as error:
+            logger.primary_logger.error("Unable to install Python Module '" + module_name + "': " + str(error))
+    return None
+
+
 def upgrade_python_pip_modules():
     if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
         requirements_text = get_file_content(file_locations.program_root_dir + "/requirements.txt").strip()
@@ -278,8 +296,7 @@ def _pip_upgrades_thread(requirements_list):
         app_cached_variables.sensor_ready_for_upgrade = False
         for requirement in requirements_list:
             if requirement[0] != "#":
-                command = file_locations.sensor_data_dir + "/env/bin/python3 -m pip install -U " + requirement.strip()
-                os.system(command)
+                subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", requirement.strip()])
         logger.primary_logger.info("Python3 Module Upgrades Complete")
         os.system(app_cached_variables.bash_commands["RestartService"])
     except Exception as error:

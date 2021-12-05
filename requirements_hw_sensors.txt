@@ -3,14 +3,10 @@
 spidev
 RPi.GPIO
 gpiozero
-luma.core
-luma.oled
+pyserial
+pyusb
 # Other requirements related to the sensors
 Pillow
-MarkupSafe
-click
-itsdangerous
-Jinja2
 pycparser
 pyftdi
 colorzero
