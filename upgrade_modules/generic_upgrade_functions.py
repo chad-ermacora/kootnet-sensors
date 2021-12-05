@@ -288,7 +288,7 @@ def upgrade_python_pip_modules():
     requirements_file_location = file_locations.program_root_dir + "/requirements.txt"
     hardware_requirements_location = file_locations.program_root_dir + "/requirements_hw_sensors.txt"
     all_python_modules_list = []
-    if app_cached_variables.pip_ready_for_upgrades:
+    if app_cached_variables.pip_ready_for_upgrades and app_cached_variables.sensor_ready_for_upgrade:
         if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
             requirements_text = get_file_content(requirements_file_location).strip()
             all_python_modules_list = requirements_text.split("\n")
@@ -317,7 +317,7 @@ def _pip_upgrades_thread(requirements_list):
 
 
 def upgrade_linux_os():
-    if app_cached_variables.sensor_ready_for_upgrade:
+    if app_cached_variables.sensor_ready_for_upgrade and app_cached_variables.pip_ready_for_upgrades:
         app_cached_variables.sensor_ready_for_upgrade = False
         thread_function(_upgrade_linux_os_thread)
     else:
