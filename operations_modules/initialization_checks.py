@@ -16,6 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+# Ensure Required Python modules are installed, if any missing, this will attempt to install them
+from operations_modules.initialization_python_modules import check_and_install_required_python_modules
+check_and_install_required_python_modules()
+
 import os
 import random
 import string
