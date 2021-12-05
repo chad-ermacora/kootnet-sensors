@@ -170,11 +170,11 @@ def _create_secondary_python_venv():
             if not os.path.isdir(upgrade_env_dir):
                 os.mkdir(upgrade_env_dir)
             if not os.path.isfile(upgrade_env_dir + "bin/python"):
-                logger.primary_logger.info(" - Creating Kootnet Sensor's Upgrade & TCT Python Virtual Environment")
+                logger.primary_logger.info(" - Kootnet Sensor's Upgrade & TCT Python Virtual Environment - Creating")
                 os.system("python3 -m venv " + upgrade_env_dir)
                 os.system(upgrade_env_dir + "bin/python3 -m pip install requests")
-                log_msg = " - Kootnet Sensor's Upgrade & TCT Python Virtual Environment Created Successfully"
+                log_msg = " - Kootnet Sensor's Upgrade & TCT Python Virtual Environment - Created Successfully"
                 logger.primary_logger.info(log_msg)
         except Exception as error:
-            log_msg = "-- Kootnet Sensor's Upgrade & TCT Python Virtual Environment Creation Failed: "
+            log_msg = "-- Kootnet Sensor's Upgrade & TCT Python Virtual Environment - Creation Failed: "
             logger.primary_logger.critical(log_msg + str(error))
