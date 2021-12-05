@@ -44,6 +44,7 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
+from operations_modules.initialization_python_modules import running_on_pi
 
 
 def successful_upgrade_message(config_name="Generic"):
@@ -284,38 +285,52 @@ def load_pip_module_on_demand(module_name, module_import_str, from_list=None):
 
 
 def upgrade_python_pip_modules():
-    if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
-        requirements_text = get_file_content(file_locations.program_root_dir + "/requirements.txt").strip()
-        requirements_list = requirements_text.split("\n")
-        thread_function(_pip_upgrades_thread, args=requirements_list)
+    requirements_file_location = file_locations.program_root_dir + "/requirements.txt"
+    hardware_requirements_location = file_locations.program_root_dir + "/requirements_hw_sensors.txt"
+    all_python_modules_list = []
+    if app_cached_variables.pip_ready_for_upgrades:
+        if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
+            requirements_text = get_file_content(requirements_file_location).strip()
+            all_python_modules_list = requirements_text.split("\n")
+        if app_cached_variables.running_with_root and running_on_pi():
+            if os.path.isfile(file_locations.program_root_dir + "/requirements_hw_sensors.txt"):
+                requirements_text = get_file_content(hardware_requirements_location).strip()
+                all_python_modules_list = all_python_modules_list + requirements_text.split("\n")
+        app_cached_variables.pip_ready_for_upgrades = False
+        thread_function(_pip_upgrades_thread, args=all_python_modules_list)
+    else:
+        logger.network_logger.warning("Unable to start Python Module Upgrades - already running")
 
 
 def _pip_upgrades_thread(requirements_list):
     logger.primary_logger.info("Python3 Module Upgrades Started")
     try:
-        app_cached_variables.sensor_ready_for_upgrade = False
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "pip"])
         for requirement in requirements_list:
+            requirement = requirement.strip()
             if requirement[0] != "#":
                 subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", requirement.strip()])
         logger.primary_logger.info("Python3 Module Upgrades Complete")
         os.system(app_cached_variables.bash_commands["RestartService"])
     except Exception as error:
         logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
-        app_cached_variables.sensor_ready_for_upgrade = True
+    app_cached_variables.pip_ready_for_upgrades = True
 
 
 def upgrade_linux_os():
-    thread_function(_upgrade_linux_os_thread)
+    if app_cached_variables.sensor_ready_for_upgrade:
+        app_cached_variables.sensor_ready_for_upgrade = False
+        thread_function(_upgrade_linux_os_thread)
+    else:
+        logger.network_logger.warning("Unable to start Linux OS Upgrade - already running")
 
 
 def _upgrade_linux_os_thread():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
-        app_cached_variables.sensor_ready_for_upgrade = False
         os.system(app_cached_variables.bash_commands["UpgradeSystemOS"])
-        logger.primary_logger.warning("Linux OS Upgrade Done")
-        logger.primary_logger.info("Rebooting System")
+        logger.primary_logger.info("Linux OS Upgrade Done - Rebooting System")
         os.system(app_cached_variables.bash_commands["RebootSystem"])
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
-        app_cached_variables.sensor_ready_for_upgrade = True
+    app_cached_variables.sensor_ready_for_upgrade = True

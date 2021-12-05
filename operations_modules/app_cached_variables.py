@@ -193,8 +193,9 @@ restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
 
 # Checked before running OS or pip3 upgrades
-# Set to False when stating a upgrade, returns to True after program restarts
+# Set to False when stating an upgrade, returns to True after program restarts or upgrade fails
 sensor_ready_for_upgrade = True
+pip_ready_for_upgrades = True
 
 # Variables to make sure the same zip is not being generated multiple times at the same time
 creating_zip_main_db = False

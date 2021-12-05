@@ -138,10 +138,7 @@ def system_shutdown():
 def upgrade_system_os():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
-        if app_cached_variables.sensor_ready_for_upgrade:
-            upgrade_linux_os()
-        else:
-            logger.network_logger.warning("* Upgrades Already Running")
+        upgrade_linux_os()
         msg = "Upgrading the Operating System requires Internet & may take up to an hour or more.<br>"
         msg = msg + "Once complete, the system will automatically reboot."
         return get_message_page("Upgrading Operating System", message=msg, page_url="sensor-dashboard")
@@ -153,10 +150,7 @@ def upgrade_system_os():
 def upgrade_pip_modules():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("** Program pip3 modules upgrade Initiated by " + str(request.remote_addr))
-        if app_cached_variables.sensor_ready_for_upgrade:
-            upgrade_python_pip_modules()
-        else:
-            logger.network_logger.warning("* Upgrades Already Running")
+        upgrade_python_pip_modules()
         msg = "Python Modules for Kootnet Sensors are being upgraded. Once complete, the program will be restarted."
         return get_message_page("Upgrading Python Modules", message=msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg
