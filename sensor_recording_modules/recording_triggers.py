@@ -107,7 +107,9 @@ def start_trigger_variance_recording_server():
 
 def _trigger_variance_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
-    logger.primary_logger.debug("Trigger Thread(s) Starting")
+    # Sleep to allow cached variables like sensor IP & hostname to populate
+    sleep(10)
+    logger.primary_logger.info(" -- Trigger Variance Recording Started")
     if trigger_variances.cpu_temperature_enabled:
         sensor_get_function = sensor_access.get_cpu_temperature
         sql_column_name_list = [database_variables.system_temperature]

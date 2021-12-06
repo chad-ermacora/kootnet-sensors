@@ -337,8 +337,11 @@ class _MultiTriggerThread:
 
 def start_trigger_high_low_recording_server():
     if app_config_access.trigger_high_low.enable_high_low_trigger_recording:
-        tmp_tv = _CreateHighLowTriggerThreadData()
+        # Sleep to allow cached variables like sensor IP & hostname to populate
+        sleep(10)
+        logger.primary_logger.info(" -- High/Low Trigger Recording Started")
 
+        tmp_tv = _CreateHighLowTriggerThreadData()
         if app_config_access.trigger_high_low.cpu_temperature_enabled:
             app_cached_variables.trigger_high_low_cpu_temp = CreateMonitoredThread(
                 _SingleTriggerThread,
@@ -436,6 +439,5 @@ def start_trigger_high_low_recording_server():
                 args=[tmp_tv.gyroscope],
                 thread_name="High/Low Trigger Gyroscope"
             )
-        logger.primary_logger.info(" -- High/Low Trigger Recording Threads Started")
     else:
         logger.primary_logger.debug("High/Low Trigger Recording Disabled in Configuration")

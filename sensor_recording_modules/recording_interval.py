@@ -37,7 +37,8 @@ def start_interval_recording_server():
 
 def _interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
-    sleep(5)
+    # Sleep to allow cached variables like sensor IP & hostname to populate
+    sleep(10)
     app_cached_variables.interval_recording_thread.current_state = "Disabled"
     if not app_config_access.interval_recording_config.enable_interval_recording:
         logger.primary_logger.debug("Interval Recording Disabled in the Configuration")
