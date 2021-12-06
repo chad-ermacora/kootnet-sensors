@@ -229,7 +229,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             if os.path.isfile("/proc/device-tree/model"):
                 pi_version = str(check_output("cat /proc/device-tree/model", shell=True).decode())
                 logger.primary_logger.debug("Pi Version: " + str(pi_version))
-                if str(pi_version)[:12] == "Raspberry Pi":
+                if str(pi_version)[:12] == "Raspberry Pi" and running_with_root:
                     self.raspberry_pi = 1
                 else:
                     self.raspberry_pi = 0
