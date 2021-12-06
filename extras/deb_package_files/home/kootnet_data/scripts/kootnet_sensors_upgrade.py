@@ -63,7 +63,7 @@ class CreateUpgradeInterface:
         """
         self.configuration_file_present = False
         self.upgrade_config_location = program_root_dir + "upgrade_options.conf"
-        self.upgrade_running_file_location = program_root_dir + "upgrade_running.txt"
+        self.upgrade_running_file_location = program_root_dir + "upgrade_running.conf"
         self.upgrade_file_location = ""
         self.clean_upgrade = 0
 
