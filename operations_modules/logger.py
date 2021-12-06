@@ -44,7 +44,7 @@ def initialize_logger(logger, log_location, formatter):
     logger.addHandler(stream_handler)
 
 
-def _debug_enabled():
+def _debug_status():
     if os.path.isfile(file_locations.primary_config):
         with open(file_locations.primary_config, "r") as loaded_file:
             file_lines_list = loaded_file.read().split("\n")
@@ -55,7 +55,7 @@ def _debug_enabled():
     return False
 
 
-def set_logging_level(debug_enabled=_debug_enabled()):
+def set_logging_level():
     if debug_enabled:
         primary_logger.setLevel(logging.DEBUG)
         network_logger.setLevel(logging.DEBUG)
@@ -119,6 +119,8 @@ def clear_mqtt_subscriber_log():
 def _get_log_cleared_msg():
     return datetime.utcnow().strftime("Log Cleared on %Y-%m-%d %H:%M:%S UTC0") + "\n"
 
+
+debug_enabled = _debug_status()
 
 # Initialize 3 Logs, Primary, Network and Sensors
 primary_logger = logging.getLogger("PrimaryLog")
