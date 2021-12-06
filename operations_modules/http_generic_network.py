@@ -45,7 +45,10 @@ def get_http_regular_file(file_http_url_location, get_text=True, timeout=10, ver
     except requests.exceptions.ConnectionError:
         logger.network_logger.debug("HTTP GET File Connection Failed " + file_http_url_location)
     except Exception as error:
-        logger.network_logger.warning("HTTP GET File from " + str(file_http_url_location) + ": " + str(error))
+        log_msg = "HTTP GET File - Unable to get " + str(file_http_url_location)
+        if logger.debug_enabled:
+            log_msg += ": " + str(error)
+        logger.network_logger.warning(log_msg)
     return "Unable to get file: " + str(file_http_url_location)
 
 
@@ -67,7 +70,10 @@ def get_http_kootnet_sensor_file(sensor_address, http_command, verify_ssl=False)
         )
         return tmp_return_data.content
     except Exception as error:
-        logger.network_logger.warning("HTTP GET File from " + sensor_address + ": " + str(error))
+        log_msg = "HTTP GET File - Unable to get " + sensor_address
+        if logger.debug_enabled:
+            log_msg += ": " + str(error)
+        logger.network_logger.warning(log_msg)
     return get_sensor_reading_error_msg
 
 
@@ -92,7 +98,10 @@ def get_http_sensor_reading(sensor_address, http_command="CheckOnlineStatus", ti
     except requests.exceptions.ConnectionError:
         logger.network_logger.debug("HTTP GET Reading Connection Failed " + sensor_address)
     except Exception as error:
-        logger.network_logger.warning("HTTP GET Reading from " + sensor_address + ": " + str(error))
+        log_msg = "HTTP GET Reading - Unable to get " + sensor_address
+        if logger.debug_enabled:
+            log_msg += ": " + str(error)
+        logger.network_logger.warning(log_msg)
     return get_sensor_reading_error_msg
 
 
@@ -119,7 +128,10 @@ def send_http_command(sensor_address, http_command, dic_data=None, timeout=10, v
     except requests.exceptions.ConnectionError:
         logger.network_logger.warning("HTTP PUT Connection Failed " + sensor_address + http_command)
     except Exception as error:
-        logger.network_logger.warning("HTTP PUT data to " + sensor_address + ": " + str(error))
+        log_msg = "HTTP PUT data - Unable to send data to " + sensor_address
+        if logger.debug_enabled:
+            log_msg += ": " + str(error)
+        logger.network_logger.warning(log_msg)
 
 
 def send_http_test_config(sensor_address, http_command, text_config, verify_ssl=False):
@@ -143,7 +155,10 @@ def send_http_test_config(sensor_address, http_command, text_config, verify_ssl=
         )
         return resp.status_code
     except Exception as error:
-        logger.network_logger.info("HTTP PUT Test Configuration to " + sensor_address + ": " + str(error))
+        log_msg = "HTTP PUT Test Configuration - Unable to send Configuration to " + sensor_address
+        if logger.debug_enabled:
+            log_msg += ": " + str(error)
+        logger.network_logger.warning(log_msg)
 
 
 def check_http_file_exist(file_url):
@@ -161,7 +176,10 @@ def check_http_file_exist(file_url):
     except requests.exceptions.ConnectionError:
         logger.network_logger.debug("Check HTTP file Connection Failed " + file_url)
     except Exception as error:
-        logger.network_logger.warning("Check HTTP file " + file_url + ": " + str(error))
+        log_msg = "Check HTTP file - Unable to check file " + file_url
+        if logger.debug_enabled:
+            log_msg += ": " + str(error)
+        logger.network_logger.warning(log_msg)
     return False
 
 
