@@ -19,13 +19,9 @@
 import logging
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from operations_modules.initialization_python_modules import load_pip_module_on_demand
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
-
-try:
-    # In try statement so import does not prevent loading when missing
-    import requests
-except Exception as import_error:
-    logger.primary_logger.debug("requests python module import error: " + str(import_error))
+requests = load_pip_module_on_demand("requests", "requests")
 
 logging.captureWarnings(True)
 get_sensor_reading_error_msg = "Unable to get Sensor Reading/File"

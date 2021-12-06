@@ -268,22 +268,6 @@ def load_and_save_all_configs_silently():
     upgrade_config_load_and_save(CreateSensorControlConfiguration, upgrade_msg=False, new_location=new_location)
 
 
-def load_pip_module_on_demand(module_name, module_import_str, from_list=None):
-    try:
-        if from_list is not None:
-            return __import__(module_import_str, fromlist=from_list)
-        return __import__(module_import_str)
-    except ImportError:
-        try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", module_name])
-            if from_list is not None:
-                return __import__(module_import_str, fromlist=from_list)
-            return __import__(module_import_str)
-        except Exception as error:
-            logger.primary_logger.error("Unable to install Python Module '" + module_name + "': " + str(error))
-    return None
-
-
 def upgrade_python_pip_modules(python_location=None):
     requirements_file_location = file_locations.program_root_dir + "/requirements.txt"
     hardware_requirements_location = file_locations.program_root_dir + "/requirements_hw_sensors.txt"
@@ -317,7 +301,7 @@ def _pip_upgrades_thread(requirements_and_py_loc):
             requirement = requirement.strip()
             if requirement[0] != "#":
                 subprocess.check_call([python_location, "-m", "pip", "install", "-U", requirement.strip()])
-                logger.primary_logger.info("Python3 Module " + requirement + " Upgrade Complete")
+                logger.primary_logger.info("Python3 Module Upgraded: " + requirement)
         except Exception as error:
             logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
     logger.primary_logger.info("Python3 Module Upgrades Complete")

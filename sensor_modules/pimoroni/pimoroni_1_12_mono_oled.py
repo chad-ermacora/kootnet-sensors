@@ -18,8 +18,8 @@ Created on Tue July 9 16:33:56 2019
 from time import sleep
 from threading import Thread
 from operations_modules import logger
+from operations_modules.initialization_python_modules import load_pip_module_on_demand
 from configuration_modules import app_config_access
-from upgrade_modules.generic_upgrade_functions import load_pip_module_on_demand
 
 turn_off_display = 30
 

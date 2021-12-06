@@ -25,6 +25,29 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 
 
+def load_pip_module_on_demand(module_name, module_import_str, from_list=None):
+    """
+    Returns pip import, if missing, installs it, then returns import
+    :param module_name: Python module name used to install with pip
+    :param module_import_str: Python module name used to import into python
+    :param from_list: Optional: A list of what to import from the Python module
+    :return: Python module import
+    """
+    try:
+        if from_list is not None:
+            return __import__(module_import_str, fromlist=from_list)
+        return __import__(module_import_str)
+    except ImportError:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", module_name])
+            if from_list is not None:
+                return __import__(module_import_str, fromlist=from_list)
+            return __import__(module_import_str)
+        except Exception as error:
+            logger.primary_logger.error("Unable to install Python Module '" + module_name + "': " + str(error))
+    return None
+
+
 def check_and_install_required_python_modules():
     """
     Checks
