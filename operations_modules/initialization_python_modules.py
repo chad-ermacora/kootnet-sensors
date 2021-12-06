@@ -82,9 +82,12 @@ def _add_pip_modules_to_list(requirements_locations_list):
 
 
 def running_on_pi():
-    pi_version = str(subprocess.check_output("cat /proc/device-tree/model", shell=True).decode())
-    if str(pi_version)[:12] == "Raspberry Pi":
-        return True
+    try:
+        pi_version = str(subprocess.check_output("cat /proc/device-tree/model", shell=True).decode())
+        if str(pi_version)[:12] == "Raspberry Pi":
+            return True
+    except Exception as error:
+        logger.primary_logger.debug("Unable to verify Pi hardware: " + str(error))
     return False
 
 
