@@ -51,7 +51,6 @@ def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False,
             system_thread.start()
         else:
             _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type)
-        _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type)
 
 
 def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
@@ -78,30 +77,35 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
             current_online_version = get_http_regular_file(http_developmental_version_url, timeout=5)
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_developmental_deb_url
+            update_available = app_cached_variables.software_update_dev_available
         else:
             current_online_version = get_http_regular_file(http_standard_version_url, timeout=5)
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_standard_deb_url
+            update_available = app_cached_variables.software_update_available
 
-        if new_version_str[:1] == "0":
-            new_version_str = "Beta" + new_version_str[1:]
+        if update_available:
+            if new_version_str[:1] == "0":
+                new_version_str = "Beta" + new_version_str[1:]
 
-        download_file_location = _save_http_url_to_file(download_url)
-        if _verify_http_upgrade_file(download_file_location, _get_md5_for_version(new_version_str)):
-            _save_upgrade_config(download_file_location, clean_upgrade_str)
-            upgrade_can_proceed = True
+            download_file_location = _save_http_url_to_file(download_url)
+            if _verify_http_upgrade_file(download_file_location, _get_md5_for_version(new_version_str)):
+                _save_upgrade_config(download_file_location, clean_upgrade_str)
+                upgrade_can_proceed = True
+            else:
+                logger.network_logger.error("Upgrade Cancelled - Bad MD5 Checksum")
         else:
-            logger.network_logger.error("Upgrade Cancelled, Bad MD5 Checksum")
+            logger.network_logger.info("Upgrade Cancelled - The latest version or higher is already running")
     elif download_type == download_type_smb:
         smb_upgrade_file_location = _save_smb_to_file(dev_upgrade)
         if smb_upgrade_file_location is not None:
             _save_upgrade_config(smb_upgrade_file_location, clean_upgrade_str)
             upgrade_can_proceed = True
     if upgrade_can_proceed:
+        _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type)
         _set_upgrade_running_variable()
         os.system("systemctl start KootnetSensorsUpgrade.service")
     else:
-        atpro_notifications.manage_ks_upgrade(enable=False)
         app_cached_variables.sensor_ready_for_upgrade = True
 
 
