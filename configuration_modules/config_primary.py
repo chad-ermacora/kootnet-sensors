@@ -88,9 +88,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_debug_logging = 0
             if html_request.form.get("debug_logging") is not None:
                 self.enable_debug_logging = 1
-                logger.set_logging_level(debug_enabled=True)
+                logger.set_logging_level()
             else:
-                logger.set_logging_level(debug_enabled=False)
+                logger.set_logging_level()
 
             if html_request.form.get("program_hour_offset") is not None:
                 self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
