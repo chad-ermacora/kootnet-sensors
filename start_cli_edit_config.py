@@ -25,6 +25,7 @@ from configuration_modules.config_primary import CreatePrimaryConfiguration
 from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
 from operations_modules.software_version import version
 from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
+from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_generic_functions import save_http_auth_to_file
 
 logging.captureWarnings(True)
@@ -36,14 +37,15 @@ options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 1. View/Edit Primary & Installed Sensors Configurations
 2. Change Web Login Credentials
 3. Update Python Modules
-4. Upgrade Kootnet Sensors (Standard HTTP)
-5. Re-Install Kootnet Sensors (Latest Standard HTTP)
-6. Create New Self Signed SSL Certificate
-7. Restart KootnetSensors Service
-8. Run Sensor Local Tests
-9. View Logs
-10. Advanced Menu
-11. Exit
+4. Upgrade Operating System
+5. Upgrade Kootnet Sensors (Standard HTTP)
+6. Re-Install Kootnet Sensors (Latest Standard HTTP)
+7. Create New Self Signed SSL Certificate
+8. Restart KootnetSensors Service
+9. Run Sensor Local Tests
+10. View Logs
+11. Advanced Menu
+12. Exit
 """.replace("{{ Version }}", version)
 
 extra_options_menu = """Advanced Menu\n
@@ -82,38 +84,44 @@ def start_script():
                 _change_https_auth()
             elif selection == 3:
                 if app_cached_variables.running_as_service:
-                    _pip_upgrades()
+                    upgrade_python_pip_modules(python_location="/home/kootnet_data/env/bin/python")
                 else:
                     print(msg_service_not_installed)
             elif selection == 4:
+                if app_cached_variables.running_with_root:
+                    print("Starting Operating System Upgrade\n")
+                    upgrade_linux_os(thread_the_function=False)
+                else:
+                    print("OS Upgrade Cancelled - Not Running as root")
+            elif selection == 5:
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Standard Upgrade\n")
                     start_kootnet_sensors_upgrade(thread_download=False)
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
-            elif selection == 5:
+            elif selection == 6:
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Standard Re-Install\n")
                     start_kootnet_sensors_upgrade(clean_upgrade=True, thread_download=False)
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
-            elif selection == 6:
+            elif selection == 7:
                 os.system("rm -f -r " + file_locations.http_ssl_folder)
                 if app_cached_variables.running_as_service:
                     _restart_service(msg="SSL Certificate Removed\nRestarting Service to Create a New Certificate")
                 else:
                     print("SSL Certificate Removed")
-            elif selection == 7:
+            elif selection == 8:
                 if app_cached_variables.running_as_service:
                     _restart_service(msg="Kootnet Sensors Restarting")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 8:
+            elif selection == 9:
                 _test_sensors()
                 print("Testing Complete")
-            elif selection == 9:
+            elif selection == 10:
                 os.system("clear")
                 print("Primary Log\n\n")
                 os.system(view_log_system_command + file_locations.primary_log)
@@ -126,9 +134,9 @@ def start_script():
                 print("Sensors Log\n\n")
                 os.system(view_log_system_command + file_locations.sensors_log)
                 print("\nEnd of Logs")
-            elif selection == 10:
-                print(extra_options_menu)
             elif selection == 11:
+                print(extra_options_menu)
+            elif selection == 12:
                 running = False
             elif selection == 21:
                 if app_cached_variables.running_as_service:
@@ -214,21 +222,6 @@ def _change_https_auth():
     new_password = input("New Password: ")
     save_http_auth_to_file(new_user, new_password)
     _restart_service()
-
-
-def _pip_upgrades():
-    print("Upgrading all Python pip modules can take awhile.  Please wait ...\n")
-    try:
-        with open(file_locations.program_root_dir + "/requirements.txt") as file:
-            requirements_text_lines_list = file.readlines()
-        for line in requirements_text_lines_list:
-            if line[0] != "#":
-                command = file_locations.sensor_data_dir + "/env/bin/python3 -m pip install -U " + line.strip()
-                os.system(command)
-        logger.primary_logger.info("TCT - Python3 Module Upgrades Complete\n")
-        _restart_service()
-    except Exception as error:
-        logger.primary_logger.error("TCT - Python3 Module Upgrades: " + str(error))
 
 
 def _test_sensors():
