@@ -284,7 +284,7 @@ def load_pip_module_on_demand(module_name, module_import_str, from_list=None):
     return None
 
 
-def upgrade_python_pip_modules():
+def upgrade_python_pip_modules(python_location=None):
     requirements_file_location = file_locations.program_root_dir + "/requirements.txt"
     hardware_requirements_location = file_locations.program_root_dir + "/requirements_hw_sensors.txt"
     all_python_modules_list = []
@@ -297,29 +297,40 @@ def upgrade_python_pip_modules():
                 requirements_text = get_file_content(hardware_requirements_location).strip()
                 all_python_modules_list = all_python_modules_list + requirements_text.split("\n")
         app_cached_variables.pip_ready_for_upgrades = False
-        thread_function(_pip_upgrades_thread, args=all_python_modules_list)
+        if python_location is not None:
+            _pip_upgrades_thread([all_python_modules_list, python_location])
+        else:
+            thread_function(_pip_upgrades_thread, args=[all_python_modules_list, python_location])
     else:
         logger.network_logger.warning("Unable to start Python Module Upgrades - already running")
 
 
-def _pip_upgrades_thread(requirements_list):
+def _pip_upgrades_thread(requirements_and_py_loc):
     logger.primary_logger.info("Python3 Module Upgrades Started")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "pip"])
+    requirements_list = requirements_and_py_loc[0]
+    python_location = requirements_and_py_loc[1]
+    if python_location is None:
+        python_location = sys.executable
+    subprocess.check_call([python_location, "-m", "pip", "install", "-U", "pip"])
     for requirement in requirements_list:
         try:
             requirement = requirement.strip()
             if requirement[0] != "#":
-                subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", requirement.strip()])
-                logger.primary_logger.info("Python3 Module Upgrades Complete")
+                subprocess.check_call([python_location, "-m", "pip", "install", "-U", requirement.strip()])
+                logger.primary_logger.info("Python3 Module " + requirement + " Upgrade Complete")
         except Exception as error:
             logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
+    logger.primary_logger.info("Python3 Module Upgrades Complete")
     os.system(app_cached_variables.bash_commands["RestartService"])
 
 
-def upgrade_linux_os():
+def upgrade_linux_os(thread_the_function=True):
     if app_cached_variables.sensor_ready_for_upgrade and app_cached_variables.pip_ready_for_upgrades:
         app_cached_variables.sensor_ready_for_upgrade = False
-        thread_function(_upgrade_linux_os_thread)
+        if thread_the_function:
+            thread_function(_upgrade_linux_os_thread)
+        else:
+            _upgrade_linux_os_thread()
     else:
         logger.network_logger.warning("Unable to start Linux OS Upgrade - already running")
 
