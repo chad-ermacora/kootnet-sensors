@@ -391,9 +391,9 @@ def get_lumen(get_latency=False):
 def get_ems_colors(get_latency=False):
     """ Returns Electromagnetic Spectrum Wavelengths (colors) in a dictionary. """
     colors_dic = {}
-    if app_config_access.installed_sensors.pimoroni_as7262:
-        if get_latency:
-            return sensors_direct.pimoroni_as7262_a.sensor_latency
+    if get_latency:
+        return _get_sensor_latency(get_ems_colors)
+    elif app_config_access.installed_sensors.pimoroni_as7262:
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
         colors_dic.update({db_v.red: colours[0],
                            db_v.orange: colours[1],
@@ -401,8 +401,6 @@ def get_ems_colors(get_latency=False):
                            db_v.green: colours[3],
                            db_v.blue: colours[4],
                            db_v.violet: colours[5]})
-    elif get_latency:
-        return _get_sensor_latency(get_ems_colors)
     elif app_config_access.installed_sensors.pimoroni_enviro:
         colours = sensors_direct.pimoroni_enviro_a.ems()
         colors_dic.update({db_v.red: colours[0],
