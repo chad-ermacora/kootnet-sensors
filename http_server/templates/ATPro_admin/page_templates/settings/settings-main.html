@@ -20,8 +20,9 @@
                                 <div style="display: table; margin-left: auto; margin-right: auto;">
                                     <div style="display: table-row;">
                                         <div style="display: table-cell;">
-                                            <input type="number" style="width: 100px;" id="ip_web_port" name="ip_web_port" required
-                                                   placeholder="10065" min="1024" max="65535" value="{{ IPWebPort }}">
+                                            <input type="number" style="width: 100px;" id="ip_web_port"
+                                                   name="ip_web_port" placeholder="10065" min="1024" max="65535"
+                                                   value="{{ IPWebPort }}" required>
                                         </div>
                                     </div>
                                 </div>
@@ -40,7 +41,9 @@
                             </label>
                         </div>
                         <br>
-                        <p><strong>Note</strong>: <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i></p>
+                        <p><strong>Note</strong>:
+                            <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i>
+                        </p>
                     </div>
                     <button type="submit" class="pure-button">Update</button>
                 </form>
@@ -70,14 +73,15 @@
                         <br><br>
 
                         <div>
-                            <label><h3>Checkin Server Address & Port</h3>
-                                Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
+                            <h2>Checkin Server Address & Port</h2>
+                            <label>Eg. MySensor.sensors.org or 192.168.1.16:10065<br><br>
                                 <div style="display: table; margin-left: auto; margin-right: auto;">
                                     <div style="display: table-row;">
                                         <div style="display: table-cell;">
                                             <input type="text" style="width: 450px;" maxlength="250"
                                                    id="checkin_address" name="checkin_address"
-                                                   placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
+                                                   placeholder="server.dragonwarz.net:10065"
+                                                   value="{{ CheckinAddress }}">
                                         </div>
                                     </div>
                                 </div>
@@ -87,10 +91,10 @@
                         <br>
 
                         <div>
-                            <h3>Update server Address</h3>
+                            <h2>Update server Addresses</h2>
                             <button type="button" class="pure-button" id="update-server-requirements"
                                     onclick="ShowHideUpdateRequirements()">
-                                Show Update Server Requirements
+                                Show & Check HTTP Server Requirements
                             </button>
 
                             <br>
@@ -127,16 +131,31 @@
                                 </p>
                             </div>
 
-                            <br><br>
+                            <br>
 
-                            <label>Eg. update.sensors.org/installers/ or 192.168.1.16/ks_upgrades/<br>
-                                (Must be an HTTP(S) server)<br><br>
+                            <label>HTTP Update Server Address<br><br>
                                 <div style="display: table; margin-left: auto; margin-right: auto;">
                                     <div style="display: table-row;">
                                         <div style="display: table-cell;">
                                             <input type="text" style="width: 450px;" maxlength="250"
                                                    id="update_server_address" name="update_server_address"
-                                                   placeholder="updates.some-server.com" value="{{ UpdateServerAddress }}">
+                                                   placeholder="https://updates.some-server.com/installer_folder/"
+                                                   value="{{ UpdateServerAddress }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <br>
+
+                            <label>SMB Update Server Address (Include Share Name)<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 450px;" maxlength="250"
+                                                   id="update_server_address_smb" name="update_server_address_smb"
+                                                   placeholder="//smbServer21/KShare/"
+                                                   value="{{ UpdateServerAddressSMB }}">
                                         </div>
                                     </div>
                                 </div>
@@ -155,14 +174,21 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/settings-main">
-                    <h2><i class="fas fa-arrow-alt-circle-up"></i> Automatic HTTP Upgrades</h2>
+                <form class="pure-form" method="POST" action="/atpro/settings-upgrades">
+                    <h2><i class="fas fa-arrow-alt-circle-up"></i> Kootnet Sensors Upgrades</h2>
                     <p>
                         If you use Kootnet Sensors 'Remote Management' to manage other Kootnet Sensors,
                         it's recommended to keep all sensors on the same version to maintain full compatibility
                     </p>
 
-                    <br>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-sau-toggle-switch" class="toggle-switch-input"
+                               name="enable_auto_upgrades" {{ EnableAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="enable-sau-toggle-switch"></label>
+                        Enable Automatic Upgrades
+                    </label>
+
+                    <br><br>
 
                     <div style="display: inline-block; width: 250px;">
                         <label>Check for updates every<br>(Hours)<br><br>
@@ -179,40 +205,94 @@
 
                     <br><br>
 
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="sau-minor-toggle-switch" class="toggle-switch-input"
-                               onclick="ToggleStableAutoUpdates()" name="enable_stable_minor_auto_upgrades"
-                                {{ EnableStableMinorAutoUpgrades }}>
-                        <label class="toggle-switch-label" for="sau-minor-toggle-switch"></label>
-                        <span style="color: green;">Stable Minor</span>
-                    </label>
-
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="sau-feature-toggle-switch" class="toggle-switch-input"
-                               onclick="ToggleStableAutoUpdates()" name="enable_stable_feature_auto_upgrades"
-                                {{ EnableStableFeatureAutoUpgrades }}>
-                        <label class="toggle-switch-label" for="sau-feature-toggle-switch"></label>
-                        <span style="color: orange;">Stable Feature</span>
-                    </label>
-
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="dau-toggle-switch" class="toggle-switch-input"
-                               onclick="ToggleDevelopmentalAutoUpdates()" name="enable_dev_auto_upgrades"
-                                {{ EnableDevAutoUpgrades }}>
-                        <label class="toggle-switch-label" for="dau-toggle-switch"></label>
-                        <span style="color: orangered;">Developmental</span>
-                    </label>
+                    <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
+                        Show Advanced Upgrade Options
+                    </button>
 
                     <br>
 
-                    <h4>Upgrade Examples</h4>
-                    <p><i>
-                        <b style="color: green;">Stable Minor</b>: Beta.33.10 to Beta.33.11<br>
-                        <b style="color: orange;">Stable Feature</b>: Beta.33.11 to Beta.34.0<br>
-                        <b style="color: orangered;">Developmental</b>: Updates to the current version under Development
+                    <div id="adv-upgrade-content">
+                        <br>
+                        <p style="font-size: large;"><b>
+                            See "Kootnet Sensor Program URLs" for Update Server Addresses
+                        </b></p>
+
+                        <h3>SMB Upgrade Options</h3>
+
+                        <div style="display: inline-block; width: 250px;">
+                            <label>SMB Username<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 175px;" name="smb_username"
+                                                   value="{{ SMBUsername }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div style="display: inline-block; width: 250px;">
+                            <label>SMB Password<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="password" style="width: 175px;" name="smb_password">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
                         <br><br>
-                        * Developmental versions often contain bugs *
-                    </i></p>
+
+                        <h3>Automatic Upgrades Options</h3>
+
+                        <label>Method<br><br>
+                            <select name="upgrade_method">
+                                <option value="http" {{ HTTPSelected }}>HTTP(S)</option>
+                                <option value="smb" {{ SMBSelected }}>SMB</option>
+                            </select>
+                        </label>
+
+                        <br><br>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="sau-minor-toggle-switch" class="toggle-switch-input"
+                                   onclick="ToggleStableAutoUpdates()" name="enable_stable_minor_auto_upgrades"
+                                    {{ EnableStableMinorAutoUpgrades }}>
+                            <label class="toggle-switch-label" for="sau-minor-toggle-switch"></label>
+                            <span style="color: green;">Stable Minor</span>
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="sau-feature-toggle-switch" class="toggle-switch-input"
+                                   onclick="ToggleStableAutoUpdates()" name="enable_stable_feature_auto_upgrades"
+                                    {{ EnableStableFeatureAutoUpgrades }}>
+                            <label class="toggle-switch-label" for="sau-feature-toggle-switch"></label>
+                            <span style="color: orange;">Stable Feature</span>
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dau-toggle-switch" class="toggle-switch-input"
+                                   onclick="ToggleDevelopmentalAutoUpdates()" name="enable_dev_auto_upgrades"
+                                    {{ EnableDevAutoUpgrades }}>
+                            <label class="toggle-switch-label" for="dau-toggle-switch"></label>
+                            <span style="color: orangered;">Developmental</span>
+                        </label>
+
+                        <br>
+
+                        <h4>Upgrade Examples</h4>
+                        <p><i>
+                            <b style="color: green;">Stable Minor</b>: Beta.33.10 to Beta.33.11<br>
+                            <b style="color: orange;">Stable Feature</b>: Beta.33.11 to Beta.34.0<br>
+                            <b style="color: orangered;">Developmental</b>: Updates to the current version under Development
+                            <br><br>
+                            * Developmental versions often contain bugs *
+                        </i></p>
+                    </div>
+                    <br>
                     <button type="submit" class="pure-button">Update</button>
                 </form>
             </div>
@@ -248,10 +328,10 @@
     function ShowHideUpdateRequirements() {
         if (document.getElementById("update-server-requirements-content").style.display === "none") {
             document.getElementById("update-server-requirements-content").style.display = "inline-block";
-            document.getElementById("update-server-requirements").textContent = "Hide Update Server Requirements";
+            document.getElementById("update-server-requirements").textContent = "Hide HTTP Server Requirements";
         } else {
             document.getElementById("update-server-requirements-content").style.display = "none";
-            document.getElementById("update-server-requirements").textContent = "Show Update Server Requirements";
+            document.getElementById("update-server-requirements").textContent = "Show & Check HTTP Server Requirements";
         }
     }
 
@@ -285,5 +365,16 @@
         ShowHideUpdateRequirements()
     }
 
+    function ShowHideAdvUpgrades() {
+        if (document.getElementById("adv-upgrade-content").style.display === "none") {
+            document.getElementById("adv-upgrade-content").style.display = "inline-block";
+            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Upgrade Options";
+        } else {
+            document.getElementById("adv-upgrade-content").style.display = "none";
+            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Upgrade Options";
+        }
+    }
+
+    ShowHideAdvUpgrades()
     InitializeWindow()
 </script>

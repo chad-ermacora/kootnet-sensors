@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from flask import Blueprint, render_template, request
+from operations_modules import logger
 from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import check_for_new_version
@@ -42,29 +43,36 @@ def html_atpro_sensor_settings_main():
     if request.method == "POST":
         app_config_access.primary_config.update_with_html_request(request)
         app_config_access.primary_config.save_config_to_file()
-        config_name = "Main"
-        if request.form.get("ip_web_port") is None:
-            config_name = "Automatic HTTP Upgrade"
-            app_cached_variables.restart_automatic_upgrades_thread = True
-        elif app_config_access.primary_config.web_portal_port_changed:
+        if app_config_access.primary_config.web_portal_port_changed:
             atpro_notifications.manage_service_restart()
-        return get_message_page(config_name + " Settings Updated", page_url="sensor-settings")
+        return get_message_page("Main Settings Updated", page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
-    enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_feature)
-    enable_minor_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_minor)
-    enable_dev_up = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_developmental)
+    enable_major_upgrades = get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades_feature)
+    enable_minor_upgrades = get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades_minor)
+    enable_dev_up = get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades_developmental)
+    upgrade_method_http = ""
+    upgrade_method_smb = ""
+    if app_config_access.upgrades_config.selected_upgrade_type == app_config_access.upgrades_config.upgrade_type_http:
+        upgrade_method_http = "selected"
+    else:
+        upgrade_method_smb = "selected"
     return render_template(
         "ATPro_admin/page_templates/settings/settings-main.html",
         IPWebPort=app_config_access.primary_config.web_portal_port,
         CheckedDebug=debug_logging,
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
-        AutoUpDelayHours=str(app_config_access.primary_config.automatic_upgrade_delay_hours),
+        EnableAutoUpgrades=get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades),
+        AutoUpDelayHours=str(app_config_access.upgrades_config.automatic_upgrade_delay_hours),
+        HTTPSelected=upgrade_method_http,
+        SMBSelected=upgrade_method_smb,
+        SMBUsername=app_config_access.upgrades_config.smb_user,
         EnableStableFeatureAutoUpgrades=enable_major_upgrades,
         EnableStableMinorAutoUpgrades=enable_minor_upgrades,
         EnableDevAutoUpgrades=enable_dev_up,
         CheckinAddress=app_config_access.urls_config.url_checkin_server,
         UpdateServerAddress=app_config_access.urls_config.url_update_server,
+        UpdateServerAddressSMB=app_config_access.urls_config.url_update_server_smb,
         USMD5=_get_file_present_color(app_cached_variables.update_server_file_present_md5),
         USVersion=_get_file_present_color(app_cached_variables.update_server_file_present_version),
         USFullInstaller=_get_file_present_color(app_cached_variables.update_server_file_present_full_installer),
@@ -78,6 +86,22 @@ def _get_file_present_color(upgrade_file):
     if upgrade_file:
         return "green"
     return "red"
+
+
+@html_atpro_settings_routes.route("/atpro/settings-upgrades", methods=["POST"])
+@auth.login_required
+def html_atpro_sensor_settings_upgrades():
+    validate_smb_username = app_config_access.upgrades_config.validate_smb_username
+    validate_smb_password = app_config_access.upgrades_config.validate_smb_password
+    bad_cred_msg = "The username must be alphanumeric and the password must not contain single quotes or ="
+    if not validate_smb_username(request.form.get("smb_username")) \
+            or not validate_smb_password(request.form.get("smb_password")) and request.form.get("smb_password") != "":
+        logger.primary_logger.warning("The provided SMB username or password has invalid characters")
+        return get_message_page("Invalid SMB username or password", message=bad_cred_msg, page_url="sensor-settings")
+    app_config_access.upgrades_config.update_with_html_request(request)
+    app_config_access.upgrades_config.save_config_to_file()
+    app_cached_variables.restart_automatic_upgrades_thread = True
+    return get_message_page("Upgrade Settings Updated", page_url="sensor-settings")
 
 
 @html_atpro_settings_routes.route("/atpro/settings-urls", methods=["POST"])
