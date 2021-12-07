@@ -27,13 +27,14 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.urls_configuration, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 2
+        self.valid_setting_count = 3
         self.config_settings_names = [
-            "Update Server", "Checkin Server"
+            "HTTP Update Server URL", "Checkin Server", "SMB Update Server URL"
         ]
 
         self.url_update_server = "https://kootenay-networks.com/installers/"
         self.url_checkin_server = "server.dragonwarz.net"
+        self.url_update_server_smb = "//smbServer21/installers/"
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -48,26 +49,35 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
         """ Updates the URL configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML URL Configuration Update Check")
 
+        if html_request.form.get("checkin_address") is not None:
+            self.url_checkin_server = html_request.form.get("checkin_address")
+
         if html_request.form.get("update_server_address") is not None:
             self.url_update_server = self.ensure_http_in_url(html_request.form.get("update_server_address"))
             if self.url_update_server[-1] != "/":
                 self.url_update_server += "/"
 
-        if html_request.form.get("checkin_address") is not None:
-            self.url_checkin_server = html_request.form.get("checkin_address")
+        if html_request.form.get("update_server_address_smb") is not None:
+            self.url_update_server_smb = html_request.form.get("update_server_address_smb")
+            if len(self.url_update_server_smb) > 3:
+                if self.url_update_server_smb[:2] != "//":
+                    self.url_update_server_smb = "//" + self.url_update_server_smb
+                if self.url_update_server_smb[-1] != "/":
+                    self.url_update_server_smb += "/"
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [
-            str(self.url_update_server), str(self.url_checkin_server)
+            str(self.url_update_server), str(self.url_checkin_server), str(self.url_update_server_smb)
         ]
 
     def _update_variables_from_settings_list(self):
         try:
             self.url_update_server = self.config_settings[0].strip()
             self.url_checkin_server = self.config_settings[1].strip()
+            self.url_update_server_smb = self.config_settings[2].strip()
 
         except Exception as error:
             if self.load_from_file:
