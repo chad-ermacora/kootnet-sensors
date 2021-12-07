@@ -56,9 +56,17 @@ def _config_to_html_view(config_name, config_location, config_text_file, split_b
         return_html = ""
         for text_line in config_lines:
             try:
-                config_parts = text_line.split("=")
-                return_html += "<span class='setting-title'>" + config_parts[-1].strip() + "</span>: " + \
-                               "<span class='setting-value'>" + config_parts[0].strip() + "</span><br>"
+                config_part1 = text_line.split("=")[-1]
+                config_part2 = ""
+                line_split = text_line.split("=")[:-1]
+                if len(line_split) > 1:
+                    for section in line_split:
+                        config_part2 += section + "="
+                    config_part2 = config_part2[:-1]
+                else:
+                    config_part2 = line_split[0]
+                return_html += "<span class='setting-title'>" + config_part1 + "</span>: " + \
+                               "<span class='setting-value'>" + config_part2 + "</span><br>"
             except Exception as error:
                 log_msg = "HTML Raw Configurations creation error in " + config_location + ": "
                 logger.network_logger.warning(log_msg + str(error))
@@ -92,6 +100,10 @@ def atpro_raw_config_urls(url_path):
         config_name = "<i class='fas fa-link'></i> URLs Configuration"
         config_content = app_config_access.urls_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.urls_configuration, config_content)
+    elif url_path == "config-upgrades":
+        config_name = "<i class='fas fa-arrow-circle-up'></i> Upgrades Configuration"
+        config_content = remove_line_from_text(app_config_access.upgrades_config.get_config_as_str(), [3, 4])
+        return _config_to_html_view(config_name, file_locations.upgrades_config, config_content)
     elif url_path == "config-is":
         config_name = "<i class='fas fa-microchip'></i> Installed Sensors"
         config_content = app_config_access.installed_sensors.get_config_as_str()
