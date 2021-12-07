@@ -126,6 +126,7 @@ program_last_updated = sensor_config_dir + "/last_updated.txt"
 
 html_sensor_control_config = sensor_config_dir + "/html_sensor_control.conf"
 primary_config = sensor_config_dir + "/main_config.conf"
+upgrades_config = sensor_config_dir + "/upgrades_config.conf"
 urls_configuration = sensor_config_dir + "/urls_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
 sensor_offsets_config = sensor_config_dir + "/sensor_offsets.conf"
