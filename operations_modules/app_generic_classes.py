@@ -83,8 +83,15 @@ class CreateGeneralConfiguration:
             self.config_settings = []
             for line in config_file_text:
                 try:
-                    line_split = line.split("=")
-                    setting = line_split[0].strip()
+                    final_setting = ""
+                    line_split = line.split("=")[:-1]
+                    if len(line_split) > 1:
+                        for section in line_split:
+                            final_setting += section + "="
+                        final_setting = final_setting[:-1]
+                    else:
+                        final_setting = line_split[0]
+                    setting = final_setting.strip()
                 except Exception as error:
                     if self.load_from_file:
                         logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
@@ -97,9 +104,9 @@ class CreateGeneralConfiguration:
 
 class CreateMonitoredThread:
     """
-    Creates a thread and checks every 30 seconds to make sure its still running.
+    Creates a thread and checks every 30 seconds to make sure it's still running.
     If the thread stops, it will be restarted up to 5 times by default.
-    If it gets restarted more then 5 times, it logs an error message and stops.
+    If it gets restarted more than 5 times, it logs an error message and stops.
     """
 
     def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=10):
@@ -174,7 +181,7 @@ class CreateMonitoredThread:
 
 
 class CreateNetworkSystemCommands:
-    """ Create a object instance holding available network "System" commands (Mostly Upgrades). """
+    """ Create an object instance holding available network "System" commands (Mostly Upgrades). """
 
     def __init__(self):
         self.upgrade_system_os = "UpgradeSystemOS"
