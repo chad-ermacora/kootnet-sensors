@@ -28,6 +28,7 @@ from http_server.server_http_generic_functions import save_http_auth_to_file, de
 from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration
 from configuration_modules.config_database_graphs import CreateDatabaseGraphsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
 from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
@@ -72,10 +73,17 @@ def reset_database_graph_config(log_reset=True):
 
 
 def reset_primary_config(log_reset=True):
-    """ Writes a default main configuration file. """
+    """ Writes a default Main configuration file. """
     if log_reset:
         logger.primary_logger.warning(" **** Main Configuration Reset ****")
     CreatePrimaryConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_upgrade_config(log_reset=True):
+    """ Writes a default Upgrade configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Upgrades Configuration Reset ****")
+    CreateUpgradesConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_urls_config(log_reset=True):
@@ -216,6 +224,7 @@ def reset_all_configurations(log_reset=True):
     reset_live_graph_config(log_reset=log_reset)
     reset_database_graph_config(log_reset=log_reset)
     reset_primary_config(log_reset=log_reset)
+    reset_upgrade_config(log_reset=log_reset)
     reset_urls_config(log_reset=log_reset)
     reset_installed_sensors(log_reset=log_reset)
     reset_sensor_offsets_config(log_reset=log_reset)
