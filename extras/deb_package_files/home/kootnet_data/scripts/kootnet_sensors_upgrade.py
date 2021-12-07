@@ -68,57 +68,36 @@ class CreateUpgradeInterface:
         self.clean_upgrade = 0
 
         if load_config_file:
-            try:
-                if os.path.isfile(self.upgrade_config_location):
-                    with open(self.upgrade_config_location, "r") as info_file:
-                        config_str = info_file.read()
-                    config_list = config_str.split(",")
-                    self.upgrade_file_location = config_list[0]
-                    self.clean_upgrade = int(config_list[1])
-                    os.remove(self.upgrade_config_location)
-                    self.configuration_file_present = True
-                    logger.primary_logger.debug(" --- Configuration file for automatic upgrade loaded successfully")
-                else:
-                    logger.primary_logger.error("--- Upgrade Configuration File not found")
-            except Exception as upgrade_configuration_error:
-                logger.primary_logger.error("--- Upgrade Configuration Failed: " + str(upgrade_configuration_error))
+            self._load_configuration()
 
     def start_upgrade(self):
         """
         Starts the upgrade process based on class variable settings
         :return: Nothing
         """
-        if self.configuration_file_present:
-            if self.clean_upgrade:
-                self._clean_install()
-            self._install_upgrade()
-        self._set_upgrade_running_false()
-
-    def _install_upgrade(self):
-        """
-        Installs the Debian upgrade file
-        :return: Nothing
-        """
         dpkg_install_str = "dpkg -iEG "
-        if self.clean_upgrade:
-            dpkg_install_str = "dpkg -i "
 
-        try:
-            logger.primary_logger.info(" --- Updating apt-get cache ...")
-            os.system("apt-get update")
-            logger.primary_logger.info(" --- Starting Install of Debian Package ...")
-            os.system(dpkg_install_str + self.upgrade_file_location)
-            os.system("date -u >/etc/kootnet/last_updated.txt")
-            logger.primary_logger.info(" --- Debian Package Install Complete")
-        except Exception as error:
-            logger.primary_logger.error(" --- Debian Package Install Failed: " + str(error))
+        if self.configuration_file_present:
+            try:
+                logger.primary_logger.info(" --- Updating apt-get cache ...")
+                os.system("apt-get update")
+                if self.clean_upgrade:
+                    dpkg_install_str = "dpkg -i "
+                    self._clean_install()
+                logger.primary_logger.info(" --- Starting Install of Debian Package ...")
+                os.system(dpkg_install_str + self.upgrade_file_location)
+                os.system("date -u >/etc/kootnet/last_updated.txt")
+                logger.primary_logger.info(" --- Debian Package Install Complete")
+            except Exception as error:
+                logger.primary_logger.error(" --- Debian Package Install Failed: " + str(error))
+        self._set_upgrade_running_false()
 
     @staticmethod
     def _clean_install():
         """
         Removes the main Python virtual environment, SSL files, program folder and system services
-        Optionally used just before upgrades to clear issue files and or clutter
-        :return: Nothing, removes program files
+        Used when re-installing Kootnet Sensors
+        :return: Nothing
         """
         try:
             logger.primary_logger.info(" --- Starting Clean Removal ...")
@@ -139,6 +118,26 @@ class CreateUpgradeInterface:
                 upgrade_file.write("0")
         except Exception as error:
             logger.primary_logger.warning("Accessing upgrade running file: " + str(error))
+
+    def _load_configuration(self):
+        """
+        Loads configuration file and sets class settings accordingly
+        :return: Nothing
+        """
+        try:
+            if os.path.isfile(self.upgrade_config_location):
+                with open(self.upgrade_config_location, "r") as info_file:
+                    config_str = info_file.read()
+                config_list = config_str.split(",")
+                self.upgrade_file_location = config_list[0]
+                self.clean_upgrade = int(config_list[1])
+                os.remove(self.upgrade_config_location)
+                self.configuration_file_present = True
+                logger.primary_logger.debug(" --- Configuration file for automatic upgrade loaded successfully")
+            else:
+                logger.primary_logger.error("--- Upgrade Configuration File not found")
+        except Exception as upgrade_configuration_error:
+            logger.primary_logger.error("--- Upgrade Configuration Failed: " + str(upgrade_configuration_error))
 
 
 logger = CreateUpgradeLogger()
