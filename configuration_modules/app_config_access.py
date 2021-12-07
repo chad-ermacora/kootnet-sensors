@@ -21,6 +21,7 @@ from operations_modules import file_locations
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
 from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
@@ -43,6 +44,7 @@ logger.primary_logger.info(" -- Loading Configurations")
 installed_sensors = CreateInstalledSensorsConfiguration()
 sensor_offsets = CreateSensorOffsetsConfiguration()
 primary_config = CreatePrimaryConfiguration()
+upgrades_config = CreateUpgradesConfiguration()
 urls_config = CreateURLConfiguration()
 interval_recording_config = CreateIntervalRecordingConfiguration()
 trigger_high_low = CreateTriggerHighLowConfiguration()
