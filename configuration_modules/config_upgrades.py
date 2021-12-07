@@ -27,11 +27,12 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.upgrades_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 8
+        self.valid_setting_count = 9
         self.config_settings_names = [
             "Enable Automatic Upgrades", "Delay in Hours between Automatic Upgrade Checks",
             "SMB Username", "SMB Password", "Selected Upgrade Type", "Enable Automatic Feature version upgrades",
             "Enable Automatic Minor version upgrades", "Enable Automatic Developmental version upgrades",
+            "Enable MD5 Validation"
         ]
         self.upgrade_type_http = "http"
         self.upgrade_type_SMB = "smb"
@@ -45,6 +46,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
         self.enable_automatic_upgrades_feature = 0
         self.enable_automatic_upgrades_minor = 1
         self.enable_automatic_upgrades_developmental = 0
+        self.md5_validation_enabled = 1
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -82,6 +84,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
         self.enable_automatic_upgrades_feature = 0
         self.enable_automatic_upgrades_minor = 0
         self.enable_automatic_upgrades_developmental = 0
+        self.md5_validation_enabled = 0
 
         if html_request.form.get("enable_auto_upgrades") is not None:
             self.enable_automatic_upgrades = 1
@@ -108,6 +111,8 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             self.enable_automatic_upgrades_minor = 1
         if html_request.form.get("enable_dev_auto_upgrades") is not None:
             self.enable_automatic_upgrades_developmental = 1
+        if html_request.form.get("enable_md5_validation") is not None:
+            self.md5_validation_enabled = 1
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
@@ -117,7 +122,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             str(self.enable_automatic_upgrades), str(self.automatic_upgrade_delay_hours),
             str(self.smb_user), str(self.smb_password), str(self.selected_upgrade_type),
             str(self.enable_automatic_upgrades_feature), str(self.enable_automatic_upgrades_minor),
-            str(self.enable_automatic_upgrades_developmental)
+            str(self.enable_automatic_upgrades_developmental), str(self.md5_validation_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -130,6 +135,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             self.enable_automatic_upgrades_feature = int(self.config_settings[5])
             self.enable_automatic_upgrades_minor = int(self.config_settings[6])
             self.enable_automatic_upgrades_developmental = int(self.config_settings[7])
+            self.md5_validation_enabled = int(self.config_settings[8])
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Upgrades Config: " + str(error))
