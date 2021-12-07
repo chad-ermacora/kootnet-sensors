@@ -57,6 +57,9 @@ def run_configuration_upgrade_checks():
                     generic_upgrade_functions.reset_installed_sensors()
                     generic_upgrade_functions.reset_primary_config()
                 elif previous_version.feature_version == 35:
+                    if previous_version.minor_version < 93:
+                        no_changes = False
+                        generic_upgrade_functions.reset_upgrade_config(log_reset=False)
                     if previous_version.minor_version < 60:
                         no_changes = False
                         generic_upgrade_functions.reset_urls_config()
