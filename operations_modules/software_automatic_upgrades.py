@@ -30,18 +30,18 @@ def start_automatic_upgrades_server():
     text_name = "Automatic Upgrades Server"
     function = _thread_start_automatic_upgrades_server
     app_cached_variables.automatic_upgrades_thread = CreateMonitoredThread(function, thread_name=text_name)
-    if not app_config_access.primary_config.enable_automatic_upgrades_feature and \
-            not app_config_access.primary_config.enable_automatic_upgrades_minor and \
-            not app_config_access.primary_config.enable_automatic_upgrades_developmental:
+    if not app_config_access.upgrades_config.enable_automatic_upgrades_feature and \
+            not app_config_access.upgrades_config.enable_automatic_upgrades_minor and \
+            not app_config_access.upgrades_config.enable_automatic_upgrades_developmental:
         logger.primary_logger.debug("Automatic Upgrades Disabled in Configuration")
         app_cached_variables.automatic_upgrades_thread.current_state = "Disabled"
 
 
 def _thread_start_automatic_upgrades_server():
     app_cached_variables.automatic_upgrades_thread.current_state = "Disabled"
-    while not app_config_access.primary_config.enable_automatic_upgrades_feature \
-            and not app_config_access.primary_config.enable_automatic_upgrades_minor \
-            and not app_config_access.primary_config.enable_automatic_upgrades_developmental:
+    while not app_config_access.upgrades_config.enable_automatic_upgrades_feature \
+            and not app_config_access.upgrades_config.enable_automatic_upgrades_minor \
+            and not app_config_access.upgrades_config.enable_automatic_upgrades_developmental:
         sleep(5)
     app_cached_variables.automatic_upgrades_thread.current_state = "Running"
     app_cached_variables.restart_automatic_upgrades_thread = False
@@ -52,7 +52,7 @@ def _thread_start_automatic_upgrades_server():
 
     while not app_cached_variables.restart_automatic_upgrades_thread:
         sleep_total = 0
-        main_sleep = app_config_access.primary_config.automatic_upgrade_delay_hours * 60 * 60
+        main_sleep = app_config_access.upgrades_config.automatic_upgrade_delay_hours * 60 * 60
         while sleep_total < main_sleep and not app_cached_variables.restart_automatic_upgrades_thread:
             sleep(30)
             sleep_total += 30
@@ -63,7 +63,7 @@ def _thread_start_automatic_upgrades_server():
                 http_std_version = CreateRefinedVersion(app_cached_variables.standard_version_available)
 
                 new_version_msg = version_template_msg
-                if app_config_access.primary_config.enable_automatic_upgrades_developmental:
+                if app_config_access.upgrades_config.enable_automatic_upgrades_developmental:
                     if http_dev_version.major_version != running_version.major_version:
                         _major_upgrade_msg_and_sleep()
                     else:
@@ -81,14 +81,14 @@ def _thread_start_automatic_upgrades_server():
                 else:
                     new_version = http_std_version.get_version_string()
                     new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                    if app_config_access.primary_config.enable_automatic_upgrades_feature:
+                    if app_config_access.upgrades_config.enable_automatic_upgrades_feature:
                         if http_std_version.major_version != running_version.major_version:
                             _major_upgrade_msg_and_sleep()
                         else:
                             if http_std_version.feature_version > running_version.feature_version:
                                 logger.primary_logger.info(new_version_msg + "Starting Automatic Feature Upgrade")
                                 start_kootnet_sensors_upgrade()
-                    if app_config_access.primary_config.enable_automatic_upgrades_minor:
+                    if app_config_access.upgrades_config.enable_automatic_upgrades_minor:
                         if http_std_version.major_version != running_version.major_version:
                             _major_upgrade_msg_and_sleep()
                         else:
@@ -111,14 +111,14 @@ def _major_upgrade_msg_and_sleep():
 
 def get_automatic_upgrade_enabled_text():
     return_text = "Disabled"
-    if app_config_access.primary_config.enable_automatic_upgrades_developmental:
+    if app_config_access.upgrades_config.enable_automatic_upgrades_developmental:
         return_text = "Developmental"
     else:
-        if app_config_access.primary_config.enable_automatic_upgrades_feature \
-                and app_config_access.primary_config.enable_automatic_upgrades_minor:
+        if app_config_access.upgrades_config.enable_automatic_upgrades_feature \
+                and app_config_access.upgrades_config.enable_automatic_upgrades_minor:
             return_text = "Stable Feature & Minor"
-        elif app_config_access.primary_config.enable_automatic_upgrades_feature:
+        elif app_config_access.upgrades_config.enable_automatic_upgrades_feature:
             return_text = "Stable Feature"
-        elif app_config_access.primary_config.enable_automatic_upgrades_minor:
+        elif app_config_access.upgrades_config.enable_automatic_upgrades_minor:
             return_text = "Stable Minor"
     return return_text
