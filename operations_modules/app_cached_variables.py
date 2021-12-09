@@ -192,7 +192,7 @@ restart_weather_underground_thread = False
 restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
 
-# Checked before running OS or pip3 upgrades
+# Checked before running Kootnet Sensors, OS or pip3 upgrades (Kootnet Sensors and OS use sensor_ready_for_upgrade)
 # Set to False when stating an upgrade, returns to True after program restarts or upgrade fails
 sensor_ready_for_upgrade = True
 pip_ready_for_upgrades = True
