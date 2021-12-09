@@ -35,7 +35,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             "Enable MD5 Validation"
         ]
         self.upgrade_type_http = "http"
-        self.upgrade_type_SMB = "smb"
+        self.upgrade_type_smb = "smb"
 
         self.enable_automatic_upgrades = 1
         self.automatic_upgrade_delay_hours = 6
