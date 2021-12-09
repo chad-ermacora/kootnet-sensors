@@ -94,7 +94,7 @@
                             <h2>Update server Addresses</h2>
                             <button type="button" class="pure-button" id="update-server-requirements"
                                     onclick="ShowHideUpdateRequirements()">
-                                Show & Check Update Server Requirements
+                                Update Server Requirements
                             </button>
 
                             <br>
@@ -339,10 +339,10 @@
     function ShowHideUpdateRequirements() {
         if (document.getElementById("update-server-requirements-content").style.display === "none") {
             document.getElementById("update-server-requirements-content").style.display = "inline-block";
-            document.getElementById("update-server-requirements").textContent = "Hide Update Server Requirements";
+            document.getElementById("update-server-requirements").textContent = "Hide {{ SelectedUpgradeType }} Update Server Requirements";
         } else {
             document.getElementById("update-server-requirements-content").style.display = "none";
-            document.getElementById("update-server-requirements").textContent = "Show & Check Update Server Requirements";
+            document.getElementById("update-server-requirements").textContent = "Show {{ SelectedUpgradeType }} Update Server Requirements";
         }
     }
 
