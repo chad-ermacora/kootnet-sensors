@@ -91,8 +91,6 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("auto_upgrade_delay_hours") is not None:
             new_hours = float(html_request.form.get("auto_upgrade_delay_hours"))
-            if new_hours < 0.25:
-                new_hours = 0.25
             self.automatic_upgrade_delay_hours = new_hours
 
         smb_username = html_request.form.get("smb_username")
