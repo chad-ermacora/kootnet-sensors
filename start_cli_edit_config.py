@@ -22,7 +22,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules.config_primary import CreatePrimaryConfiguration
-from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb, download_type_http
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
 from operations_modules.software_version import version
 from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os

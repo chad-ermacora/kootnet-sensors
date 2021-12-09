@@ -24,7 +24,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
-from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_http, download_type_smb
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from sensor_modules import system_access
