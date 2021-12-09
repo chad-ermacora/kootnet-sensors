@@ -35,6 +35,7 @@ from operations_modules.sqlite_database import sql_execute_get_data, create_tabl
     check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
 from configuration_modules import app_config_access
+from upgrade_modules.upgrade_functions import get_smb_file
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_generic_functions import default_http_flask_user, default_http_flask_password
 
@@ -384,8 +385,7 @@ def _update_cached_sensor_reboot_count():
 
 def check_for_new_version():
     logger.primary_logger.debug(" -- Checking for new Kootnet Sensors Versions")
-    standard_url = app_config_access.urls_config.url_update_server + "kootnet_version.txt"
-    developmental_url = app_config_access.urls_config.url_update_server + "dev/kootnet_version.txt"
+    upgrades_config = app_config_access.upgrades_config
 
     app_cached_variables.update_server_file_present_md5 = None
     app_cached_variables.update_server_file_present_version = None
@@ -393,10 +393,7 @@ def check_for_new_version():
     app_cached_variables.update_server_file_present_upgrade_installer = None
 
     try:
-        standard_version_available = _get_cleaned_version(get_http_regular_file(standard_url, timeout=10))
-        app_cached_variables.standard_version_available = standard_version_available
-        developmental_version_available = _get_cleaned_version(get_http_regular_file(developmental_url, timeout=10))
-        app_cached_variables.developmental_version_available = developmental_version_available
+        update_new_version_releases()
 
         if _check_if_version_newer(app_cached_variables.standard_version_available):
             app_cached_variables.software_update_available = True
@@ -408,18 +405,18 @@ def check_for_new_version():
         app_cached_variables.developmental_version_available = "Retrieval Failed"
 
     try:
+        update_server_url = app_config_access.urls_config.url_update_server
+        if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
+            update_server_url = app_config_access.urls_config.url_update_server_smb
         update_server_files = [
-            app_config_access.urls_config.url_update_server + "KootnetSensors-deb-MD5.txt",
-            app_config_access.urls_config.url_update_server + "kootnet_version.txt",
-            app_config_access.urls_config.url_update_server + "KootnetSensors.deb",
-            app_config_access.urls_config.url_update_server + "KootnetSensors_online.deb"
+            "KootnetSensors-deb-MD5.txt", "kootnet_version.txt", "KootnetSensors.deb", "KootnetSensors_online.deb"
         ]
         files_exist_list = []
         for update_file in update_server_files:
-            if check_http_file_exist(update_file):
-                files_exist_list.append(True)
+            if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
+                files_exist_list.append(get_smb_file(update_file, check_file_exists=True))
             else:
-                files_exist_list.append(False)
+                files_exist_list.append(check_http_file_exist(update_server_url + update_file))
         app_cached_variables.update_server_file_present_md5 = files_exist_list[0]
         app_cached_variables.update_server_file_present_version = files_exist_list[1]
         app_cached_variables.update_server_file_present_full_installer = files_exist_list[2]
@@ -427,6 +424,24 @@ def check_for_new_version():
     except Exception as error:
         logger.primary_logger.debug("Update Server Files Check Failed: " + str(error))
     atpro_notifications.check_updates()
+
+
+def update_new_version_releases():
+    upgrades_config = app_config_access.upgrades_config
+    standard_url = app_config_access.urls_config.url_update_server + "kootnet_version.txt"
+    developmental_url = app_config_access.urls_config.url_update_server + "dev/kootnet_version.txt"
+
+    standard_version_available = ""
+    developmental_version_available = ""
+    if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_http:
+        standard_version_available = _get_cleaned_version(get_http_regular_file(standard_url))
+        developmental_version_available = _get_cleaned_version(get_http_regular_file(developmental_url))
+    elif upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
+        standard_version_available = _get_cleaned_version(get_smb_file("kootnet_version.txt"))
+        developmental_version_available = _get_cleaned_version(get_smb_file("dev/kootnet_version.txt"))
+
+    app_cached_variables.standard_version_available = standard_version_available
+    app_cached_variables.developmental_version_available = developmental_version_available
 
 
 def _get_cleaned_version(version_text):
