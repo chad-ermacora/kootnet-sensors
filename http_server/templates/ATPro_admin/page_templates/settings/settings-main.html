@@ -94,13 +94,16 @@
                             <h2>Update server Addresses</h2>
                             <button type="button" class="pure-button" id="update-server-requirements"
                                     onclick="ShowHideUpdateRequirements()">
-                                Show & Check HTTP Server Requirements
+                                Show & Check Update Server Requirements
                             </button>
 
                             <br>
 
                             <div id="update-server-requirements-content">
                                 <h3>The update server should contain the following files</h3>
+
+                                <p><i>This uses the selected method under 'Kootnet Sensors Upgrades'</i></p>
+
                                 <p>
                                     <a id="ks-up-md5-text" style="color: {{ USMD5 }};" target="_blank"
                                        href="https://kootenay-networks.com/installers/KootnetSensors-deb-MD5.txt">
@@ -336,10 +339,10 @@
     function ShowHideUpdateRequirements() {
         if (document.getElementById("update-server-requirements-content").style.display === "none") {
             document.getElementById("update-server-requirements-content").style.display = "inline-block";
-            document.getElementById("update-server-requirements").textContent = "Hide HTTP Server Requirements";
+            document.getElementById("update-server-requirements").textContent = "Hide Update Server Requirements";
         } else {
             document.getElementById("update-server-requirements-content").style.display = "none";
-            document.getElementById("update-server-requirements").textContent = "Show & Check HTTP Server Requirements";
+            document.getElementById("update-server-requirements").textContent = "Show & Check Update Server Requirements";
         }
     }
 
