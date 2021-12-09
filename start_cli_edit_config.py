@@ -22,7 +22,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules.config_primary import CreatePrimaryConfiguration
-from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb, download_type_http
 from operations_modules.software_version import version
 from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
@@ -96,14 +96,14 @@ def start_script():
             elif selection == 5:
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Standard Upgrade\n")
-                    start_kootnet_sensors_upgrade(thread_download=False)
+                    start_kootnet_sensors_upgrade(thread=False)
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
             elif selection == 6:
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Standard Re-Install\n")
-                    start_kootnet_sensors_upgrade(clean_upgrade=True, thread_download=False)
+                    start_kootnet_sensors_upgrade(clean_upgrade=True, thread=False)
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
@@ -141,14 +141,14 @@ def start_script():
             elif selection == 21:
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Developmental Upgrade\n")
-                    start_kootnet_sensors_upgrade(dev_upgrade=True, thread_download=False)
+                    start_kootnet_sensors_upgrade(dev_upgrade=True, thread=False)
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
             elif selection == 22:
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Developmental Re-Install\n")
-                    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, thread_download=False)
+                    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, thread=False)
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
@@ -184,23 +184,21 @@ def start_script():
                     print("Configuration Reset Cancelled")
             elif selection == 26:
                 print("Starting SMB Standard Upgrade\n")
-                start_kootnet_sensors_upgrade(download_type=download_type_smb,
-                                              thread_download=False)
+                start_kootnet_sensors_upgrade(download_type=download_type_smb, thread=False)
                 print(msg_upgrade_started)
             elif selection == 27:
                 print("Starting SMB Developmental Upgrade\n")
-                start_kootnet_sensors_upgrade(dev_upgrade=True, download_type=download_type_smb,
-                                              thread_download=False)
+                start_kootnet_sensors_upgrade(download_type=download_type_smb, dev_upgrade=True, thread=False)
                 print(msg_upgrade_started)
             elif selection == 28:
                 print("Starting SMB Standard Re-Install\n")
-                start_kootnet_sensors_upgrade(clean_upgrade=True, download_type=download_type_smb,
-                                              thread_download=False)
+                start_kootnet_sensors_upgrade(download_type=download_type_smb, clean_upgrade=True, thread=False)
                 print(msg_upgrade_started)
             elif selection == 29:
                 print("Starting SMB Developmental Re-Install\n")
-                start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_smb,
-                                              thread_download=False)
+                start_kootnet_sensors_upgrade(
+                    download_type=download_type_smb, dev_upgrade=True, clean_upgrade=True, thread=False
+                )
                 print(msg_upgrade_started)
             else:
                 os.system("clear")
