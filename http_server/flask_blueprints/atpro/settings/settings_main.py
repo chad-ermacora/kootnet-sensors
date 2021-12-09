@@ -101,6 +101,7 @@ def html_atpro_sensor_settings_upgrades():
         return get_message_page("Invalid SMB username or password", message=bad_cred_msg, page_url="sensor-settings")
     app_config_access.upgrades_config.update_with_html_request(request)
     app_config_access.upgrades_config.save_config_to_file()
+    thread_function(check_for_new_version)
     app_cached_variables.restart_automatic_upgrades_thread = True
     return get_message_page("Upgrade Settings Updated", page_url="sensor-settings")
 
