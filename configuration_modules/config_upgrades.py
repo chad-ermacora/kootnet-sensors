@@ -34,6 +34,8 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             "Enable Automatic Minor version upgrades", "Enable Automatic Developmental version upgrades",
             "Enable MD5 Validation"
         ]
+        # Location is hardcoded into kootnet_sensors_upgrade.py in upgrade scripts folder
+        self.update_script_config_location = file_locations.upgrade_scripts_folder + "/upgrade_options.conf"
 
         self.upgrade_filename_md5 = "KootnetSensors-deb-MD5.txt"
         self.upgrade_filename_version = "kootnet_version.txt"
@@ -78,6 +80,25 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
                 if invalid_character in password:
                     password_valid = False
         return password_valid
+
+    def save_upgrade_script_config(self, ks_upgrade_file_location, clean_upgrade):
+        """
+        Saves a configuration file to automate Kootnet Sensor's upgrade program
+        :param ks_upgrade_file_location: Location of debian upgrade package to install
+        :param clean_upgrade: Do a 'Clean' upgrade, removes program folder & main virtual environment
+        :return: Nothing
+        """
+        clean_upgrade_str = "0"
+        if clean_upgrade:
+            clean_upgrade_str = "1"
+
+        try:
+            with open(self.update_script_config_location, "w") as upgrade_config_file:
+                config_str = ks_upgrade_file_location
+                config_str += "," + clean_upgrade_str
+                upgrade_config_file.write(config_str)
+        except Exception as error:
+            logger.primary_logger.error("Save Upgrade Script Configuration Error: " + str(error))
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
