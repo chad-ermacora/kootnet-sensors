@@ -47,10 +47,11 @@ def _get_user():
 def _check_directories():
     create_directories = [
         sensor_data_dir, sensor_config_dir, custom_ip_lists_folder, ks_generated_folder, uploaded_databases_folder,
-        log_directory, database_backup_folder, upgrade_scripts_folder, http_ssl_folder, downloads_folder, smb_mount_dir
+        log_directory, database_backup_folder, upgrade_scripts_folder, http_ssl_folder, downloads_folder
     ]
 
     if running_with_root:
+        create_directories.append(smb_mount_dir)
         current_directory = ""
         for found_dir in mosquitto_configuration.split("/")[1:-1]:
             current_directory += "/" + str(found_dir)
