@@ -64,12 +64,12 @@ def _thread_start_automatic_upgrades_server():
                         new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
                         if http_dev_version.feature_version > running_version.feature_version:
                             msg2 = "Starting Automatic Developmental Feature Upgrade"
-                            logger.primary_logger.info(new_version_msg + msg2)
+                            logger.network_logger.info(new_version_msg + msg2)
                             start_kootnet_sensors_upgrade(download_type=selected_upgrade_type, dev_upgrade=True)
                         elif http_dev_version.feature_version == running_version.feature_version:
                             if http_dev_version.minor_version > running_version.minor_version:
                                 msg2 = "Starting Automatic Developmental Minor Upgrade"
-                                logger.primary_logger.info(new_version_msg + msg2)
+                                logger.network_logger.info(new_version_msg + msg2)
                                 start_kootnet_sensors_upgrade(download_type=selected_upgrade_type, dev_upgrade=True)
                 else:
                     http_std_version = CreateRefinedVersion(app_cached_variables.standard_version_available)
@@ -80,7 +80,7 @@ def _thread_start_automatic_upgrades_server():
                             _major_upgrade_msg_and_sleep()
                         else:
                             if http_std_version.feature_version > running_version.feature_version:
-                                logger.primary_logger.info(new_version_msg + "Starting Automatic Feature Upgrade")
+                                logger.network_logger.info(new_version_msg + "Starting Automatic Feature Upgrade")
                                 start_kootnet_sensors_upgrade(download_type=selected_upgrade_type)
                     if app_config_access.upgrades_config.enable_automatic_upgrades_minor:
                         if http_std_version.major_version != running_version.major_version:
@@ -88,7 +88,7 @@ def _thread_start_automatic_upgrades_server():
                         else:
                             if http_std_version.feature_version == running_version.feature_version:
                                 if http_std_version.minor_version > running_version.minor_version:
-                                    logger.primary_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
+                                    logger.network_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
                                     start_kootnet_sensors_upgrade(download_type=selected_upgrade_type)
             except Exception as error:
                 logger.primary_logger.error("Problem during Automatic Upgrade attempt: " + str(error))
