@@ -34,6 +34,12 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             "Enable Automatic Minor version upgrades", "Enable Automatic Developmental version upgrades",
             "Enable MD5 Validation"
         ]
+
+        self.upgrade_filename_md5 = "KootnetSensors-deb-MD5.txt"
+        self.upgrade_filename_version = "kootnet_version.txt"
+        self.upgrade_filename_full_installer = "KootnetSensors.deb"
+        self.upgrade_filename_update_installer = "KootnetSensors_online.deb"
+
         self.upgrade_type_http = "http"
         self.upgrade_type_smb = "smb"
 
