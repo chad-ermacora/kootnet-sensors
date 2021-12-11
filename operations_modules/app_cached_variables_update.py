@@ -395,9 +395,9 @@ def check_for_new_version():
     try:
         update_new_version_releases()
 
-        if _check_if_version_newer(app_cached_variables.standard_version_available):
+        if check_if_version_newer(app_cached_variables.standard_version_available):
             app_cached_variables.software_update_available = True
-        if _check_if_version_newer(app_cached_variables.developmental_version_available):
+        if check_if_version_newer(app_cached_variables.developmental_version_available):
             app_cached_variables.software_update_dev_available = True
     except Exception as error:
         logger.primary_logger.debug("Available Update Check Failed: " + str(error))
@@ -450,7 +450,7 @@ def _get_cleaned_version(version_text):
     return "NA"
 
 
-def _check_if_version_newer(new_version_str):
+def check_if_version_newer(new_version_str):
     current_ver = software_version.CreateRefinedVersion(software_version.version)
     latest_ver = software_version.CreateRefinedVersion(new_version_str)
 
