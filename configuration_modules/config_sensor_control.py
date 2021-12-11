@@ -22,7 +22,8 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_validation_checks
 from operations_modules.app_generic_classes import CreateGeneralConfiguration
-from operations_modules.app_generic_functions import get_list_of_filenames_in_dir, get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import get_list_of_filenames_in_dir
+from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
 from operations_modules.http_generic_network import get_http_sensor_reading
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 

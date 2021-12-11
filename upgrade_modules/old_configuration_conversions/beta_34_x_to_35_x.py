@@ -1,6 +1,6 @@
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_file_content
+from operations_modules.app_generic_disk import get_file_content
 from upgrade_modules.generic_upgrade_functions import successful_upgrade_message, reset_live_graph_config, \
     reset_database_graph_config, reset_email_config, reset_flask_login_credentials, reset_urls_config, \
     reset_checkin_config, reset_email_reports_config, reset_email_db_graphs_config, reset_upgrade_config

@@ -20,7 +20,7 @@ from sys import version_info as python_version
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_file_content
+from operations_modules.app_generic_disk import get_file_content
 from operations_modules.app_cached_variables import running_with_root
 from configuration_modules import app_config_access
 from operations_modules.software_version import version as kootnet_version

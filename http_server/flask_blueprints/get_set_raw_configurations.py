@@ -19,7 +19,7 @@
 from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_disk import write_file_to_disk
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from sensor_modules.system_access import restart_services
@@ -303,7 +303,7 @@ def set_wifi_config():
     logger.network_logger.debug("* Wifi Set by " + str(request.remote_addr))
     try:
         new_wifi_config = request.form.get("command_data")
-        app_generic_functions.write_file_to_disk(file_locations.wifi_config_file, new_wifi_config)
+        write_file_to_disk(file_locations.wifi_config_file, new_wifi_config)
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Primary Configuration from " + str(request.remote_addr)

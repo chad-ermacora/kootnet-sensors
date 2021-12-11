@@ -25,6 +25,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_classes import CreateRefinedVersion
 
 
 def thread_function(function, args=None):
@@ -94,34 +95,6 @@ def get_zip_size(zip_file):
     except Exception as error:
         logger.primary_logger.error("Error during get zip size: " + str(error))
     return files_size
-
-
-def get_file_content(load_file, open_type="r"):
-    """ Loads provided file and returns it's content. """
-    logger.primary_logger.debug("Loading File: " + str(load_file))
-
-    if os.path.isfile(load_file):
-        try:
-            with open(load_file, open_type) as loaded_file:
-                file_content = loaded_file.read()
-        except Exception as error:
-            file_content = ""
-            logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
-        return file_content
-    else:
-        logger.primary_logger.debug(load_file + " not found")
-    return ""
-
-
-def write_file_to_disk(file_location, file_content, open_type="w"):
-    """ Writes provided file and content to local disk. """
-    logger.primary_logger.debug("Writing content to " + str(file_location))
-
-    try:
-        with open(file_location, open_type) as write_file:
-            write_file.write(file_content)
-    except Exception as error:
-        logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 
 
 def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location="", skip_datetime=False):
@@ -240,3 +213,18 @@ def get_md5_hash_of_file(file_location):
     except Exception as error:
         logger.primary_logger.warning("Error Creating MD5 of " + str(file_location) + ": " + str(error))
     return None
+
+
+def check_if_version_newer(current_version, new_version_str):
+    current_ver = CreateRefinedVersion(current_version)
+    latest_ver = CreateRefinedVersion(new_version_str)
+
+    if latest_ver.major_version > current_ver.major_version:
+        return True
+    elif latest_ver.major_version == current_ver.major_version:
+        if latest_ver.feature_version > current_ver.feature_version:
+            return True
+        elif latest_ver.feature_version == current_ver.feature_version:
+            if latest_ver.minor_version > current_ver.minor_version:
+                return True
+    return False

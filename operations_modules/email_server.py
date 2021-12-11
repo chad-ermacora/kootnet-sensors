@@ -28,7 +28,8 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import software_version
 from operations_modules.app_generic_classes import CreateMonitoredThread
-from operations_modules.app_generic_functions import zip_files, get_file_content
+from operations_modules.app_generic_functions import zip_files
+from operations_modules.app_generic_disk import get_file_content
 from operations_modules.app_validation_checks import email_is_valid
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables

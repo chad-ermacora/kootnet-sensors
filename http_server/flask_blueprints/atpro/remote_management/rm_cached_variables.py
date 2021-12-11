@@ -16,27 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
-from operations_modules import logger
 from operations_modules import file_locations
-
-
-# Copied from app_generic_functions to prevent circular importing
-def get_file_content(load_file, open_type="r"):
-    """ Loads provided file and returns it's content. """
-    logger.primary_logger.debug("Loading File: " + str(load_file))
-
-    if os.path.isfile(load_file):
-        try:
-            with open(load_file, open_type) as loaded_file:
-                file_content = loaded_file.read()
-        except Exception as error:
-            file_content = ""
-            logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
-        return file_content
-    else:
-        logger.primary_logger.debug(load_file + " not found")
-    return ""
+from operations_modules.app_generic_disk import get_file_content
 
 
 # Login used for remote sensors (Used in Sensor Remote Management)

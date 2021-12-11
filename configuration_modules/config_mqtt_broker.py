@@ -19,7 +19,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_classes import CreateGeneralConfiguration
-from operations_modules.app_generic_functions import write_file_to_disk
+from operations_modules.app_generic_disk import write_file_to_disk
 
 
 class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):

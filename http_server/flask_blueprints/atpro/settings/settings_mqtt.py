@@ -20,7 +20,7 @@ import os
 from flask import Blueprint, render_template, request
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content
+from operations_modules.app_generic_disk import get_file_content
 from configuration_modules import app_config_access
 from mqtt.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server, stop_mqtt_broker_server, \
     check_mqtt_broker_server_running

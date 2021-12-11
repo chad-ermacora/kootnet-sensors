@@ -18,6 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import software_version
+from operations_modules.app_generic_classes import CreateRefinedVersion
 from upgrade_modules import generic_upgrade_functions
 from upgrade_modules.old_configuration_conversions.beta_34_x_to_35_x import upgrade_beta_34_x_to_35_x
 
@@ -29,8 +30,8 @@ def run_configuration_upgrade_checks():
     """
     if software_version.old_version != software_version.version:
         logger.primary_logger.debug(" - Configuration Upgrade Check Starting ...")
-        previous_version = software_version.CreateRefinedVersion(software_version.old_version)
-        current_version = software_version.CreateRefinedVersion(software_version.version)
+        previous_version = CreateRefinedVersion(software_version.old_version)
+        current_version = CreateRefinedVersion(software_version.version)
         no_changes = True
 
         if previous_version.major_version == 999:

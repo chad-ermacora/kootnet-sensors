@@ -20,7 +20,8 @@ import os
 from subprocess import check_output, SubprocessError
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import write_file_to_disk, thread_function
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.app_generic_disk import write_file_to_disk
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 

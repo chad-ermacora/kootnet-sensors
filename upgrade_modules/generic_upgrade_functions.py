@@ -22,7 +22,8 @@ import subprocess
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content, thread_function
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.app_generic_disk import get_file_content
 from http_server.server_http_generic_functions import save_http_auth_to_file, default_http_flask_user, \
     default_http_flask_password
 from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration

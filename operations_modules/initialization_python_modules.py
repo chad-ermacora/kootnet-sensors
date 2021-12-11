@@ -23,6 +23,7 @@ import pkg_resources
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_disk import get_file_content
 
 
 def load_pip_module_on_demand(module_name, module_import_str, from_list=None):
@@ -96,20 +97,3 @@ def _install_pip_module(module_name):
         subprocess.check_call([sys.executable, "-m", "pip", "install", module_name])
     except Exception as error:
         logger.primary_logger.error("Unable to install Python Module '" + module_name + "': " + str(error))
-
-
-def get_file_content(load_file, open_type="r"):
-    """ Loads provided file and returns its content. """
-    logger.primary_logger.debug("Loading File: " + str(load_file))
-
-    if os.path.isfile(load_file):
-        try:
-            with open(load_file, open_type) as loaded_file:
-                file_content = loaded_file.read()
-        except Exception as error:
-            file_content = ""
-            logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
-        return file_content
-    else:
-        logger.primary_logger.debug(load_file + " not found")
-    return ""

@@ -18,6 +18,7 @@
 """
 from datetime import datetime
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_classes import CreateRefinedVersion
 from operations_modules import software_version
 
 js_function_okay_prompt = "NotificationOkay"
@@ -105,8 +106,8 @@ class CreateATProMenuNotificationClass:
         if app_cached_variables.running_with_root and app_cached_variables.running_as_service:
             if app_cached_variables.software_update_available and not self._upgrade_program_enabled:
                 self._upgrade_program_enabled = 1
-                current_ver = software_version.CreateRefinedVersion(software_version.version)
-                latest_std_ver = software_version.CreateRefinedVersion(app_cached_variables.standard_version_available)
+                current_ver = CreateRefinedVersion(software_version.version)
+                latest_std_ver = CreateRefinedVersion(app_cached_variables.standard_version_available)
 
                 current_ver_str = current_ver.get_version_string()
                 latest_std_ver_str = latest_std_ver.get_version_string()

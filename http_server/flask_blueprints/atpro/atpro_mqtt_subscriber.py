@@ -21,7 +21,8 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_size, adjust_datetime, thread_function, get_file_content
+from operations_modules.app_generic_functions import get_file_size, adjust_datetime, thread_function
+from operations_modules.app_generic_disk import get_file_content
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, get_clean_sql_table_name, get_one_db_entry
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access

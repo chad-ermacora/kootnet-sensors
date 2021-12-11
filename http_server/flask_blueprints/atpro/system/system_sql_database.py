@@ -26,8 +26,9 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
-from operations_modules.app_generic_functions import get_file_content, get_list_of_filenames_in_dir, zip_files, \
-    get_file_size, adjust_datetime
+from operations_modules.app_generic_functions import get_list_of_filenames_in_dir, zip_files, get_file_size, \
+    adjust_datetime
+from operations_modules.app_generic_disk import get_file_content
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
     get_main_db_first_last_date, universal_database_structure_check
 from http_server.server_http_auth import auth

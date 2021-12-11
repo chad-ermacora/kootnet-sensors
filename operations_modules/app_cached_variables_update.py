@@ -25,9 +25,9 @@ from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, get_file_content, \
-    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files, get_md5_hash_of_file, \
-    verify_password_to_hash
+from operations_modules.app_generic_functions import thread_function, zip_files, get_md5_hash_of_file, \
+    verify_password_to_hash, check_if_version_newer, get_list_of_filenames_in_dir as get_names_list_from_dir
+from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
 from operations_modules.http_generic_network import get_http_regular_file, check_http_file_exist
 from operations_modules import network_ip
 from operations_modules import network_wifi
@@ -395,9 +395,9 @@ def check_for_new_version():
     try:
         update_new_version_releases()
 
-        if check_if_version_newer(app_cached_variables.standard_version_available):
+        if check_if_version_newer(software_version.version, app_cached_variables.standard_version_available):
             app_cached_variables.software_update_available = True
-        if check_if_version_newer(app_cached_variables.developmental_version_available):
+        if check_if_version_newer(software_version.version, app_cached_variables.developmental_version_available):
             app_cached_variables.software_update_dev_available = True
     except Exception as error:
         logger.primary_logger.debug("Available Update Check Failed: " + str(error))
@@ -448,21 +448,6 @@ def _get_cleaned_version(version_text):
     if len(version_text) < 13 and len(version_text.split(".")) == 3:
         return version_text
     return "NA"
-
-
-def check_if_version_newer(new_version_str):
-    current_ver = software_version.CreateRefinedVersion(software_version.version)
-    latest_ver = software_version.CreateRefinedVersion(new_version_str)
-
-    if latest_ver.major_version > current_ver.major_version:
-        return True
-    elif latest_ver.major_version == current_ver.major_version:
-        if latest_ver.feature_version > current_ver.feature_version:
-            return True
-        elif latest_ver.feature_version == current_ver.feature_version:
-            if latest_ver.minor_version > current_ver.minor_version:
-                return True
-    return False
 
 
 def remove_line_from_text(text_var, line_numbers_list):
