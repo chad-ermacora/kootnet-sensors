@@ -56,6 +56,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
         self.enable_automatic_upgrades_minor = 1
         self.enable_automatic_upgrades_developmental = 0
         self.md5_validation_enabled = 1
+        self.verify_ssl = 1
 
         self.update_configuration_settings_list()
         if load_from_file:
