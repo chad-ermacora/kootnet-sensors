@@ -19,6 +19,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_classes import CreateGeneralConfiguration
+from operations_modules.app_validation_checks import validate_smb_username, validate_smb_password
 
 
 class CreateUpgradesConfiguration(CreateGeneralConfiguration):
@@ -61,45 +62,6 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             self._init_config_variables()
             self._update_variables_from_settings_list()
 
-    @staticmethod
-    def validate_smb_username(username):
-        if username is not None:
-            if username.isalnum():
-                return True
-        return False
-
-    @staticmethod
-    def validate_smb_password(password):
-        # ToDo: I'm expecting there to be other characters that should not be used, will add those later
-        invalid_characters_list = ["'"]
-        password_valid = True
-        if password is None or password == "":
-            password_valid = False
-        else:
-            for invalid_character in invalid_characters_list:
-                if invalid_character in password:
-                    password_valid = False
-        return password_valid
-
-    def save_upgrade_script_config(self, ks_upgrade_file_location, clean_upgrade):
-        """
-        Saves a configuration file to automate Kootnet Sensor's upgrade program
-        :param ks_upgrade_file_location: Location of debian upgrade package to install
-        :param clean_upgrade: Do a 'Clean' upgrade, removes program folder & main virtual environment
-        :return: Nothing
-        """
-        clean_upgrade_str = "0"
-        if clean_upgrade:
-            clean_upgrade_str = "1"
-
-        try:
-            with open(self.update_script_config_location, "w") as upgrade_config_file:
-                config_str = ks_upgrade_file_location
-                config_str += "," + clean_upgrade_str
-                upgrade_config_file.write(config_str)
-        except Exception as error:
-            logger.primary_logger.error("Save Upgrade Script Configuration Error: " + str(error))
-
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
         self._update_variables_from_settings_list()
@@ -121,11 +83,11 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
             self.automatic_upgrade_delay_hours = new_hours
 
         smb_username = html_request.form.get("smb_username")
-        if self.validate_smb_username(smb_username):
+        if validate_smb_username(smb_username):
             self.smb_user = smb_username.strip()
 
         smb_password = html_request.form.get("smb_password")
-        if self.validate_smb_password(smb_password):
+        if validate_smb_password(smb_password):
             self.smb_password = smb_password.strip()
 
         if html_request.form.get("upgrade_method") is not None:

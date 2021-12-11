@@ -101,3 +101,23 @@ def email_is_valid(email):
     if re.search(regex, str(email)):
         return True
     return False
+
+
+def validate_smb_username(username):
+    if username is not None:
+        if username.isalnum():
+            return True
+    return False
+
+
+def validate_smb_password(password):
+    # ToDo: I'm expecting there to be other characters that should not be used, will add those later
+    invalid_characters_list = ["'"]
+    password_valid = True
+    if password is None or password == "":
+        password_valid = False
+    else:
+        for invalid_character in invalid_characters_list:
+            if invalid_character in password:
+                password_valid = False
+    return password_valid

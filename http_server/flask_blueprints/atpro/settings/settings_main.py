@@ -21,6 +21,7 @@ from operations_modules import logger
 from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import check_for_new_version
+from operations_modules.app_validation_checks import validate_smb_username, validate_smb_password
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_checkbox_state
@@ -93,8 +94,6 @@ def _get_file_present_color(upgrade_file):
 @html_atpro_settings_routes.route("/atpro/settings-upgrades", methods=["POST"])
 @auth.login_required
 def html_atpro_sensor_settings_upgrades():
-    validate_smb_username = app_config_access.upgrades_config.validate_smb_username
-    validate_smb_password = app_config_access.upgrades_config.validate_smb_password
     bad_cred_msg = "The username must be alphanumeric and the password must not contain single quotes or ="
     if not validate_smb_username(request.form.get("smb_username")) \
             or not validate_smb_password(request.form.get("smb_password")) and request.form.get("smb_password") != "":
