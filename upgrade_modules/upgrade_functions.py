@@ -30,6 +30,7 @@ from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notific
 
 download_type_http = upgrades_config.upgrade_type_http
 download_type_smb = upgrades_config.upgrade_type_smb
+smb_in_use = False
 
 
 class CreateUpdateChecksInterface:
@@ -368,6 +369,11 @@ def get_smb_file(file_name, new_location=None):
 
 
 def _connect_smb():
+    global smb_in_use
+    while smb_in_use:
+        time.sleep(1)
+    smb_in_use = True
+
     url_update_server_smb = urls_config.url_update_server_smb
     try:
         smb_connect = "mount -t cifs " + url_update_server_smb + " " + file_locations.smb_mount_dir
@@ -377,15 +383,17 @@ def _connect_smb():
         return True
     except Exception as error:
         logger.network_logger.error("Connecting to SMB Server " + url_update_server_smb + ": " + str(error))
+    smb_in_use = False
     return False
 
 
 def _disconnect_smb():
+    global smb_in_use
     try:
-        time.sleep(0.5)
         os.system("umount " + file_locations.smb_mount_dir)
     except Exception as error:
         logger.network_logger.error("Disconnecting SMB Server: " + str(error))
+    smb_in_use = False
 
 
 def _set_upgrade_notification_text(download_type, dev_upgrade, clean_upgrade):
