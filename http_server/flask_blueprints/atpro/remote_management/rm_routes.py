@@ -334,13 +334,18 @@ def _push_data_to_sensors(url_command, html_dictionary_data):
     if _missing_login_credentials():
         return _get_missing_login_credentials_page()
 
+    ip_address_length = len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list())
+    push_thread = Thread(target=_push_config_thread_worker, args=[url_command, html_dictionary_data])
+    push_thread.daemon = True
+    push_thread.start()
+    msg_2 = "Kootnet Sensors configuration data is being sent to " + str(ip_address_length) + " Sensors"
+    return get_message_page("Sensor Control - Configuration(s) Sent", msg_2, page_url="sensor-rm")
+
+
+def _push_config_thread_worker(url_command, html_dictionary_data):
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) < 1:
-        return get_message_page("All sensors appear to be Offline", page_url="sensor-rm")
     for ip in ip_list:
         send_http_command(ip, url_command, dic_data=html_dictionary_data)
-    msg_2 = "HTML configuration data sent to " + str(len(ip_list)) + " Sensors"
-    return get_message_page("Sensor Control - Configuration(s) Sent", msg_2, page_url="sensor-rm")
 
 
 @html_atpro_remote_management_routes.route("/atpro/sensor-rm-receive-config", methods=["POST"])
