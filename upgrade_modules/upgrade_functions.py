@@ -18,98 +18,371 @@
 """
 import os
 import time
-from threading import Thread
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, get_md5_hash_of_file
-from operations_modules.http_generic_network import get_http_regular_file
-from configuration_modules.app_config_access import urls_config
-from operations_modules.software_version import CreateRefinedVersion
+from operations_modules.app_generic_functions import thread_function, get_md5_hash_of_file, check_if_version_newer
+from operations_modules.http_generic_network import get_http_regular_file, check_http_file_exist
+from operations_modules.software_version import version
+from configuration_modules.app_config_access import urls_config, upgrades_config
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
-download_type_http = "HTTP"
-download_type_smb = "SMB"
+download_type_http = upgrades_config.upgrade_type_http
+download_type_smb = upgrades_config.upgrade_type_smb
 
 
-def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False,
-                                  download_type=download_type_http, thread_download=True):
-    """
-    Starts the Kootnet Sensors Upgrade process
-    :param dev_upgrade: Developmental Upgrade, True/False, Default False
-    :param clean_upgrade: Clean Upgrade (Re-Install), True/False, Default False
-    :param download_type: Use global variables download_type_http or download_type_smb, Default download_type_http
-    :param thread_download: Use global variables download_type_http or download_type_smb, Default download_type_http
-    :return: Nothing
-    """
-    if app_cached_variables.sensor_ready_for_upgrade:
-        app_cached_variables.sensor_ready_for_upgrade = False
-        if thread_download:
-            system_thread = Thread(target=_kootnet_sensors_upgrade, args=[dev_upgrade, clean_upgrade, download_type])
-            system_thread.daemon = True
-            system_thread.start()
+class CreateUpdateChecksInterface:
+    def __init__(self, start_auto_checks=None):
+        if start_auto_checks is None:
+            start_auto_checks = True
+        self.running_version = version
+        self.new_standard_version = "0.0.0"
+        self.new_developmental_version = "0.0.0"
+        self.standard_update_available = False
+        self.developmental_update_available = False
+
+        self.update_server_file_present_md5 = False
+        self.update_server_file_present_version = False
+        self.update_server_file_present_full_installer = False
+        self.update_server_file_present_upgrade_installer = False
+        if start_auto_checks:
+            thread_function(self.update_versions_info_variables)
+            thread_function(self._thread_worker_update_variables)
         else:
-            _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type)
+            self._update_new_release_versions()
+
+    def update_versions_info_variables(self):
+        self._update_new_release_versions()
+        self._check_upgrade_files_present()
+
+    def _thread_worker_update_variables(self):
+        while True:
+            try:
+                time.sleep(upgrades_config.automatic_upgrade_delay_hours * 60 * 60)
+                self.update_versions_info_variables()
+            except Exception as error:
+                logger.network_logger.warning("Failed to check for new versions: " + str(error))
+
+    def _update_new_release_versions(self):
+        standard_url = urls_config.url_update_server + "kootnet_version.txt"
+        developmental_url = urls_config.url_update_server + "dev/kootnet_version.txt"
+
+        standard_version_available = "Error"
+        developmental_version_available = "Error"
+        if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_http:
+            standard_version_available = self._get_cleaned_version(get_http_regular_file(standard_url))
+            developmental_version_available = self._get_cleaned_version(get_http_regular_file(developmental_url))
+        elif upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
+            standard_version_available = self._get_cleaned_version(get_smb_file("kootnet_version.txt"))
+            developmental_version_available = self._get_cleaned_version(get_smb_file("dev/kootnet_version.txt"))
+
+        self.new_standard_version = standard_version_available
+        self.new_developmental_version = developmental_version_available
+        if check_if_version_newer(version, standard_version_available):
+            self.standard_update_available = True
+        if check_if_version_newer(version, developmental_version_available):
+            self.developmental_update_available = True
+        atpro_notifications.update_ks_upgrade_available(self.new_standard_version)
+
+    @staticmethod
+    def _get_cleaned_version(version_text):
+        if len(version_text) < 13 and len(version_text.split(".")) == 3:
+            return version_text
+        return "0.0.0"
+
+    def _check_upgrade_files_present(self):
+        self.update_server_file_present_md5 = False
+        self.update_server_file_present_version = False
+        self.update_server_file_present_full_installer = False
+        self.update_server_file_present_upgrade_installer = False
+
+        try:
+            update_server_files = [
+                "KootnetSensors-deb-MD5.txt", "kootnet_version.txt", "KootnetSensors.deb", "KootnetSensors_online.deb"
+            ]
+            files_exist_list = []
+            for update_file in update_server_files:
+                if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
+                    files_exist_list.append(check_smb_file_exists(update_file))
+                else:
+                    files_exist_list.append(check_http_file_exist(urls_config.url_update_server + update_file))
+            self.update_server_file_present_md5 = files_exist_list[0]
+            self.update_server_file_present_version = files_exist_list[1]
+            self.update_server_file_present_full_installer = files_exist_list[2]
+            self.update_server_file_present_upgrade_installer = files_exist_list[3]
+        except Exception as error:
+            logger.primary_logger.debug("Update Server File Checks Failed: " + str(error))
 
 
-def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
-    """
-    Initiates Kootnet Sensor's upgrade process.
-    This Function is meant to be started in it's own Thread
-    :param dev_upgrade: Developmental Upgrade, True/False
-    :param clean_upgrade: Delete program folder & main Python virtual environment before install, True/False
-    :param download_type: Get upgrade file from HTTP(S) server or SMB server
-    :return: Nothing
-    """
-    http_standard_version_url = urls_config.url_update_server + "kootnet_version.txt"
-    http_developmental_version_url = urls_config.url_update_server + "dev/kootnet_version.txt"
-    http_standard_deb_url = urls_config.url_update_server + "KootnetSensors_online.deb"
-    http_developmental_deb_url = urls_config.url_update_server + "dev/KootnetSensors_online.deb"
-    upgrade_can_proceed = False
+class CreateUpgradeScriptInterface:
+    def __init__(self):
+        self.start_upgrade_script_command = "systemctl start KootnetSensorsUpgrade.service"
 
-    clean_upgrade_str = "0"
-    if clean_upgrade:
-        clean_upgrade_str = "1"
+        self.download_type = download_type_http
+        self.dev_upgrade = False
+        self.clean_upgrade = False
+        self.thread = True
+        self.verify_ssl = True
 
-    if download_type == download_type_http:
-        if dev_upgrade:
-            current_online_version = get_http_regular_file(http_developmental_version_url, timeout=5)
-            new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
-            download_url = http_developmental_deb_url
-            update_available = app_cached_variables.software_update_dev_available
-        else:
-            current_online_version = get_http_regular_file(http_standard_version_url, timeout=5)
-            new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
-            download_url = http_standard_deb_url
-            update_available = app_cached_variables.software_update_available
+        self.local_upgrade_file_location = "Updated On start_kootnet_sensors_upgrade()"
+        self.currently_released_version = "Updated On start_kootnet_sensors_upgrade()"
+        self.currently_released_version_md5 = "Updated On start_kootnet_sensors_upgrade()"
+        self.update_available = False  # Updated automatically with self.currently_released_version
 
-        if update_available:
-            if new_version_str[:1] == "0":
-                new_version_str = "Beta" + new_version_str[1:]
-
-            download_file_location = _save_http_url_to_file(download_url)
-            if _verify_http_upgrade_file(download_file_location, _get_md5_for_version(new_version_str)):
-                _save_upgrade_config(download_file_location, clean_upgrade_str)
-                upgrade_can_proceed = True
+    def start_kootnet_sensors_upgrade(self):
+        """
+        Starts the Kootnet Sensors Upgrade process
+        :return: Nothing
+        """
+        if not app_cached_variables.running_as_service or not app_cached_variables.running_with_root:
+            logger.network_logger.info("Upgrade Not Started - Must be running with root & as a service")
+        elif app_cached_variables.sensor_ready_for_upgrade and app_cached_variables.pip_ready_for_upgrades:
+            if self.thread:
+                thread_function(self._kootnet_sensors_upgrade)
             else:
-                logger.network_logger.error("Upgrade Cancelled - Bad MD5 Checksum")
+                self._kootnet_sensors_upgrade()
         else:
-            logger.network_logger.info("Upgrade Cancelled - The latest version or higher is already running")
-    elif download_type == download_type_smb:
-        smb_upgrade_file_location = _save_smb_to_file(dev_upgrade)
-        if smb_upgrade_file_location is not None:
-            _save_upgrade_config(smb_upgrade_file_location, clean_upgrade_str)
-            upgrade_can_proceed = True
-    if upgrade_can_proceed:
-        _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type)
-        _set_upgrade_running_variable()
-        os.system("systemctl start KootnetSensorsUpgrade.service")
-    else:
+            logger.network_logger.info("Upgrade Not Started - There is another upgrade already running")
+
+    def _kootnet_sensors_upgrade(self):
+        app_cached_variables.sensor_ready_for_upgrade = False
+        self._update_local_upgrade_file_location()
+        self.update_currently_released_version()
+        self._update_validated_md5()
+
+        if self.download_type == download_type_http:
+            if self.update_available or self.clean_upgrade:
+                self._save_http_upgrade_to_file()
+                if self._verify_upgrade_file():
+                    self._start_upgrade_script()
+            else:
+                logger.network_logger.info("Upgrade Cancelled - The latest version or higher is already running")
+                app_cached_variables.sensor_ready_for_upgrade = True
+        elif self.download_type == download_type_smb:
+            self._save_smb_to_file()
+            if self._verify_upgrade_file():
+                self._start_upgrade_script()
+        log_msg = "Upgrade Details || DownloadType: " + self.download_type
+        log_msg += " || Dev: " + str(self.dev_upgrade) + " || Clean: " + str(self.clean_upgrade)
+        logger.network_logger.debug(log_msg)
+
+    def _update_local_upgrade_file_location(self):
+        file_name = self.download_type + "_upgrade_" + datetime.utcnow().strftime("%Y_%m_%d_%H_%M_%S") + ".deb"
+        if self.dev_upgrade:
+            file_name = "dev_" + file_name
+        if self.clean_upgrade:
+            file_name = "clean_" + file_name
+        file_location = file_locations.downloads_folder + "/" + file_name
+        if os.path.isfile(file_location):
+            os.remove(file_location)
+        self.local_upgrade_file_location = file_location
+
+    def _update_validated_md5(self):
+        """
+        Updates self.currently_released_version_md5 with MD5 checksum of update installer
+        :return: Nothing
+        """
+        if upgrades_config.md5_validation_enabled:
+            verified_md5 = "MD5 or Version File Not Found"
+            try:
+                upgrade_filename_md5 = upgrades_config.upgrade_filename_md5
+
+                versions_md5 = ""
+                if self.download_type == download_type_smb:
+                    versions_md5 = get_smb_file(upgrade_filename_md5)
+                elif self.download_type == download_type_http:
+                    versions_md5 = get_http_regular_file(urls_config.url_update_server + upgrade_filename_md5)
+
+                versions_md5_list = versions_md5.split("\n")
+
+                if len(versions_md5_list) > 4:
+                    for index, version_md5_text in enumerate(versions_md5_list):
+                        if self.currently_released_version == version_md5_text[:15].split(" ")[0]:
+                            verified_md5 = versions_md5_list[index + 4].split(":")[-1].strip()
+                            if self.clean_upgrade:
+                                verified_md5 = versions_md5_list[index + 1].split(":")[-1].strip()
+                            break
+            except Exception as error:
+                logger.network_logger.warning("Get MD5 checksum failed: " + str(error))
+            self.currently_released_version_md5 = verified_md5
+
+    def update_currently_released_version(self):
+        http_standard_version_url = urls_config.url_update_server + upgrades_config.upgrade_filename_version
+        http_dev_version_url = urls_config.url_update_server + "dev/" + upgrades_config.upgrade_filename_version
+
+        current_online_version = "0.0.0"
+        if self.download_type == download_type_http:
+            if self.dev_upgrade:
+                current_online_version = get_http_regular_file(http_dev_version_url)
+            else:
+                current_online_version = get_http_regular_file(http_standard_version_url)
+        elif self.download_type == download_type_smb:
+            if self.dev_upgrade:
+                current_online_version = get_smb_file("dev/" + upgrades_config.upgrade_filename_version)
+            else:
+                current_online_version = get_smb_file(upgrades_config.upgrade_filename_version)
+        current_online_version = current_online_version.strip()
+        self.update_available = check_if_version_newer(version, current_online_version)
+        self.currently_released_version = current_online_version
+
+    def _get_http_download_url(self):
+        upgrade_filename_update_installer = upgrades_config.upgrade_filename_update_installer
+        upgrade_filename_full_installer = upgrades_config.upgrade_filename_full_installer
+
+        http_standard_deb_url = urls_config.url_update_server + upgrade_filename_update_installer
+        http_developmental_deb_url = urls_config.url_update_server + "dev/" + upgrade_filename_update_installer
+        http_standard_clean_deb_url = urls_config.url_update_server + upgrade_filename_full_installer
+        http_developmental_clean_deb_url = urls_config.url_update_server + "dev/" + upgrade_filename_full_installer
+
+        if self.dev_upgrade:
+            download_url = http_developmental_deb_url
+            if self.clean_upgrade:
+                download_url = http_developmental_clean_deb_url
+        else:
+            download_url = http_standard_deb_url
+            if self.clean_upgrade:
+                download_url = http_standard_clean_deb_url
+        return download_url
+
+    def _save_http_upgrade_to_file(self):
+        """
+        Downloads HTTP(S) URL to file
+        :return: Nothing
+        """
+        download_url = self._get_http_download_url()
+        try:
+            with open(self.local_upgrade_file_location, "wb") as upgrade_file:
+                upgrade_file_content = get_http_regular_file(download_url, get_text=False, verify_ssl=self.verify_ssl)
+                if type(upgrade_file_content) is str:
+                    logger.network_logger.error("Update File is str: " + upgrade_file_content)
+                upgrade_file.write(upgrade_file_content)
+        except Exception as error:
+            logger.network_logger.error("HTTP(S) Upgrade Download " + download_url + ": " + str(error))
+
+    def _save_smb_to_file(self):
+        """
+        Copies SMB URL to self.local_upgrade_file_location
+        :return: Nothing
+        """
+        smb_deb_installer = upgrades_config.upgrade_filename_update_installer
+        if self.clean_upgrade:
+            smb_deb_installer = upgrades_config.upgrade_filename_full_installer
+        if self.dev_upgrade:
+            smb_deb_installer = "dev/" + smb_deb_installer
+        get_smb_file(smb_deb_installer, new_location=self.local_upgrade_file_location)
+
+    def _verify_upgrade_file(self):
+        """
+        Creates and checks MD5 hash of local upgrade file and compares it to the validated MD5 hash.
+        :return: If Checksums match, True, else False
+        """
+        if os.path.isfile(self.local_upgrade_file_location):
+            if not upgrades_config.md5_validation_enabled:
+                log_msg = "MD5 verification Disabled in Upgrades Configuration - Proceeding with Upgrade"
+                logger.network_logger.info(log_msg)
+                return True
+
+            file_md5 = get_md5_hash_of_file(self.local_upgrade_file_location)
+            if file_md5 is not None and file_md5 == self.currently_released_version_md5:
+                logger.network_logger.info("Upgrade File MD5 Checksum Verified")
+                return True
+            log_msg = "Downloaded Upgrade File MD5: " + str(file_md5)
+            log_msg += " || Valid MD5: " + self.currently_released_version_md5
+            logger.network_logger.warning(log_msg)
+            logger.network_logger.warning("Upgrade Cancelled - Bad MD5 Checksum")
+        else:
+            logger.network_logger.error("MD5 verification failed - File not found")
         app_cached_variables.sensor_ready_for_upgrade = True
+        return False
+
+    def _start_upgrade_script(self):
+        """
+        Saves a configuration file for Kootnet Sensor's upgrade program & starts it
+        :return: Nothing
+        """
+        _set_upgrade_notification_text(self.download_type, self.dev_upgrade, self.clean_upgrade)
+        _set_upgrade_running_variable()
+
+        clean_upgrade_str = "0"
+        if self.clean_upgrade:
+            clean_upgrade_str = "1"
+
+        try:
+            with open(upgrades_config.update_script_config_location, "w") as upgrade_config_file:
+                config_str = self.local_upgrade_file_location
+                config_str += "," + clean_upgrade_str
+                upgrade_config_file.write(config_str)
+            os.system(self.start_upgrade_script_command)
+        except Exception as error:
+            logger.primary_logger.error("Start Upgrade Script: " + str(error))
+            app_cached_variables.sensor_ready_for_upgrade = True
 
 
-def _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type):
+def check_smb_file_exists(file_name):
+    smb_file_location = file_locations.smb_mount_dir + file_name
+    if not app_cached_variables.running_with_root:
+        logger.network_logger.debug("Unable to check SMB files without root permissions")
+        return False
+    _connect_smb()
+    if os.path.isfile(smb_file_location):
+        _disconnect_smb()
+        return True
+    _disconnect_smb()
+    return False
+
+
+def get_smb_file(file_name, new_location=None):
+    """
+    Gets file from SMB server and returns content or copies it to a new location
+    :param file_name: SMB filename
+    :param new_location: Location of where to copy file, if None, returns file content as text
+    :return: SMB File Content or blank string
+    """
+    smb_file_location = file_locations.smb_mount_dir + file_name
+    file_content = ""
+    if not app_cached_variables.running_with_root:
+        logger.network_logger.debug("Unable to get SMB files without root permissions")
+        return ""
+
+    _connect_smb()
+    try:
+        if os.path.isfile(smb_file_location):
+            if new_location is not None:
+                os.system("cp " + smb_file_location + " " + new_location)
+            else:
+                with open(smb_file_location, "r") as open_file:
+                    file_content = open_file.read()
+        else:
+            logger.network_logger.warning("SMB file not found: " + str(smb_file_location))
+    except Exception as error:
+        logger.network_logger.error("SMB File Download: " + str(error))
+    _disconnect_smb()
+    return file_content
+
+
+def _connect_smb():
+    url_update_server_smb = urls_config.url_update_server_smb
+    try:
+        smb_connect = "mount -t cifs " + url_update_server_smb + " " + file_locations.smb_mount_dir
+        smb_connect += " -o username=" + upgrades_config.smb_user + ",password='" + upgrades_config.smb_password + "'"
+        os.system(smb_connect)
+        time.sleep(0.5)
+        return True
+    except Exception as error:
+        logger.network_logger.error("Connecting to SMB Server " + url_update_server_smb + ": " + str(error))
+    return False
+
+
+def _disconnect_smb():
+    try:
+        time.sleep(0.5)
+        os.system("umount " + file_locations.smb_mount_dir)
+    except Exception as error:
+        logger.network_logger.error("Disconnecting SMB Server: " + str(error))
+
+
+def _set_upgrade_notification_text(download_type, dev_upgrade, clean_upgrade):
     short_type_msg = "Std " + download_type
     long_type_msg = "Standard " + download_type
     if dev_upgrade:
@@ -117,7 +390,7 @@ def _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type):
         long_type_msg = "Developmental " + download_type
     if clean_upgrade:
         short_type_msg += " Re-Install"
-    atpro_notifications.manage_ks_upgrade(short_type_msg, long_type_msg)
+    atpro_notifications.manage_ks_upgrade_running(short_type_msg, long_type_msg)
 
 
 def _set_upgrade_running_variable():
@@ -139,119 +412,5 @@ def _check_upgrade_still_running():
             logger.network_logger.warning("Accessing upgrade running file: " + str(error))
             upgrade_running = 0
         time.sleep(10)
-    atpro_notifications.manage_ks_upgrade(enable=False)
+    atpro_notifications.manage_ks_upgrade_running(enable=False)
     app_cached_variables.sensor_ready_for_upgrade = True
-
-
-def _save_http_url_to_file(file_url, verify_ssl=True):
-    """
-    Downloads & saves HTTP(S) URL to file then returns the file's location
-    :param file_url: HTTP(S) URL to a file
-    :param verify_ssl: Verify HTTPS SSL connection, Default: True
-    :return: File's locally saved location, on failure None
-    """
-    try:
-        file_name = "http_upgrade_" + datetime.utcnow().strftime("%Y_%m_%d_%H_%M_%S") + "." + file_url.split(".")[-1]
-        file_location = file_locations.downloads_folder + "/" + file_name
-        if os.path.isfile(file_location):
-            os.remove(file_location)
-
-        file_content = get_http_regular_file(file_url, get_text=False, verify_ssl=verify_ssl)
-
-        with open(file_location, "wb") as upgrade_file:
-            upgrade_file.write(file_content)
-        return file_location
-    except Exception as error:
-        logger.network_logger.error("HTTP(S) Upgrade URL Download " + file_url + ": " + str(error))
-    return None
-
-
-def _save_smb_to_file(dev_upgrade=False):
-    """
-    Downloads & saves Kootnet Sensors upgrade file from an SMB server
-    :param dev_upgrade: Download the Developmental version, Default False
-    :return: Upgrade file's locally saved location, on failure None
-    """
-    smb_cifs_options = "username=myself,password='123'"
-    smb_mount_dir = "/tmp/super_nas/"
-    smb_server = "//USB-Development/"
-    smb_share = "KootNetSMB/"
-    smb_deb_installer = "KootnetSensors_online.deb"
-
-    file_name = "smb_upgrade_" + datetime.utcnow().strftime("%Y_%m_%d_%H_%M_%S") + ".deb"
-    file_location = file_locations.downloads_folder + "/" + file_name
-
-    try:
-        for directory_var in ["/tmp", smb_mount_dir]:
-            if not os.path.isdir(directory_var):
-                os.mkdir(directory_var)
-
-        if os.path.isfile(file_location):
-            os.remove(file_location)
-
-        smb_share_new = smb_share
-        if dev_upgrade:
-            smb_share_new += "dev/"
-        os.system("mount -t cifs " + smb_server + smb_share_new + " " + smb_mount_dir + " -o " + smb_cifs_options +
-                  " && sleep 1 && cp " + smb_mount_dir + smb_deb_installer + " " + file_location +
-                  " && sleep 1 && umount " + smb_mount_dir)
-        return file_location
-    except Exception as error:
-        logger.network_logger.error("SMB Download: " + str(error))
-    return None
-
-
-def _verify_http_upgrade_file(file_location, good_md5_checksum):
-    """
-    Creates and checks MD5 hash of file and compares it to the provided MD5 hash.
-    If they match, returns True, else False
-    :param file_location: Upgrade Installer file location
-    :param good_md5_checksum: MD5 Checksum the Upgrade file should match
-    :return: If Checksums match, True, else False
-    """
-    file_md5 = get_md5_hash_of_file(file_location)
-    if file_md5 is None:
-        logger.network_logger.error("MD5 verification failed - Error getting file MD5 hash")
-        return False
-    logger.network_logger.info("Downloaded File MD5: " + file_md5 + " || Online MD5: " + good_md5_checksum)
-    if file_md5 == good_md5_checksum:
-        logger.network_logger.debug("File MD5 Verified")
-        return True
-    return False
-
-
-def _get_md5_for_version(kootnet_version, get_full_installer=False):
-    """
-    Gets the MD5 checksum for provided version installer
-    :param kootnet_version: Kootnet Sensors version you want to get the MD5 checksum of
-    :param get_full_installer: Get the full installer instead of the upgrade installer, Default: upgrade installer
-    :return: MD5 checksum of provided version's Kootnet Senors installer, on error returns not found message
-    """
-    try:
-        versions_md5 = get_http_regular_file(urls_config.url_update_server + "KootnetSensors-deb-MD5.txt", timeout=5)
-        versions_md5_list = versions_md5.split("\n")
-        for index, version in enumerate(versions_md5_list):
-            if kootnet_version == version[:15].split(" ")[0]:
-                if get_full_installer:
-                    return versions_md5_list[index + 1].split(":")[-1].strip()
-                return versions_md5_list[index + 4].split(":")[-1].strip()
-    except Exception as error:
-        logger.network_logger.warning("Get MD5 checksum failed for version " + kootnet_version + ": " + str(error))
-    return kootnet_version + " Not Found"
-
-
-def _save_upgrade_config(ks_upgrade_file_location, clean_upgrade_str):
-    """
-    Saves a configuration file to automate Kootnet Sensor's upgrade program
-    :param ks_upgrade_file_location: Location of debian upgrade package to install
-    :param clean_upgrade_str: Do a 'Clean' upgrade, removes program folder & main virtual environment
-    :return: Nothing
-    """
-    try:
-        # Location is hardcoded into kootnet_sensors_upgrade.py in upgrade scripts folder
-        with open(file_locations.upgrade_scripts_folder + "/upgrade_options.conf", "w") as info_file:
-            config_str = ks_upgrade_file_location
-            config_str += "," + clean_upgrade_str
-            info_file.write(config_str)
-    except Exception as error:
-        logger.primary_logger.error("Save Upgrade Configuration Error: " + str(error))
