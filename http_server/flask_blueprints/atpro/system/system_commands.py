@@ -18,12 +18,13 @@
 """
 import os
 from flask import Blueprint, request, render_template
+from configuration_modules.app_config_access import primary_config
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from configuration_modules.app_config_access import primary_config
 from operations_modules.app_generic_functions import thread_function
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
-from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
+from upgrade_modules.upgrade_functions import CreateUpdateChecksInterface, CreateUpgradeScriptInterface, \
+    download_type_smb
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
@@ -69,38 +70,53 @@ def atpro_upgrade_urls(url_path):
             logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
             title = "Upgrade Not Available"
             message = "The latest Standard version or higher is already running"
-            if app_cached_variables.software_update_available:
+            update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
+            if update_checks_interface.standard_update_available:
                 title = "Upgrade Started"
                 message = "Standard Upgrade by HTTP Started. This may take awhile ..."
-                start_kootnet_sensors_upgrade()
+                upgrade_interface = CreateUpgradeScriptInterface()
+                upgrade_interface.start_kootnet_sensors_upgrade()
         elif str(url_path) == "upgrade-http-dev":
             logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
             title = "Upgrade Not Available"
             message = "The latest Developmental version or higher is already running"
-            if app_cached_variables.software_update_dev_available:
+            update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
+            if update_checks_interface.developmental_update_available:
                 title = "Upgrade Started"
                 message = "Development Upgrade by HTTP Started. This may take awhile ..."
-                start_kootnet_sensors_upgrade(dev_upgrade=True)
+                upgrade_interface = CreateUpgradeScriptInterface()
+                upgrade_interface.dev_upgrade = True
+                upgrade_interface.start_kootnet_sensors_upgrade()
         elif str(url_path) == "upgrade-http-std-clean":
             logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Re-installing the latest Standard version of Kootnet Sensors. This may take awhile ..."
-            start_kootnet_sensors_upgrade(clean_upgrade=True)
+            upgrade_interface = CreateUpgradeScriptInterface()
+            upgrade_interface.clean_upgrade = True
+            upgrade_interface.start_kootnet_sensors_upgrade()
         elif str(url_path) == "upgrade-http-dev-clean":
             logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Re-installing the latest Developmental version of Kootnet Sensors. This may take awhile ..."
-            start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True)
+            upgrade_interface = CreateUpgradeScriptInterface()
+            upgrade_interface.dev_upgrade = True
+            upgrade_interface.clean_upgrade = True
+            upgrade_interface.start_kootnet_sensors_upgrade()
         elif str(url_path) == "upgrade-smb-std":
             logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Standard Upgrade by SMB Started. This may take awhile ..."
-            start_kootnet_sensors_upgrade(download_type=download_type_smb)
+            upgrade_interface = CreateUpgradeScriptInterface()
+            upgrade_interface.download_type = download_type_smb
+            upgrade_interface.start_kootnet_sensors_upgrade()
         elif str(url_path) == "upgrade-smb-dev":
             logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Development Upgrade by SMB Started. This may take awhile ..."
-            start_kootnet_sensors_upgrade(download_type=download_type_smb, dev_upgrade=True)
+            upgrade_interface = CreateUpgradeScriptInterface()
+            upgrade_interface.download_type = download_type_smb
+            upgrade_interface.dev_upgrade = True
+            upgrade_interface.start_kootnet_sensors_upgrade()
         elif str(url_path) == "upgrade-os":
             logger.network_logger.info("** System OS Upgrade - SMB Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"

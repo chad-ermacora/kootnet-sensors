@@ -23,7 +23,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.software_version import version
 from operations_modules.software_version import version as kootnet_version
-from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
+from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text, update_checks_interface
 from configuration_modules import app_config_access
 from sensor_modules import system_access
 from sensor_modules import sensor_access
@@ -61,8 +61,8 @@ def html_atpro_dashboard():
         "ATPro_admin/page_templates/dashboard.html",
         AutoUpgrades=get_automatic_upgrade_enabled_text(),
         KootnetVersion=version,
-        StdVersion=app_cached_variables.standard_version_available,
-        DevVersion=app_cached_variables.developmental_version_available,
+        StdVersion=update_checks_interface.new_standard_version,
+        DevVersion=update_checks_interface.new_developmental_version,
         LastUpdated=app_cached_variables.program_last_updated,
         DateTime=strftime("%Y-%m-%d %H:%M:%S %Z"),
         DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),

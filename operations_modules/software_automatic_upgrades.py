@@ -19,11 +19,10 @@
 from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules.app_cached_variables_update import check_for_new_version
-from operations_modules.app_generic_classes import CreateMonitoredThread
-from operations_modules.software_version import CreateRefinedVersion, version
-from configuration_modules import app_config_access
-from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade
+from operations_modules.app_generic_classes import CreateMonitoredThread, CreateRefinedVersion
+from operations_modules.software_version import version
+from configuration_modules.app_config_access import upgrades_config
+from upgrade_modules.upgrade_functions import CreateUpgradeScriptInterface, CreateUpdateChecksInterface
 
 
 def start_automatic_upgrades_server():
@@ -33,63 +32,65 @@ def start_automatic_upgrades_server():
 
 
 def _thread_start_automatic_upgrades_server():
-    if not app_config_access.upgrades_config.enable_automatic_upgrades:
+    if not upgrades_config.enable_automatic_upgrades:
         logger.primary_logger.debug("Automatic Upgrades Disabled in Configuration")
         app_cached_variables.automatic_upgrades_thread.current_state = "Disabled"
-        while not app_config_access.upgrades_config.enable_automatic_upgrades:
+        while not upgrades_config.enable_automatic_upgrades:
             sleep(10)
 
     app_cached_variables.automatic_upgrades_thread.current_state = "Running"
     app_cached_variables.restart_automatic_upgrades_thread = False
+    upgrade_interface = CreateUpgradeScriptInterface()
     running_version = CreateRefinedVersion(version)
     version_template_msg = " -- New Version Detected - New: {{ NewVersion }} Current: " + version + " - "
 
     while not app_cached_variables.restart_automatic_upgrades_thread:
         sleep_total = 0
-        main_sleep = app_config_access.upgrades_config.automatic_upgrade_delay_hours * 60 * 60
+        main_sleep = upgrades_config.automatic_upgrade_delay_hours * 60 * 60
         while sleep_total < main_sleep and not app_cached_variables.restart_automatic_upgrades_thread:
             sleep(30)
             sleep_total += 30
-        if not app_cached_variables.restart_automatic_upgrades_thread:
-            selected_upgrade_type = app_config_access.upgrades_config.selected_upgrade_type
+        if not app_cached_variables.restart_automatic_upgrades_thread and upgrades_config.enable_automatic_upgrades:
+            upgrade_interface.download_type = upgrades_config.selected_upgrade_type
+            upgrade_interface.dev_upgrade = upgrades_config.enable_automatic_upgrades_developmental
+            upgrade_interface.verify_ssl = upgrades_config.verify_ssl
+            latest_version = CreateRefinedVersion(_get_automatic_upgrade_version())
+
             try:
-                check_for_new_version()
                 new_version_msg = version_template_msg
-                if app_config_access.upgrades_config.enable_automatic_upgrades_developmental:
-                    http_dev_version = CreateRefinedVersion(app_cached_variables.developmental_version_available)
-                    if http_dev_version.major_version != running_version.major_version:
+                if upgrade_interface.dev_upgrade:
+                    if latest_version.major_version != running_version.major_version:
                         _major_upgrade_msg_and_sleep()
                     else:
-                        new_version = http_dev_version.get_version_string()
+                        new_version = latest_version.get_version_string()
                         new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                        if http_dev_version.feature_version > running_version.feature_version:
+                        if latest_version.feature_version > running_version.feature_version:
                             msg2 = "Starting Automatic Developmental Feature Upgrade"
                             logger.network_logger.info(new_version_msg + msg2)
-                            start_kootnet_sensors_upgrade(download_type=selected_upgrade_type, dev_upgrade=True)
-                        elif http_dev_version.feature_version == running_version.feature_version:
-                            if http_dev_version.minor_version > running_version.minor_version:
+                            upgrade_interface.start_kootnet_sensors_upgrade()
+                        elif latest_version.feature_version == running_version.feature_version:
+                            if latest_version.minor_version > running_version.minor_version:
                                 msg2 = "Starting Automatic Developmental Minor Upgrade"
                                 logger.network_logger.info(new_version_msg + msg2)
-                                start_kootnet_sensors_upgrade(download_type=selected_upgrade_type, dev_upgrade=True)
+                                upgrade_interface.start_kootnet_sensors_upgrade()
                 else:
-                    http_std_version = CreateRefinedVersion(app_cached_variables.standard_version_available)
-                    new_version = http_std_version.get_version_string()
+                    new_version = latest_version.get_version_string()
                     new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                    if app_config_access.upgrades_config.enable_automatic_upgrades_feature:
-                        if http_std_version.major_version != running_version.major_version:
+                    if upgrades_config.enable_automatic_upgrades_feature:
+                        if latest_version.major_version != running_version.major_version:
                             _major_upgrade_msg_and_sleep()
                         else:
-                            if http_std_version.feature_version > running_version.feature_version:
+                            if latest_version.feature_version > running_version.feature_version:
                                 logger.network_logger.info(new_version_msg + "Starting Automatic Feature Upgrade")
-                                start_kootnet_sensors_upgrade(download_type=selected_upgrade_type)
-                    if app_config_access.upgrades_config.enable_automatic_upgrades_minor:
-                        if http_std_version.major_version != running_version.major_version:
+                                upgrade_interface.start_kootnet_sensors_upgrade()
+                    if upgrades_config.enable_automatic_upgrades_minor:
+                        if latest_version.major_version != running_version.major_version:
                             _major_upgrade_msg_and_sleep()
                         else:
-                            if http_std_version.feature_version == running_version.feature_version:
-                                if http_std_version.minor_version > running_version.minor_version:
+                            if latest_version.feature_version == running_version.feature_version:
+                                if latest_version.minor_version > running_version.minor_version:
                                     logger.network_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
-                                    start_kootnet_sensors_upgrade(download_type=selected_upgrade_type)
+                                    upgrade_interface.start_kootnet_sensors_upgrade()
             except Exception as error:
                 logger.primary_logger.error("Problem during Automatic Upgrade attempt: " + str(error))
         logger.primary_logger.debug("Automatic Upgrade Check Finished")
@@ -103,16 +104,26 @@ def _major_upgrade_msg_and_sleep():
         sleep(15)
 
 
+def _get_automatic_upgrade_version():
+    update_checks_interface.update_versions_info_variables()
+    if upgrades_config.enable_automatic_upgrades_developmental:
+        return update_checks_interface.new_developmental_version
+    return update_checks_interface.new_standard_version
+
+
 def get_automatic_upgrade_enabled_text():
     return_text = "Disabled"
-    if app_config_access.upgrades_config.enable_automatic_upgrades_developmental:
+    if upgrades_config.enable_automatic_upgrades_developmental:
         return_text = "Developmental"
     else:
-        if app_config_access.upgrades_config.enable_automatic_upgrades_feature \
-                and app_config_access.upgrades_config.enable_automatic_upgrades_minor:
+        if upgrades_config.enable_automatic_upgrades_feature \
+                and upgrades_config.enable_automatic_upgrades_minor:
             return_text = "Stable Feature & Minor"
-        elif app_config_access.upgrades_config.enable_automatic_upgrades_feature:
+        elif upgrades_config.enable_automatic_upgrades_feature:
             return_text = "Stable Feature"
-        elif app_config_access.upgrades_config.enable_automatic_upgrades_minor:
+        elif upgrades_config.enable_automatic_upgrades_minor:
             return_text = "Stable Minor"
     return return_text
+
+
+update_checks_interface = CreateUpdateChecksInterface()

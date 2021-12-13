@@ -26,16 +26,14 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, zip_files, get_md5_hash_of_file, \
-    verify_password_to_hash, check_if_version_newer, get_list_of_filenames_in_dir as get_names_list_from_dir
+    verify_password_to_hash, get_list_of_filenames_in_dir as get_names_list_from_dir
 from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
-from operations_modules.http_generic_network import get_http_regular_file, check_http_file_exist
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
     check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
 from configuration_modules import app_config_access
-from upgrade_modules.upgrade_functions import get_smb_file
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_generic_functions import default_http_flask_user, default_http_flask_password
 
@@ -128,7 +126,6 @@ def update_cached_variables():
     _update_cached_note_variables()
     _update_cached_ip()
     _update_cached_hostname()
-    check_for_new_version()
 
 
 def _update_ks_info_table_data():
@@ -276,7 +273,6 @@ def _cached_variables_refresh():
     while True:
         _update_cached_ip()
         _update_cached_hostname()
-        check_for_new_version()
         sleep(3600)
 
 
@@ -381,73 +377,6 @@ def _update_cached_sensor_reboot_count():
     debug_message = "Linux System - " + str(len(sql_column_data)) + " entries in DB reboot column retrieved"
     logger.sensors_logger.debug(debug_message)
     app_cached_variables.reboot_count = reboot_count
-
-
-def check_for_new_version():
-    logger.primary_logger.debug(" -- Checking for new Kootnet Sensors Versions")
-    upgrades_config = app_config_access.upgrades_config
-
-    app_cached_variables.update_server_file_present_md5 = None
-    app_cached_variables.update_server_file_present_version = None
-    app_cached_variables.update_server_file_present_full_installer = None
-    app_cached_variables.update_server_file_present_upgrade_installer = None
-
-    try:
-        update_new_version_releases()
-
-        if check_if_version_newer(software_version.version, app_cached_variables.standard_version_available):
-            app_cached_variables.software_update_available = True
-        if check_if_version_newer(software_version.version, app_cached_variables.developmental_version_available):
-            app_cached_variables.software_update_dev_available = True
-    except Exception as error:
-        logger.primary_logger.debug("Available Update Check Failed: " + str(error))
-        app_cached_variables.standard_version_available = "Retrieval Failed"
-        app_cached_variables.developmental_version_available = "Retrieval Failed"
-
-    try:
-        update_server_url = app_config_access.urls_config.url_update_server
-        if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
-            update_server_url = app_config_access.urls_config.url_update_server_smb
-        update_server_files = [
-            "KootnetSensors-deb-MD5.txt", "kootnet_version.txt", "KootnetSensors.deb", "KootnetSensors_online.deb"
-        ]
-        files_exist_list = []
-        for update_file in update_server_files:
-            if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
-                files_exist_list.append(get_smb_file(update_file, check_file_exists=True))
-            else:
-                files_exist_list.append(check_http_file_exist(update_server_url + update_file))
-        app_cached_variables.update_server_file_present_md5 = files_exist_list[0]
-        app_cached_variables.update_server_file_present_version = files_exist_list[1]
-        app_cached_variables.update_server_file_present_full_installer = files_exist_list[2]
-        app_cached_variables.update_server_file_present_upgrade_installer = files_exist_list[3]
-    except Exception as error:
-        logger.primary_logger.debug("Update Server Files Check Failed: " + str(error))
-    atpro_notifications.check_updates()
-
-
-def update_new_version_releases():
-    upgrades_config = app_config_access.upgrades_config
-    standard_url = app_config_access.urls_config.url_update_server + "kootnet_version.txt"
-    developmental_url = app_config_access.urls_config.url_update_server + "dev/kootnet_version.txt"
-
-    standard_version_available = ""
-    developmental_version_available = ""
-    if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_http:
-        standard_version_available = _get_cleaned_version(get_http_regular_file(standard_url))
-        developmental_version_available = _get_cleaned_version(get_http_regular_file(developmental_url))
-    elif upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
-        standard_version_available = _get_cleaned_version(get_smb_file("kootnet_version.txt"))
-        developmental_version_available = _get_cleaned_version(get_smb_file("dev/kootnet_version.txt"))
-
-    app_cached_variables.standard_version_available = standard_version_available
-    app_cached_variables.developmental_version_available = developmental_version_available
-
-
-def _get_cleaned_version(version_text):
-    if len(version_text) < 13 and len(version_text.split(".")) == 3:
-        return version_text
-    return "NA"
 
 
 def remove_line_from_text(text_var, line_numbers_list):

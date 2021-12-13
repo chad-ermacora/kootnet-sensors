@@ -24,7 +24,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
-from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
+from upgrade_modules.upgrade_functions import CreateUpgradeScriptInterface, download_type_smb
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from sensor_modules import system_access
@@ -40,7 +40,8 @@ demo_mode_enabled_msg = "Demo mode enabled, function disabled"
 def upgrade_http():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
-        start_kootnet_sensors_upgrade()
+        upgrade_interface = CreateUpgradeScriptInterface()
+        upgrade_interface.start_kootnet_sensors_upgrade()
         msg = "HTTP" + upgrade_msg
         return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg
@@ -51,7 +52,9 @@ def upgrade_http():
 def upgrade_http_dev():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
-        start_kootnet_sensors_upgrade(dev_upgrade=True)
+        upgrade_interface = CreateUpgradeScriptInterface()
+        upgrade_interface.dev_upgrade = True
+        upgrade_interface.start_kootnet_sensors_upgrade()
         msg = "HTTP Development" + upgrade_msg
         return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg
@@ -62,7 +65,9 @@ def upgrade_http_dev():
 def upgrade_clean_http():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-        start_kootnet_sensors_upgrade(clean_upgrade=True)
+        upgrade_interface = CreateUpgradeScriptInterface()
+        upgrade_interface.clean_upgrade = True
+        upgrade_interface.start_kootnet_sensors_upgrade()
         msg = "HTTP Clean" + upgrade_msg
         return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg
@@ -73,7 +78,10 @@ def upgrade_clean_http():
 def upgrade_clean_http_dev():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True)
+        upgrade_interface = CreateUpgradeScriptInterface()
+        upgrade_interface.dev_upgrade = True
+        upgrade_interface.clean_upgrade = True
+        upgrade_interface.start_kootnet_sensors_upgrade()
         msg = "HTTP Development Clean" + upgrade_msg
         return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg
@@ -84,7 +92,9 @@ def upgrade_clean_http_dev():
 def upgrade_smb():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
-        start_kootnet_sensors_upgrade(download_type=download_type_smb)
+        upgrade_interface = CreateUpgradeScriptInterface()
+        upgrade_interface.download_type = download_type_smb
+        upgrade_interface.start_kootnet_sensors_upgrade()
         msg = "SMB" + upgrade_msg
         return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg
@@ -95,7 +105,10 @@ def upgrade_smb():
 def upgrade_smb_dev():
     if not app_config_access.primary_config.demo_mode:
         logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
-        start_kootnet_sensors_upgrade(download_type=download_type_smb, dev_upgrade=True)
+        upgrade_interface = CreateUpgradeScriptInterface()
+        upgrade_interface.download_type = download_type_smb
+        upgrade_interface.dev_upgrade = True
+        upgrade_interface.start_kootnet_sensors_upgrade()
         msg = "SMB Development" + upgrade_msg
         return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
     return demo_mode_enabled_msg

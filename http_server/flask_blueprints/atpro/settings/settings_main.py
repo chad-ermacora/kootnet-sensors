@@ -20,7 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
-from operations_modules.app_cached_variables_update import check_for_new_version
+from operations_modules.software_automatic_upgrades import update_checks_interface
 from operations_modules.app_validation_checks import validate_smb_username, validate_smb_password
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
@@ -76,10 +76,10 @@ def html_atpro_sensor_settings_main():
         EnableStableFeatureAutoUpgrades=enable_major_upgrades,
         EnableStableMinorAutoUpgrades=enable_minor_upgrades,
         EnableDevAutoUpgrades=enable_dev_up,
-        USMD5=_get_file_present_color(app_cached_variables.update_server_file_present_md5),
-        USVersion=_get_file_present_color(app_cached_variables.update_server_file_present_version),
-        USFullInstaller=_get_file_present_color(app_cached_variables.update_server_file_present_full_installer),
-        USUpgradeInstaller=_get_file_present_color(app_cached_variables.update_server_file_present_upgrade_installer)
+        USMD5=_get_file_present_color(update_checks_interface.update_server_file_present_md5),
+        USVersion=_get_file_present_color(update_checks_interface.update_server_file_present_version),
+        USFullInstaller=_get_file_present_color(update_checks_interface.update_server_file_present_full_installer),
+        USUpgradeInstaller=_get_file_present_color(update_checks_interface.update_server_file_present_upgrade_installer)
     )
 
 
@@ -101,7 +101,7 @@ def html_atpro_sensor_settings_upgrades():
         return get_message_page("Invalid SMB username or password", message=bad_cred_msg, page_url="sensor-settings")
     app_config_access.upgrades_config.update_with_html_request(request)
     app_config_access.upgrades_config.save_config_to_file()
-    thread_function(check_for_new_version)
+    thread_function(update_checks_interface.update_versions_info_variables)
     app_cached_variables.restart_automatic_upgrades_thread = True
     return get_message_page("Upgrade Settings Updated", page_url="sensor-settings")
 
@@ -111,7 +111,7 @@ def html_atpro_sensor_settings_upgrades():
 def html_atpro_sensor_settings_urls():
     app_config_access.urls_config.update_with_html_request(request)
     app_config_access.urls_config.save_config_to_file()
-    thread_function(check_for_new_version)
+    thread_function(update_checks_interface.update_versions_info_variables)
     app_cached_variables.restart_automatic_upgrades_thread = True
     return get_message_page("URL Settings Updated", page_url="sensor-settings")
 
@@ -120,7 +120,7 @@ def html_atpro_sensor_settings_urls():
 @auth.login_required
 def html_atpro_sensor_settings_urls_reset():
     app_config_access.urls_config.reset_urls_to_default()
-    thread_function(check_for_new_version)
+    thread_function(update_checks_interface.update_versions_info_variables)
     return get_message_page("URLs Configuration Reset", page_url="sensor-settings")
 
 
