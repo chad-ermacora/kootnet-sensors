@@ -25,7 +25,7 @@ from threading import Thread
 from operations_modules import file_locations
 from operations_modules import logger
 from operations_modules.app_cached_variables import network_get_commands as sg_commands
-from operations_modules.app_generic_classes import  CreateRefinedVersion
+from operations_modules.app_generic_classes import CreateRefinedVersion
 from operations_modules.http_generic_network import get_http_sensor_reading
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 from tests import test_http_server
