@@ -102,10 +102,10 @@ class CreateUpdateChecksInterface:
                 "KootnetSensors-deb-MD5.txt", "kootnet_version.txt", "KootnetSensors.deb", "KootnetSensors_online.deb"
             ]
             files_exist_list = []
-            for update_file in update_server_files:
-                if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
-                    files_exist_list.append(check_smb_file_exists(update_file))
-                else:
+            if upgrades_config.selected_upgrade_type == upgrades_config.upgrade_type_smb:
+                files_exist_list = check_smb_file_exists(update_server_files)
+            else:
+                for update_file in update_server_files:
                     files_exist_list.append(check_http_file_exist(urls_config.url_update_server + update_file))
             self.update_server_file_present_md5 = files_exist_list[0]
             self.update_server_file_present_version = files_exist_list[1]
@@ -319,17 +319,23 @@ class CreateUpgradeScriptInterface:
             app_cached_variables.sensor_ready_for_upgrade = True
 
 
-def check_smb_file_exists(file_name):
-    smb_file_location = file_locations.smb_mount_dir + file_name
-    if not app_cached_variables.running_with_root:
+def check_smb_file_exists(file_name_list):
+    return_file_presence_list = []
+    if app_cached_variables.running_with_root:
+        _connect_smb()
+    else:
         logger.network_logger.debug("Unable to check SMB files without root permissions")
-        return False
-    _connect_smb()
-    if os.path.isfile(smb_file_location):
+    for file_name in file_name_list:
+        smb_file_location = file_locations.smb_mount_dir + file_name
+        if not app_cached_variables.running_with_root:
+            return_file_presence_list.append(False)
+        elif os.path.isfile(smb_file_location):
+            return_file_presence_list.append(True)
+        else:
+            return_file_presence_list.append(False)
+    if app_cached_variables.running_with_root:
         _disconnect_smb()
-        return True
-    _disconnect_smb()
-    return False
+    return return_file_presence_list
 
 
 def get_smb_file(file_name, new_location=None):
