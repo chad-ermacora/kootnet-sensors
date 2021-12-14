@@ -28,6 +28,7 @@ from operations_modules.software_version import version
 from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_generic_functions import save_http_auth_to_file
+from build_deb_packages import start_deb_build_cli_menu
 
 logging.captureWarnings(True)
 logger.primary_logger.debug("Terminal Configuration Tool Starting")
@@ -59,6 +60,7 @@ extra_options_menu = """Advanced Menu\n
 27. Upgrade Kootnet Sensors (Development SMB)
 28. Re-Install Kootnet Sensors (Latest Standard SMB)
 29. Re-Install Kootnet Sensors (Latest Developmental SMB)
+31. Build Kootnet Sensors Debian Installers
 """
 remote_get_commands = app_cached_variables.network_get_commands
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
@@ -235,6 +237,8 @@ def start_script():
                 upgrade_interface.thread = False
                 upgrade_interface.start_kootnet_sensors_upgrade()
                 print(msg_upgrade_started)
+            elif selection == 31:
+                start_deb_build_cli_menu()
             else:
                 os.system("clear")
                 print("Invalid Selection: " + str(selection))
