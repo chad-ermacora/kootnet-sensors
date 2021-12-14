@@ -19,7 +19,7 @@
     This file contains the location of files on the host system.
 """
 import os
-from getpass import getuser
+from getpass import getuser as _getuser
 
 running_with_root = True
 if os.geteuid():
@@ -27,13 +27,13 @@ if os.geteuid():
     running_with_root = False
 
 
-def _get_user():
+def get_user():
     """Try to find the user who called sudo."""
     try:
         user = os.environ['USER']
     except KeyError:
         # possibly a systemd service. no sudo was used
-        return getuser()
+        return _getuser()
 
     if user == 'root':
         try:
@@ -79,7 +79,7 @@ sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
 # If not running as a service or the root user, locations changes to the user's home directory + /kootnet_data
 if program_root_dir != "/opt/kootnet-sensors" or not running_with_root:
-    system_user = _get_user()
+    system_user = get_user()
     sensor_data_dir = "/home/" + system_user + "/kootnet_data"
     sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
 
