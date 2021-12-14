@@ -42,6 +42,7 @@ Output folder: {debian_installer_dir}\n
 3. Change Feature Version Number
 4. Change Major Version Number
 5. Change Default Configuration Settings
+6. Install Required OS APT Packages
 12. Exit
 """
 
@@ -115,6 +116,8 @@ def start_deb_build_cli_menu():
             elif selection == 5:
                 print(configurations_menu)
                 _edit_default_configs()
+            elif selection == 6:
+                os.system("sudo apt-get -y install zip")
             elif selection == 11:
                 _copy_to_smb()
             elif selection == 12:
