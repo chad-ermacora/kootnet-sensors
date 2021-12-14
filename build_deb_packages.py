@@ -147,6 +147,7 @@ def start_debian_package_build():
         print("Creating Upgrade Version File & Appending to MD5s File ...")
         _create_version_file()
         _create_md5_file()
+        _set_file_permissions()
         print("\nDebian Installer Creations Complete")
     except Exception as error:
         print("Error Building Debian Packages: " + str(error))
@@ -325,7 +326,15 @@ def _copy_to_smb():
     os.system(f"cp -f {md5_versions_file} '{new_location}'")
     for file_loc in upgrade_installer_files:
         os.system(f"cp -f {file_loc} '{new_location}dev/'")
-        
+
+
+def _set_file_permissions():
+    """ Sets upgrade files permissions to be accessible by all. """
+    os.chmod(debian_installer_dir + upgrade_filename_version, 0o666)
+    os.chmod(debian_installer_dir + upgrade_filename_md5, 0o666)
+    os.chmod(debian_installer_dir + upgrade_filename_full_installer, 0o777)
+    os.chmod(debian_installer_dir + upgrade_filename_update_installer, 0o777)
+
 
 def _check_build_directories():
     directories_list = [
