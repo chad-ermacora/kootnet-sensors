@@ -30,6 +30,7 @@ from operations_modules.software_automatic_upgrades import get_automatic_upgrade
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_urls import CreateURLConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
@@ -61,6 +62,8 @@ default_primary_config = CreatePrimaryConfiguration(load_from_file=False).get_co
 default_primary_config = default_primary_config.replace("\n", "\\n")
 default_urls_config = CreateURLConfiguration(load_from_file=False).get_config_as_str()
 default_urls_config = default_urls_config.replace("\n", "\\n")
+default_upgrade_config = CreateUpgradesConfiguration(load_from_file=False).get_config_as_str()
+default_upgrade_config = default_upgrade_config.replace("\n", "\\n")
 default_installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False).get_config_as_str()
 default_installed_sensors_config = default_installed_sensors_config.replace("\n", "\\n")
 default_sensor_offsets_config = CreateSensorOffsetsConfiguration(load_from_file=False).get_config_as_str()
@@ -300,6 +303,7 @@ def html_atpro_rm_configurations():
         "ATPro_admin/page_templates/remote_management/configurations.html",
         DefaultPrimaryText=default_primary_config,
         DefaultURLsText=default_urls_config,
+        DefaultUpgradeText=default_upgrade_config,
         DefaultInstalledSensorsText=default_installed_sensors_config,
         DefaultSensorOffsetsText=default_sensor_offsets_config,
         DefaultCheckinsText=default_checkins_config,
@@ -348,7 +352,7 @@ def _push_config_thread_worker(url_command, html_dictionary_data):
         send_http_command(ip, url_command, dic_data=html_dictionary_data)
 
 
-@html_atpro_remote_management_routes.route("/atpro/sensor-rm-receive-config", methods=["POST"])
+@html_atpro_remote_management_routes.route("/atpro/sensor-rm-receive-config", methods=["POST", "PUT"])
 @auth.login_required
 def html_atpro_sensor_rm_receive_configuration():
     return remote_management_receive_configuration(request)
