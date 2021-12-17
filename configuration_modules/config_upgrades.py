@@ -27,7 +27,7 @@ class CreateUpgradesConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.upgrades_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 and Disable = 0"
+        self.config_file_header = "This contains server addresses used in Checkins & Upgrades"
         self.valid_setting_count = 9
         self.config_settings_names = [
             "Enable Automatic Upgrades", "Delay in Hours between Automatic Upgrade Checks",
