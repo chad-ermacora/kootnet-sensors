@@ -202,6 +202,7 @@ class CreateNetworkSystemCommands:
         self.shutdown_system = "ShutdownSystem"
 
 
+#  ToDo: this is now only used in unit tests, which should be changed to HTML post or put
 class CreateNetworkSetCommands:
     """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
 

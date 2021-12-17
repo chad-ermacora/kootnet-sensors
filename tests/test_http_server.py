@@ -18,6 +18,7 @@
 """
 import unittest
 from json import loads as json_loads
+from operations_modules.app_generic_classes import CreateNetworkSetCommands
 from operations_modules.http_generic_network import get_http_sensor_reading, send_http_test_config, send_http_command
 from operations_modules import app_cached_variables
 from tests.create_test_configs import *
@@ -273,7 +274,7 @@ open_sense_map_config_test = CreateOpenSenseMapConfigurationTest()
 
 sensor_address = "localhost"
 
-remote_set = app_cached_variables.network_set_commands
+remote_set = CreateNetworkSetCommands()
 remote_get = app_cached_variables.network_get_commands
 sensor_get_commands = [
     remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,

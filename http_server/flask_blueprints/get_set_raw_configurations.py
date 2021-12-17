@@ -27,6 +27,8 @@ from sensor_modules.system_access import restart_services
 html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
 
 
+# ToDo: Remove all set configs (Using rm_receive_configs.py for Remote Management instead)
+# Only being used in Unit tests & the depreciated desktop app
 @html_get_set_config_routes.route("/GetPrimaryConfiguration")
 @auth.login_required
 def get_primary_configuration():

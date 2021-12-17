@@ -19,12 +19,11 @@
 from platform import system
 from os import geteuid, path
 from operations_modules.app_generic_classes import CreateDatabaseVariables, CreateNetworkSystemCommands, \
-    CreateNetworkGetCommands, CreateNetworkSetCommands, CreateLatencyVariables, CreateEmptyThreadClass
+    CreateNetworkGetCommands, CreateLatencyVariables, CreateEmptyThreadClass
 
 database_variables = CreateDatabaseVariables()
 network_system_commands = CreateNetworkSystemCommands()
 network_get_commands = CreateNetworkGetCommands()
-network_set_commands = CreateNetworkSetCommands()
 latency_variables = CreateLatencyVariables()
 
 # Dictionary of Terminal commands
