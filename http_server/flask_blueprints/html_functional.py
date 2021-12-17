@@ -123,9 +123,15 @@ def atpro_root_static_files(filename):
 
 
 def _is_valid_filename(filename):
+    """
+    If provided filename is using valid characters and, it's length is <= 256, returns True, else False
+    :param filename: Name of a file as text
+    :return: True/False
+    """
     filename = str(filename)
-    if re.match('[0-9a-zA-Z_./-]+$', filename):
-        return True
+    if len(filename) <= 256:
+        if re.match('[0-9a-zA-Z_./-]+$', filename):
+            return True
     return False
 # End -- HTML assets for 'ATPro admin' interface
 
