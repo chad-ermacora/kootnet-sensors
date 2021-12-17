@@ -335,7 +335,7 @@ def html_atpro_sensor_rm_push_configuration():
 def _push_data_to_sensors(url_command, html_dictionary_data):
     if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
         return _get_missing_sensor_addresses_page()
-    if _missing_login_credentials():
+    elif _missing_login_credentials():
         return _get_missing_login_credentials_page()
 
     ip_address_length = len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list())
@@ -372,13 +372,13 @@ def html_atpro_rm_system_commands():
 def html_atpro_get_remote_management_reports(filename):
     if filename == "combination":
         return rm_cached_variables.html_combo_report
-    if filename == "system":
+    elif filename == "system":
         return rm_cached_variables.html_system_report
-    if filename == "configuration":
+    elif filename == "configuration":
         return rm_cached_variables.html_config_report
-    if filename == "readings":
+    elif filename == "readings":
         return rm_cached_variables.html_readings_report
-    if filename == "latency":
+    elif filename == "latency":
         return rm_cached_variables.html_latency_report
     return ""
 
@@ -410,8 +410,7 @@ def run_system_command(command):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
     if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
         return _get_missing_sensor_addresses_page()
-
-    if _missing_login_credentials():
+    elif _missing_login_credentials():
         return _get_missing_login_credentials_page(full_reload=False)
 
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
