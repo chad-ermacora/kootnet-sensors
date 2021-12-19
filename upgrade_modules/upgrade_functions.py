@@ -286,8 +286,13 @@ class CreateUpgradeScriptInterface:
 
             file_md5 = get_md5_hash_of_file(self.local_upgrade_file_location)
             if file_md5 is not None and file_md5 == self.currently_released_version_md5:
-                logger.network_logger.info("Upgrade File MD5 Checksum Verified")
+                log_msg = "Upgrade File MD5 Checksum Verified - Type: " + self.download_type
+                log_msg += " | Dev: " + str(self.dev_upgrade) + " | Ver: " + self.currently_released_version
+                logger.network_logger.info(log_msg)
                 return True
+            log_msg = "Upgrade File MD5 Checksum Verification Failed - Type: " + self.download_type
+            log_msg += " | Dev: " + str(self.dev_upgrade) + " | Ver: " + self.currently_released_version
+            logger.network_logger.warning(log_msg)
             log_msg = "Downloaded Upgrade File MD5: " + str(file_md5)
             log_msg += " || Valid MD5: " + self.currently_released_version_md5
             logger.network_logger.warning(log_msg)
