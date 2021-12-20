@@ -30,7 +30,7 @@ class CreateVEML6075:
         self.sensor_in_use = False
         try:
             veml6075_import = __import__("sensor_modules.drivers.veml6075", fromlist=["VEML6075"])
-            self.smbus_import = __import__("smbus")
+            self.smbus_import = __import__("sensor_modules.drivers.smbus2.smbus2", fromlist=["SMBus"])
             self.bus = self.smbus_import.SMBus(1)
             self.uv_sensor = veml6075_import.VEML6075(i2c_dev=self.bus)
             self.uv_sensor.set_shutdown(False)

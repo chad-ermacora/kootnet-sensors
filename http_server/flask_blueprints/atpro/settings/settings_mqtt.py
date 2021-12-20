@@ -20,7 +20,7 @@ import os
 from flask import Blueprint, render_template, request
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content
+from operations_modules.app_generic_disk import get_file_content
 from configuration_modules import app_config_access
 from mqtt.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server, stop_mqtt_broker_server, \
     check_mqtt_broker_server_running
@@ -274,7 +274,7 @@ def html_atpro_sensor_settings_mqtt_broker():
             return_text = "MQTT Broker Service Stopped"
             stop_mqtt_broker_server()
         return get_message_page("MQTT Broker Settings Updated", return_text, page_url="sensor-settings")
-    mosquitto_configuration = ""
+    mosquitto_configuration = "listener 1883\nallow_anonymous true"
     if os.path.isfile(file_locations.mosquitto_configuration):
         mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
     return render_template(

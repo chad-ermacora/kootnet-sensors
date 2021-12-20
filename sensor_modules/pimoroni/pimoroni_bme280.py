@@ -28,9 +28,8 @@ class CreateBME280:
         self.sensor_in_use = False
         try:
             bme280_import = __import__("sensor_modules.drivers.bme280", fromlist=["BME280"])
-            smbus2_import = __import__("smbus2", fromlist=["SMBus"])
-            bus = smbus2_import.SMBus(1)
-            self.bme280 = bme280_import.BME280(i2c_dev=bus)
+            self.smbus_import = __import__("sensor_modules.drivers.smbus2.smbus2", fromlist=["SMBus"])
+            self.bme280 = bme280_import.BME280(i2c_dev=self.smbus_import.SMBus(1))
             self.bme280.get_temperature()
             logger.sensors_logger.debug("Pimoroni BME280 Initialization - OK")
         except Exception as error:

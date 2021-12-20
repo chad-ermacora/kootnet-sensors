@@ -6,90 +6,98 @@
     }
 </style>
 
-<div class="pure-menu">
-    <ul class="pure-menu-list pure-menu-horizontal">
-        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
-        system-db-local system-db-management system-db-uploads">
-            <a style="cursor: default;" class="pure-menu-link">
-                <i class="fas fa-database"></i> Databases
-            </a>
-            <ul class="pure-menu-children">
-                <li class="pure-menu-item">
-                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
-                        Information & Downloads
-                    </a>
-                </li>
-                <li class="pure-menu-item">
-                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-management')">
-                        Management
-                    </a>
-                </li>
-                <li class="pure-menu-item">
-                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
-                        Uploads
-                    </a>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</div>
+<div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list pure-menu-horizontal">
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+            system-db-local system-db-management system-db-uploads">
+                <a style="cursor: default;" class="pure-menu-link">
+                    <i class="fas fa-database"></i> Databases
+                </a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
+                            Information & Downloads
+                        </a>
+                    </li>
+                    <li class="pure-menu-item">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-management')">
+                            Management
+                        </a>
+                    </li>
+                    <li class="pure-menu-item">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
+                            Uploads
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
 
-<div class="pure-menu">
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item raw-configurations">
-            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
-                <i class="fas fa-tools"></i> View Versions & Configurations
-            </a>
-        </li>
-    </ul>
-</div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item raw-configurations">
+                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
+                    <i class="fas fa-tools"></i> View Versions & Configurations
+                </a>
+            </li>
+        </ul>
+    </div>
 
-<div class="pure-menu">
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item system-networking">
-            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
-                <i class="fas fa-wifi"></i> Networking
-            </a>
-        </li>
-    </ul>
-</div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item system-networking">
+                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
+                    <i class="fas fa-wifi"></i> Networking
+                </a>
+            </li>
+        </ul>
+    </div>
 
-<div class="pure-menu">
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item system-ssl">
-            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
-                <i class="fab fa-expeditedssl"></i> SSL
-            </a>
-        </li>
-    </ul>
-</div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item system-ssl">
+                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
+                    <i class="fab fa-expeditedssl"></i> SSL
+                </a>
+            </li>
+        </ul>
+    </div>
 
-<div class="pure-menu">
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item system-change-login">
-            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-change-login')">
-                <i class="fas fa-key"></i> Change Login
-            </a>
-        </li>
-    </ul>
-</div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item system-change-login">
+                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-change-login')">
+                    <i class="fas fa-key"></i> Change Login
+                </a>
+            </li>
+        </ul>
+    </div>
 
-<div class="pure-menu">
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item system-upgrades-power">
-            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-upgrades-power')">
-                <i class="fas fa-arrow-alt-circle-up"></i> Upgrades & Power
-            </a>
-        </li>
-    </ul>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item system-upgrades-power">
+                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-upgrades-power')">
+                    <i class="fas fa-arrow-alt-circle-up"></i> Upgrades & Power
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <br><hr><br>
 
 <div id="system-page-view">
-    <div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content"><h1>
-        <i class="fas fa-hourglass-half"></i> Loading ...
-    </h1></div></div></div></div>
+    <div class="row">
+        <div class="col-12 col-m-12 col-sm-12">
+            <div class="card" style="width: 100vw;">
+                <div class="card-content">
+                    <h1><i class="fas fa-hourglass-half"></i> Loading ...</h1>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -110,6 +118,7 @@
             jQuery("#system-page-view").load("/atpro/" + nav_location);
         }
     }
+
     CheckNotificationsAsync();
     SelectSystemNav("system-db-local");
 </script>

@@ -37,29 +37,13 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def set_settings_for_test1(self):
         self.enable_debug_logging = 0
         self.utc0_hour_offset = -4.0
-        self.enable_custom_temp = 0
-        self.temperature_offset = 0.0
-        self.enable_temperature_comp_factor = 0
-        self.temperature_comp_factor = 0.0
         self.web_portal_port = 10065
-        self.enable_automatic_upgrades_feature = 0
-        self.enable_automatic_upgrades_minor = 0
-        self.enable_automatic_upgrades_developmental = 0
-        self.automatic_upgrade_delay_hours = 1
         self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.enable_debug_logging = 1
         self.utc0_hour_offset = 22.0
-        self.enable_custom_temp = 1
-        self.temperature_offset = 1.1
-        self.enable_temperature_comp_factor = 1
-        self.temperature_comp_factor = 2.2
         self.web_portal_port = 10064
-        self.enable_automatic_upgrades_feature = 1
-        self.enable_automatic_upgrades_minor = 1
-        self.enable_automatic_upgrades_developmental = 1
-        self.automatic_upgrade_delay_hours = 33
         self.update_configuration_settings_list()
 
 

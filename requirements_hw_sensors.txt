@@ -4,17 +4,10 @@ spidev
 RPi.GPIO
 gpiozero
 pyserial
-smbus
-smbus2
-luma.core
-luma.oled
-# Other requirements related to the sensors
-MarkupSafe
-click
-itsdangerous
-Jinja2
-pycparser
 pyusb
+# Other requirements related to the sensors
+Pillow
+pycparser
 pyftdi
 colorzero
 zope.event

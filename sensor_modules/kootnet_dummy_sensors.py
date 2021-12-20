@@ -63,6 +63,15 @@ class CreateDummySensors:
         self.sensor_in_use = False
         return self._get_random_float(min_number=650, max_number=1200)
 
+    def altitude(self):
+        """ Returns Altitude as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
+        self.sensor_in_use = False
+        return self._get_random_float(min_number=100, max_number=1200)
+
     def humidity(self):
         """ Returns Altitude as a Float. """
         while self.sensor_in_use:

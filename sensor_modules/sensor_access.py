@@ -146,8 +146,8 @@ def get_environment_temperature(temperature_correction=True, get_latency=False):
 
 
 def _apply_environment_temperature_correction(temperature):
-    enable_custom_temp = app_config_access.primary_config.enable_custom_temp
-    temperature_offset = app_config_access.primary_config.temperature_offset
+    enable_custom_temp = app_config_access.sensor_offsets.enable_temp_offset
+    temperature_offset = app_config_access.sensor_offsets.temperature_offset
     new_temp = temperature
     if enable_custom_temp:
         try:
@@ -157,8 +157,8 @@ def _apply_environment_temperature_correction(temperature):
             logger.sensors_logger.debug(str(error))
 
     cpu_temp = get_cpu_temperature()
-    enable_temperature_comp_factor = app_config_access.primary_config.enable_temperature_comp_factor
-    temperature_comp_factor = app_config_access.primary_config.temperature_comp_factor
+    enable_temperature_comp_factor = app_config_access.sensor_offsets.enable_temperature_comp_factor
+    temperature_comp_factor = app_config_access.sensor_offsets.temperature_comp_factor
     if enable_temperature_comp_factor and cpu_temp is not None and temperature_comp_factor != 0:
         try:
             cpu_temp = cpu_temp[db_v.system_temperature]
@@ -208,6 +208,8 @@ def get_altitude(get_latency=False):
         sensor_reading = sensors_direct.pimoroni_bmp280_a.altitude()
     elif app_config_access.installed_sensors.pimoroni_enviro:
         sensor_reading = sensors_direct.pimoroni_enviro_a.altitude()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        sensor_reading = sensors_direct.dummy_sensors.altitude()
     else:
         sensor_reading = _get_self_calculated_altitude()
         if sensor_reading is None:
@@ -272,7 +274,7 @@ def get_dew_point(get_latency=False):
         alpha = ((variable_a * env_temp) / (variable_b + env_temp)) + math.log(humidity / 100.0)
         dew_point = (variable_b * alpha) / (variable_a - alpha)
     except Exception as error:
-        logger.sensors_logger.error("Unable to calculate dew point: " + str(error))
+        logger.sensors_logger.warning("Unable to calculate dew point: " + str(error))
         dew_point = 0.0
     return {db_v.dew_point: round(dew_point, 5)}
 
@@ -389,9 +391,9 @@ def get_lumen(get_latency=False):
 def get_ems_colors(get_latency=False):
     """ Returns Electromagnetic Spectrum Wavelengths (colors) in a dictionary. """
     colors_dic = {}
-    if app_config_access.installed_sensors.pimoroni_as7262:
-        if get_latency:
-            return sensors_direct.pimoroni_as7262_a.sensor_latency
+    if get_latency:
+        return _get_sensor_latency(get_ems_colors)
+    elif app_config_access.installed_sensors.pimoroni_as7262:
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
         colors_dic.update({db_v.red: colours[0],
                            db_v.orange: colours[1],
@@ -399,8 +401,6 @@ def get_ems_colors(get_latency=False):
                            db_v.green: colours[3],
                            db_v.blue: colours[4],
                            db_v.violet: colours[5]})
-    elif get_latency:
-        return _get_sensor_latency(get_ems_colors)
     elif app_config_access.installed_sensors.pimoroni_enviro:
         colours = sensors_direct.pimoroni_enviro_a.ems()
         colors_dic.update({db_v.red: colours[0],

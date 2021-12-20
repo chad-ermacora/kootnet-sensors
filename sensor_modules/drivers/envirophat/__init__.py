@@ -1,4 +1,4 @@
-import smbus
+from sensor_modules.drivers.smbus2 import smbus2 as smbus
 import RPi.GPIO as GPIO
 # from ..ads1015 import ADS1015
 from ..bmp280 import BMP280

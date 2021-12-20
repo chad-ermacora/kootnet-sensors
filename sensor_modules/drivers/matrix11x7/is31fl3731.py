@@ -49,7 +49,7 @@ class IS31FL3731:
 
         if self.i2c is None:
             try:
-                import smbus
+                from sensor_modules.drivers.smbus2 import smbus2 as smbus
                 self.i2c = smbus.SMBus(1)
             except ImportError as e:
                 raise ImportError('You must supply an i2c device or install the smbus library.')

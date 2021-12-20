@@ -1,0 +1,48 @@
+<link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+<link rel="stylesheet" type="text/css" href="/atpro/style.css">
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="card">
+        <div class="card-content">
+            <form class="pure-form" method="POST" action="/atpro/login">
+                <h1 style="display: table; margin-left: auto; margin-right: auto;">
+                    <i class="fas fa-sign-in-alt"></i> Please Login
+                </h1>
+
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Username<br>
+                                <input type="text" class="system-text-input" id="login_username"
+                                       name="login_username" minlength="4" maxlength="62" required>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Password<br>
+                                <input type="password" class="system-text-input" id="login_password"
+                                       name="login_password" minlength="4" maxlength="62" required>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <button style="display: table; margin-left: auto; margin-right: auto;"
+                        type="submit" class="pure-button">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/atpro/index.js"></script>
+<script src="/jquery.min.js"></script>

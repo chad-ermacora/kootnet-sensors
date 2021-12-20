@@ -24,9 +24,10 @@ from time import strftime
 from threading import Thread
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_http_sensor_reading
-from operations_modules.software_version import CreateRefinedVersion
+from operations_modules.app_cached_variables import network_get_commands as sg_commands
+from operations_modules.app_generic_classes import CreateRefinedVersion
+from operations_modules.http_generic_network import get_http_sensor_reading
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 from tests import test_http_server
 
 compatible_version_str = "Beta.34.x"
@@ -44,16 +45,16 @@ def run_tests():
     app_textbox_address.disable()
     app_button_test_sensor.disable()
     app_text_output.disable()
-    app_cached_variables.http_login = app_textbox_user.value
-    app_cached_variables.http_password = app_textbox_password.value
+    rm_cached_variables.http_login = app_textbox_user.value
+    rm_cached_variables.http_password = app_textbox_password.value
 
     sensor_address = app_textbox_address.value
     test_http_server.sensor_address = sensor_address
 
     print("Sensor: " + str(sensor_address) + "\n\n")
     if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
-        if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
-            temp_version = get_http_sensor_reading(sensor_address, command="GetSensorVersion", timeout=5)
+        if get_http_sensor_reading(sensor_address, http_command=sg_commands.check_portal_login, timeout=5) == "OK":
+            temp_version = get_http_sensor_reading(sensor_address, http_command=sg_commands.program_version, timeout=5)
             remote_sensor_version.load_from_string(temp_version)
             if remote_sensor_version.major_version == refined_compatible_version.major_version and \
                     remote_sensor_version.feature_version == refined_compatible_version.feature_version and \

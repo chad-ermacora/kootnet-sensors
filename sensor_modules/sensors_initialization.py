@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from os import geteuid
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
@@ -49,13 +48,14 @@ from sensor_modules import sensirion_sps30 as _sensirion_sps30
 from sensor_modules import maxim_dallas_1_wire_multi as _maxim_dallas_1_wire_multi
 from sensor_modules.no_sensors_dummy_sensors import CreateNoSensorsDummySensor
 from sensor_modules.sensor_compatibility_checks import check_installed_sensors_compatibility
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 
 class CreateSensorAccess:
     def __init__(self, first_start=False):
-        # Initialize sensor access, based on installed sensors file
         if first_start:
             logger.primary_logger.info(" -- Initializing Sensors")
+            # Create "dummy" sensor class placeholders. Helps prevent errors under unusual circumstances
             self.raspberry_pi_a = CreateNoSensorsDummySensor()
             self.rp_sense_hat_a = CreateNoSensorsDummySensor()
             self.pimoroni_bh1745_a = CreateNoSensorsDummySensor()
@@ -86,10 +86,11 @@ class CreateSensorAccess:
         else:
             logger.primary_logger.info(" -- Re-initializing Sensors")
 
-        if geteuid() == 0:
+        if app_cached_variables.running_with_root:
             check_installed_sensors_compatibility()
             installed_sensors = app_config_access.installed_sensors
             try:
+                # Initialize sensor access, based on installed sensors file
                 # Raspberry Pi System is created first to enable I2C, SPI & Wifi
                 # This is to ensure they are enabled for the other hardware Sensors
                 if installed_sensors.raspberry_pi and not self.raspberry_pi_a.initialized_sensor:
@@ -182,10 +183,14 @@ class CreateSensorAccess:
                     app_cached_variables.restart_weather_underground_thread = True
                     app_cached_variables.restart_luftdaten_thread = True
                     app_cached_variables.restart_open_sense_map_thread = True
+                    atpro_notifications.manage_service_restart()
             except Exception as error:
                 logger.sensors_logger.critical(" -- Hardware Sensor Initializations: " + str(error))
         else:
             logger.sensors_logger.info(" -- Hardware Based Sensor Initializations Skipped - root required")
+            dummy_sensor = app_config_access.installed_sensors.kootnet_dummy_sensor
+            app_config_access.installed_sensors.__init__(load_from_file=False)
+            app_config_access.installed_sensors.kootnet_dummy_sensor = dummy_sensor
 
         if app_config_access.installed_sensors.kootnet_dummy_sensor:
             self.dummy_sensors = _kootnet_dummy_sensors.CreateDummySensors()

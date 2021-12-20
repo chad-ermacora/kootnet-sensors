@@ -2,7 +2,7 @@
 Name=Terminal Config - Kootnet Sensors
 Comment=Reconfigure Kootnet Sensors through a Terminal & Test
 Icon=/opt/kootnet-sensors/extras/icon_terminal.png
-Exec=sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py
+Exec=sudo /home/kootnet_data/upgrade_env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py
 Type=Application
 Encoding=UTF-8
 Terminal=true

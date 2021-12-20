@@ -29,22 +29,6 @@
                         </label>
                     </div>
 
-                    <br>
-
-                    <div>
-                        <label>Checkin Server Address & Port<br>
-                            Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
-                            <div style="display: table; margin-left: auto; margin-right: auto;">
-                                <div style="display: table-row;">
-                                    <div style="display: table-cell;">
-                                        <input type="text" style="width: 450px;" maxlength="250" id="checkin_address" name="checkin_address"
-                                               placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
                     <br><hr>
 
                     <h2>Include in Sensor Checkins</h2>
@@ -146,7 +130,7 @@
                         Enable Sensor CheckIns Server
                     </label>
 
-                    <h2><strong>Sensor Checkin View Options</strong></h2>
+                    <h2><strong>Sensor Checkin List Option</strong></h2>
                     <p>
                         Past days used in counting how many Sensors have checked-in
                     </p>
@@ -156,23 +140,6 @@
                                 <div style="display: table-cell;">
                                     <input style="width: 100px;" type="number" min="1" max="3650" step="0.1"
                                            name="contact_in_past_days" value="{{ ContactInPastDays }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-
-                    <br><br>
-
-                    <p>
-                        Set the Maximum number of Sensor Checkins you want to see on the main Sensor Checkins page
-                    </p>
-
-                    <label>Max Sensors<br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input style="width: 100px;" type="number" min="0" max="240" step="1"
-                                           name="number_of_sensors_to_show" value="{{ MaxSensorCount }}">
                                 </div>
                             </div>
                         </div>

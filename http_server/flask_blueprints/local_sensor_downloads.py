@@ -22,8 +22,8 @@ from flask import Blueprint, send_file, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_size, get_file_content, get_zip_size, zip_files, \
-    thread_function
+from operations_modules.app_generic_functions import get_file_size, get_zip_size, zip_files, thread_function
+from operations_modules.app_generic_disk import get_file_content
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
 

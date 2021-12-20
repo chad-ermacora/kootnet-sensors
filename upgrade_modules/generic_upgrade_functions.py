@@ -17,12 +17,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import sys
+import subprocess
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content, thread_function
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.app_generic_disk import get_file_content
+from http_server.server_http_generic_functions import save_http_auth_to_file, default_http_flask_user, \
+    default_http_flask_password
+from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration
+from configuration_modules.config_database_graphs import CreateDatabaseGraphsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
@@ -36,17 +46,52 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
+from operations_modules.initialization_python_modules import running_on_pi
 
 
 def successful_upgrade_message(config_name="Generic"):
     logger.primary_logger.info("Successfully Upgraded " + str(config_name) + " Configuration")
 
 
+def reset_flask_login_credentials(log_reset=True):
+    if log_reset:
+        logger.primary_logger.warning(" **** Web Portal Login Reset to Defaults ****")
+    save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)
+
+
+def reset_live_graph_config(log_reset=True):
+    """ Writes a default Live Graph configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Live Graph Configuration Reset ****")
+    CreateLiveGraphsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_database_graph_config(log_reset=True):
+    """ Writes a default Database Graph configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Database Graph Configuration Reset ****")
+    CreateDatabaseGraphsConfiguration(load_from_file=False).save_config_to_file()
+
+
 def reset_primary_config(log_reset=True):
-    """ Writes a default main configuration file. """
+    """ Writes a default Main configuration file. """
     if log_reset:
         logger.primary_logger.warning(" **** Main Configuration Reset ****")
     CreatePrimaryConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_upgrade_config(log_reset=True):
+    """ Writes a default Upgrade configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Upgrades Configuration Reset ****")
+    CreateUpgradesConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_urls_config(log_reset=True):
+    """ Writes a default URLs configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** URLs Configuration Reset ****")
+    CreateURLConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_installed_sensors(log_reset=True):
@@ -54,6 +99,13 @@ def reset_installed_sensors(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_sensor_offsets_config(log_reset=True):
+    """ Writes a default Sensor Offsets configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Sensor Offsets Configuration Reset ****")
+    CreateSensorOffsetsConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_display_config(log_reset=True):
@@ -89,6 +141,24 @@ def reset_trigger_variance_config(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
     CreateTriggerVariancesConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_email_reports_config(log_reset=True):
+    """ Writes a default Email Reports configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Email Reports Configuration Reset ****")
+    file_loc = file_locations.email_reports_config
+    temp_config = CreateSensorControlConfiguration(load_from_file=False, config_file_location=file_loc)
+    temp_config.save_config_to_file()
+
+
+def reset_email_db_graphs_config(log_reset=True):
+    """ Writes a default Email Database Graphs configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Email Database Graphs Configuration Reset ****")
+    file_loc = file_locations.email_db_graph_config
+    temp_config = CreateDatabaseGraphsConfiguration(load_from_file=False, config_file_location=file_loc)
+    temp_config.save_config_to_file()
 
 
 def reset_email_config(log_reset=True):
@@ -152,13 +222,20 @@ def reset_all_configurations(log_reset=True):
     Resets all configuration files to Default settings.
     If log_reset is True, adds log entry for each reset.  Default True.
     """
+    reset_live_graph_config(log_reset=log_reset)
+    reset_database_graph_config(log_reset=log_reset)
     reset_primary_config(log_reset=log_reset)
+    reset_upgrade_config(log_reset=log_reset)
+    reset_urls_config(log_reset=log_reset)
     reset_installed_sensors(log_reset=log_reset)
+    reset_sensor_offsets_config(log_reset=log_reset)
     reset_display_config(log_reset=log_reset)
     reset_checkin_config(log_reset=log_reset)
     reset_interval_recording_config(log_reset=log_reset)
     reset_trigger_high_low_config(log_reset=log_reset)
     reset_trigger_variance_config(log_reset=log_reset)
+    reset_email_reports_config(log_reset=log_reset)
+    reset_email_db_graphs_config(log_reset=log_reset)
     reset_email_config(log_reset=log_reset)
     reset_mqtt_broker_config(log_reset=log_reset)
     reset_mqtt_publisher_config(log_reset=log_reset)
@@ -169,9 +246,11 @@ def reset_all_configurations(log_reset=True):
     reset_sensor_control_config(log_reset=log_reset)
 
 
-def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True):
+def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True, new_location=None):
     """ Creates configuration class, loads the config and saves it without logging. """
     new_config_instance = configuration_creation_class(load_from_file=False)
+    if new_location is not None:
+        new_config_instance.config_file_location = new_location
     try:
         old_config_text = get_file_content(new_config_instance.config_file_location)
         new_config_instance.set_config_with_str(old_config_text)
@@ -184,49 +263,78 @@ def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True)
 
 
 def load_and_save_all_configs_silently():
-    ccl = [CreatePrimaryConfiguration, CreateInstalledSensorsConfiguration, CreateIntervalRecordingConfiguration,
-           CreateTriggerHighLowConfiguration, CreateTriggerVariancesConfiguration, CreateDisplayConfiguration,
-           CreateEmailConfiguration, CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration,
-           CreateMQTTSubscriberConfiguration, CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration,
-           CreateOpenSenseMapConfiguration, CreateSensorControlConfiguration, CreateCheckinConfiguration]
+    ccl = [CreateLiveGraphsConfiguration, CreateDatabaseGraphsConfiguration, CreatePrimaryConfiguration,
+           CreateURLConfiguration, CreateInstalledSensorsConfiguration, CreateSensorOffsetsConfiguration,
+           CreateIntervalRecordingConfiguration, CreateTriggerHighLowConfiguration,
+           CreateTriggerVariancesConfiguration, CreateDisplayConfiguration, CreateEmailConfiguration,
+           CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration, CreateMQTTSubscriberConfiguration,
+           CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration, CreateOpenSenseMapConfiguration,
+           CreateSensorControlConfiguration, CreateCheckinConfiguration]
     for config in ccl:
         upgrade_config_load_and_save(config, upgrade_msg=False)
+    new_location = file_locations.email_db_graph_config
+    upgrade_config_load_and_save(CreateDatabaseGraphsConfiguration, upgrade_msg=False, new_location=new_location)
+    new_location = file_locations.email_reports_config
+    upgrade_config_load_and_save(CreateSensorControlConfiguration, upgrade_msg=False, new_location=new_location)
 
 
-def upgrade_python_pip_modules():
-    if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
-        requirements_text = get_file_content(file_locations.program_root_dir + "/requirements.txt").strip()
-        requirements_list = requirements_text.split("\n")
-        thread_function(_pip_upgrades_thread, args=requirements_list)
+def upgrade_python_pip_modules(python_location=None):
+    requirements_file_location = file_locations.program_root_dir + "/requirements.txt"
+    hardware_requirements_location = file_locations.program_root_dir + "/requirements_hw_sensors.txt"
+    all_python_modules_list = []
+    if app_cached_variables.pip_ready_for_upgrades and app_cached_variables.sensor_ready_for_upgrade:
+        if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
+            requirements_text = get_file_content(requirements_file_location).strip()
+            all_python_modules_list = requirements_text.split("\n")
+        if app_cached_variables.running_with_root and running_on_pi():
+            if os.path.isfile(file_locations.program_root_dir + "/requirements_hw_sensors.txt"):
+                requirements_text = get_file_content(hardware_requirements_location).strip()
+                all_python_modules_list = all_python_modules_list + requirements_text.split("\n")
+        app_cached_variables.pip_ready_for_upgrades = False
+        if python_location is not None:
+            _pip_upgrades_thread([all_python_modules_list, python_location])
+        else:
+            thread_function(_pip_upgrades_thread, args=[all_python_modules_list, python_location])
+    else:
+        logger.network_logger.warning("Unable to start Python Module Upgrades - already running")
 
 
-def _pip_upgrades_thread(requirements_list):
+def _pip_upgrades_thread(requirements_and_py_loc):
     logger.primary_logger.info("Python3 Module Upgrades Started")
-    try:
-        app_cached_variables.sensor_ready_for_upgrade = False
-        for requirement in requirements_list:
+    requirements_list = requirements_and_py_loc[0]
+    python_location = requirements_and_py_loc[1]
+    if python_location is None:
+        python_location = sys.executable
+    subprocess.check_call([python_location, "-m", "pip", "install", "-U", "pip"])
+    for requirement in requirements_list:
+        try:
+            requirement = requirement.strip()
             if requirement[0] != "#":
-                command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + requirement.strip()
-                os.system(command)
-        logger.primary_logger.info("Python3 Module Upgrades Complete")
-        os.system(app_cached_variables.bash_commands["RestartService"])
-    except Exception as error:
-        logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
-        app_cached_variables.sensor_ready_for_upgrade = True
+                subprocess.check_call([python_location, "-m", "pip", "install", "-U", requirement.strip()])
+                logger.primary_logger.info("Python3 Module Upgraded: " + requirement)
+        except Exception as error:
+            logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
+    logger.primary_logger.info("Python3 Module Upgrades Complete")
+    os.system(app_cached_variables.bash_commands["RestartService"])
 
 
-def upgrade_linux_os():
-    thread_function(_upgrade_linux_os_thread)
+def upgrade_linux_os(thread_the_function=True):
+    if app_cached_variables.sensor_ready_for_upgrade and app_cached_variables.pip_ready_for_upgrades:
+        app_cached_variables.sensor_ready_for_upgrade = False
+        if thread_the_function:
+            thread_function(_upgrade_linux_os_thread)
+        else:
+            _upgrade_linux_os_thread()
+    else:
+        logger.network_logger.warning("Unable to start Linux OS Upgrade - already running")
 
 
 def _upgrade_linux_os_thread():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
-        app_cached_variables.sensor_ready_for_upgrade = False
         os.system(app_cached_variables.bash_commands["UpgradeSystemOS"])
-        logger.primary_logger.warning("Linux OS Upgrade Done")
-        logger.primary_logger.info("Rebooting System")
+        logger.primary_logger.info("Linux OS Upgrade Done - Rebooting System")
         os.system(app_cached_variables.bash_commands["RebootSystem"])
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
-        app_cached_variables.sensor_ready_for_upgrade = True
+    app_cached_variables.sensor_ready_for_upgrade = True

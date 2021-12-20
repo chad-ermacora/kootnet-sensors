@@ -18,7 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
 from operations_modules.app_validation_checks import email_is_valid
 
 
@@ -28,17 +28,13 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.email_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 33
+        self.valid_setting_count = 15
         self.config_settings_names = [
             "SMTP send from email address", "SMTP server address", "Enable SMTP SSL",
             "SMTP server port #", "SMTP user name", "SMTP password", "Enable Reports email server",
             "Send Report every (daily, weekly, monthly, yearly)", "Send Report to CSV emails",
-            "Enable Graph email server", "Sending Graph every (daily, weekly, monthly, yearly)", "Graph the past hours",
-            "Graph type (0=Quick Graph, 1=Plotly Graph)", "Send Graph to CSV emails", "Graph sensor uptime",
-            "Graph CPU temperature", "Graph environmental temperature", "Graph pressure", "Graph altitude",
-            "Graph humidity", "Graph distance", "Graph GAS", "Graph particulate matter", "Graph lumen", "Graph color",
-            "Graph ultra violet", "Graph accelerometer", "Graph magnetometer", "Graph gyroscope",
-            "Email Report at time of day", "Email Graph at time of day", "Dew point", "Enable SMTP TLS"
+            "Enable Graph email server", "Sending Graph every (daily, weekly, monthly, yearly)",
+            "Send Graph to CSV emails", "Email Report at time of day", "Email Graph at time of day", "Enable SMTP TLS"
         ]
 
         # If set to 1+, emails are sent on program start for Graphs and Reports (They must be enabled)
@@ -65,27 +61,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.enable_graph_emails = 0
         self.send_graph_every = self.send_option_monthly
         self.email_graph_time_of_day = "07:00"
-        self.graph_past_hours = 48
-        self.graph_type = 0  # 0 = Quick Graph / 1+ = Plotly Graph
         self.send_graphs_to_csv_emails = ""
-
-        # Enable or Disable Sensors to Graph.  0 = Disabled, 1 = Enabled
-        self.sensor_uptime = 1
-        self.system_temperature = 1
-        self.env_temperature = 1
-        self.pressure = 0
-        self.altitude = 0
-        self.humidity = 1
-        self.dew_point = 0
-        self.distance = 0
-        self.gas = 0
-        self.particulate_matter = 0
-        self.lumen = 0
-        self.color = 0
-        self.ultra_violet = 0
-        self.accelerometer = 0
-        self.magnetometer = 0
-        self.gyroscope = 0
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -126,64 +102,6 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("send_graphs_to_email_address") is not None:
             send_graphs_to_csv_emails = html_request.form.get("send_graphs_to_email_address")
             self.send_graphs_to_csv_emails = _validate_csv_emails(send_graphs_to_csv_emails)
-
-        self.sensor_uptime = 0
-        self.system_temperature = 0
-        self.env_temperature = 0
-        self.pressure = 0
-        self.altitude = 0
-        self.humidity = 0
-        self.dew_point = 0
-        self.distance = 0
-        self.gas = 0
-        self.particulate_matter = 0
-        self.lumen = 0
-        self.color = 0
-        self.ultra_violet = 0
-        self.accelerometer = 0
-        self.magnetometer = 0
-        self.gyroscope = 0
-
-        if html_request.form.get("graph_type") == "QuickGraphs":
-            self.graph_type = 0
-        elif html_request.form.get("graph_type") == "PlotlyGraphs":
-            self.graph_type = 1
-
-        if html_request.form.get("graph_past_hours") is not None:
-            self.graph_past_hours = float(html_request.form.get("graph_past_hours"))
-
-        if html_request.form.get("sensor_uptime") is not None:
-            self.sensor_uptime = 1
-        if html_request.form.get("cpu_temperature") is not None:
-            self.system_temperature = 1
-        if html_request.form.get("env_temperature") is not None:
-            self.env_temperature = 1
-        if html_request.form.get("pressure") is not None:
-            self.pressure = 1
-        if html_request.form.get("altitude") is not None:
-            self.altitude = 1
-        if html_request.form.get("humidity") is not None:
-            self.humidity = 1
-        if html_request.form.get("dew_point") is not None:
-            self.dew_point = 1
-        if html_request.form.get("distance") is not None:
-            self.distance = 1
-        if html_request.form.get("gas") is not None:
-            self.gas = 1
-        if html_request.form.get("particulate_matter") is not None:
-            self.particulate_matter = 1
-        if html_request.form.get("lumen") is not None:
-            self.lumen = 1
-        if html_request.form.get("colour") is not None:
-            self.color = 1
-        if html_request.form.get("ultra_violet") is not None:
-            self.ultra_violet = 1
-        if html_request.form.get("accelerometer") is not None:
-            self.accelerometer = 1
-        if html_request.form.get("magnetometer") is not None:
-            self.magnetometer = 1
-        if html_request.form.get("gyroscope") is not None:
-            self.gyroscope = 1
         self.update_configuration_settings_list()
 
     def update_with_html_request_server(self, html_request):
@@ -221,12 +139,8 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             str(self.server_sending_email), str(self.server_smtp_address), str(self.server_smtp_ssl_enabled),
             str(self.server_smtp_port), str(self.server_smtp_user), str(self.server_smtp_password),
             str(self.enable_combo_report_emails), self.send_report_every, str(self.send_report_to_csv_emails),
-            str(self.enable_graph_emails), self.send_graph_every, str(self.graph_past_hours), str(self.graph_type),
-            str(self.send_graphs_to_csv_emails), str(self.sensor_uptime), str(self.system_temperature),
-            str(self.env_temperature), str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
-            str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
-            str(self.accelerometer), str(self.magnetometer), str(self.gyroscope), str(self.email_reports_time_of_day),
-            str(self.email_graph_time_of_day), str(self.dew_point), str(self.server_smtp_tls_enabled)
+            str(self.enable_graph_emails), self.send_graph_every, str(self.send_graphs_to_csv_emails),
+            str(self.email_reports_time_of_day), str(self.email_graph_time_of_day), str(self.server_smtp_tls_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -244,30 +158,11 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
 
             self.enable_graph_emails = int(self.config_settings[9].strip())
             self.send_graph_every = self.config_settings[10].strip()
-            self.graph_past_hours = float(self.config_settings[11].strip())
-            self.graph_type = int(self.config_settings[12].strip())
-            self.send_graphs_to_csv_emails = self.config_settings[13].strip()
+            self.send_graphs_to_csv_emails = self.config_settings[11].strip()
 
-            self.sensor_uptime = int(self.config_settings[14].strip())
-            self.system_temperature = int(self.config_settings[15].strip())
-            self.env_temperature = int(self.config_settings[16].strip())
-            self.pressure = int(self.config_settings[17].strip())
-            self.altitude = int(self.config_settings[18].strip())
-            self.humidity = int(self.config_settings[19].strip())
-            self.distance = int(self.config_settings[20].strip())
-            self.gas = int(self.config_settings[21].strip())
-            self.particulate_matter = int(self.config_settings[22].strip())
-            self.lumen = int(self.config_settings[23].strip())
-            self.color = int(self.config_settings[24].strip())
-            self.ultra_violet = int(self.config_settings[25].strip())
-            self.accelerometer = int(self.config_settings[26].strip())
-            self.magnetometer = int(self.config_settings[27].strip())
-            self.gyroscope = int(self.config_settings[28].strip())
-
-            self.email_reports_time_of_day = self.config_settings[29].strip()
-            self.email_graph_time_of_day = self.config_settings[30].strip()
-            self.dew_point = int(self.config_settings[31].strip())
-            self.server_smtp_tls_enabled = int(self.config_settings[32].strip())
+            self.email_reports_time_of_day = self.config_settings[12].strip()
+            self.email_graph_time_of_day = self.config_settings[13].strip()
+            self.server_smtp_tls_enabled = int(self.config_settings[14].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Email Config: " + str(error))

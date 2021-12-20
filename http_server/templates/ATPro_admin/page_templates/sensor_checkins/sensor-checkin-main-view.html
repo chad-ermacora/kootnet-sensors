@@ -1,34 +1,14 @@
-<style>
-    .info-box-data {
-        color: blue;
-        font-weight: bold;
-    }
-</style>
-
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <h2><a style="color: var(--main-color); text-decoration-line: none;"
                        href="#" onclick="SelectNav('sensor-checkin-view')">
-                    <i class="fas fa-satellite-dish"></i> Sensor Check-ins
+                    <i class="fas fa-satellite-dish"></i> Sensor Check-ins Server
                 </a></h2>
-
-                <h4>
-                    Up to {{ MaxSensorCount }} of the last Sensor Check-ins are shown<br><br>
-                    This will automatically refresh every 5 minutes
-                </h4>
-
                 <button class="pure-button" type="button"
                         onclick="window.open('/atpro/checkin-sensors-list', '_blank')">
-                    View Checkins Sensors List
-                </button>
-
-                <br><br>
-
-                <button class="pure-button" onclick="window.open('/atpro/sensor-checkin-search','targetWindow',
-                   'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1100,height=800'); return false;">
-                    Open Sensor Search
+                    View Sensors List
                 </button>
             </div>
         </div>
@@ -38,26 +18,11 @@
         <div class="card">
             <div class="card-content">
                 <h2><i class="fas fa-info-circle"></i> Checkin Information</h2>
-
                 <h3>
                     <span>Checkin Server: </span>{{ CheckinEnabledText | safe }}<br>
                     <span>Total Sensors in Database: </span>{{ SensorsInDatabase }}<br>
                     <span>Database Size: </span>{{ CheckinDBSize }} MB<br>
                 </h3>
-
-                <div class="progress-wrapper">
-                    <p><b>
-                        Sensor Checkins from the past {{ ContactInPastDays }} Days
-                        <span class="float-right">{{ PercentOfTotalDays }}%</span>
-                    </b></p>
-                    <div class="progress" style="height: 30px;">
-                        <div class="bg-success" style="color: var(--second-color); width: {{ PercentOfTotalDays }}%;
-                                font-size: large; padding-top: 4px;"><b>
-                            {{ TotalSensorsContactDays }}/{{ SensorsInDatabase }}
-                        </b></div>
-                    </div>
-                </div>
-                <br><br><br><br>
             </div>
         </div>
     </div>
@@ -75,7 +40,7 @@
                         </button>
                     </label>
 
-                    <br><br><br>
+                    <br><br>
 
                     <label><b>Delete Sensors Inactive for Days</b><br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
@@ -83,20 +48,15 @@
                                 <div style="display: table-cell;">
                                     <input style="width: 100px;" type="number" max="3650" step="0.1" name="delete_sensors_older_days"
                                            value="{{ DeleteSensorsOlderDays }}">
+                                    <button class="pure-button" type="submit">Delete</button>
                                 </div>
                             </div>
                         </div>
-
-                        <br>
-
-                        <button class="pure-button" type="submit">Delete</button>
                     </label>
                 </form>
             </div>
         </div>
     </div>
-
-    {{ CheckinSensorStatistics | safe }}
 </div>
 
 <script>
@@ -107,23 +67,11 @@
         }
     }
 
-    function RefreshCheckins() {
-        SelectNav('sensor-checkin-view');
-    }
-
-    refresh_timer = setTimeout(() => {
-        clearTimeout(refresh_timer);
-        RefreshCheckins();
-        }, 300000);
-
-    if (screen.width < 500) {
+    if (window.innerWidth < 500) {
         let sensor_id = document.getElementsByClassName("sensor-id");
         for (let i = 0; i < sensor_id.length; i++) {
             document.getElementsByClassName('sensor-id')[i].style.fontSize = 'medium';
         }
     }
-</script>
-
-<script>
     CheckNotificationsAsync();
 </script>

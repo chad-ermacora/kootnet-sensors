@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kootnet Sensors Live Graphing</title>
+
+    <link rel="icon" type="image/png" href="/AT-pro-logo.png"/>
+    <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/atpro/style.css">
+    <script src="/chart.min.js"></script>
+</head>
+
+<style>
+    body {
+        background: black;
+        text-align: center;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    table td {
+        border-top: 1px solid;
+        padding: 15px;
+        text-align: center;
+        font-weight: bolder;
+        color: orange;
+    }
+
+    table th {
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+        padding: 15px 12px;
+        text-align: center;
+        color: darkblue;
+    }
+</style>
+
+<body>
+<h2 style="color: red;">Sensor Address: {{ SensorAddress }}</h2>
+<table class="pure-table">
+    <thead>
+        <tr>
+            <th>Host Name</th>
+            <th>Remote Version</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><span id="sensor_name_host_name">NA</span></td>
+            <td><span id="remote_sensor_version">NA</span></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="disable_ssl_msg" style="color: red;">If this message does not go away, try disabling SSL Verification</h3>
+
+<br>
+
+<button type="button" class="pure-button" onclick="window.location='/LiveGraphView'">Clear & Refresh</button>
+
+<br>
+
+<div class="row">
+    {{ SensorChartCode | safe }}
+</div>
+
+</body>
+</html>
+
+<script>
+    async function GetSensorName() {
+        fetch("{{ SensorNameFetchURL }}")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("sensor_name_host_name").innerText = data;
+                document.getElementById("disable_ssl_msg").hidden = true;
+            })
+    }
+    async function GetSensorVersion() {
+        fetch("{{ SensorVersionFetchURL }}")
+            .then(response => response.text())
+            .then(data => {document.getElementById("remote_sensor_version").innerText = data;})
+    }
+    GetSensorName();
+    GetSensorVersion();
+</script>

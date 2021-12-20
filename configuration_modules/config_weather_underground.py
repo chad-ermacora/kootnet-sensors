@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import file_locations, logger
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
 
 
 class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):

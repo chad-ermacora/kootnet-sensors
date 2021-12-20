@@ -18,6 +18,7 @@ Created on Tue July 9 16:33:56 2019
 from time import sleep
 from threading import Thread
 from operations_modules import logger
+from operations_modules.initialization_python_modules import load_pip_module_on_demand
 from configuration_modules import app_config_access
 
 turn_off_display = 30
@@ -31,20 +32,36 @@ class CreateLumaOLED:
         try:
             self.display_off_count = 0
             self.display_is_on = True
-            self.luma_serial_import = __import__("luma.core.interface.serial", fromlist=["i2c"])
-            self.luma_canvas_import = __import__("luma.core.render", fromlist=["canvas"])
-            self.luma_sh1106_import = __import__("luma.oled.device", fromlist=["sh1106"])
-            serial = self.luma_serial_import.i2c(port=1, address=0x3C)
-            self.device = self.luma_sh1106_import.sh1106(serial_interface=serial, width=128, height=128, rotate=2)
-
-            self.thread_display_power_saving = Thread(target=self._display_timed_off)
-            self.thread_display_power_saving.daemon = True
-            self.thread_display_power_saving.start()
-            logger.sensors_logger.debug("Pimoroni 1.12 Mono OLED (128x128) Initialization - OK")
+            Thread(target=self._install_and_initialize, daemon=True).start()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128) Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
             app_config_access.installed_sensors.update_configuration_settings_list()
+
+    def _install_and_initialize(self):
+        self.display_in_use = True
+        try:
+            self.luma_serial_import = load_pip_module_on_demand("luma.core", "luma.core.interface.serial", ["i2c"])
+            self.luma_canvas_import = load_pip_module_on_demand("luma.core", "luma.core.render", ["canvas"])
+            self.luma_sh1106_import = load_pip_module_on_demand("luma.oled", "luma.oled.device", ["sh1106"])
+
+            if self.luma_serial_import is not None and self.luma_sh1106_import is not None:
+                serial = self.luma_serial_import.i2c(port=1, address=0x3C)
+                self.device = self.luma_sh1106_import.sh1106(serial_interface=serial, width=128, height=128, rotate=2)
+
+                self.thread_display_power_saving = Thread(target=self._display_timed_off)
+                self.thread_display_power_saving.daemon = True
+                self.thread_display_power_saving.start()
+                logger.sensors_logger.debug("Pimoroni 1.12 Mono OLED (128x128) Initialization - OK")
+            else:
+                logger.sensors_logger.error("Unable to install Python Modules for Pimoroni 1.12 Mono OLED (128x128)")
+                app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
+                app_config_access.installed_sensors.update_configuration_settings_list()
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni 1.12 Mono OLED Initialization: " + str(error))
+            app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
+        self.display_in_use = False
 
     def _display_timed_off(self):
         while True:

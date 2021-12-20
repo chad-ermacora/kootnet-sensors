@@ -16,13 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from os import urandom
+from hashlib import sha256
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
+from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import update_cached_variables
 from configuration_modules import app_config_access
-from http_server import server_http_auth
 
 from http_server.flask_blueprints.html_functional import html_functional_routes
 from http_server.flask_blueprints.basic_html_pages import html_basic_routes
@@ -30,6 +32,7 @@ from http_server.flask_blueprints.basic_html_pages import html_basic_routes
 from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
 from http_server.flask_blueprints.atpro.atpro_notes import html_atpro_notes_routes
 from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphing_routes
+from http_server.flask_blueprints.atpro.atpro_live_graphing_wrappers import html_live_graph_sensor_wrappers_routes
 from http_server.flask_blueprints.atpro.remote_management.rm_routes import html_atpro_remote_management_routes
 from http_server.flask_blueprints.atpro.atpro_mqtt_subscriber import html_atpro_mqtt_subscriber_routes
 from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
@@ -52,7 +55,7 @@ from http_server.flask_blueprints.local_sensor_downloads import html_local_downl
 from http_server.flask_blueprints.get_set_raw_configurations import html_get_set_config_routes
 from http_server.flask_blueprints.system_commands import html_system_commands_routes
 from http_server.flask_blueprints.sensor_checkin_server import html_sensor_check_ins_routes
-
+from http_server.server_http_generic_functions import set_http_auth_from_file
 https_import_error_msg = ""
 https_import_errors = True
 try:
@@ -70,8 +73,8 @@ class CreateSensorHTTP:
 
     def __init__(self):
         app = Flask(__name__)
+        app.secret_key = sha256(urandom(32)).hexdigest()
         Compress(app)
-        server_http_auth.set_http_auth_from_file()
 
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_basic_routes)
@@ -79,6 +82,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_atpro_main_routes)
         app.register_blueprint(html_atpro_notes_routes)
         app.register_blueprint(html_atpro_graphing_routes)
+        app.register_blueprint(html_live_graph_sensor_wrappers_routes)
         app.register_blueprint(html_atpro_remote_management_routes)
         app.register_blueprint(html_atpro_mqtt_subscriber_routes)
         app.register_blueprint(html_atpro_sensor_check_ins_routes)
@@ -102,7 +106,8 @@ class CreateSensorHTTP:
         app.register_blueprint(html_system_commands_routes)
         app.register_blueprint(html_sensor_check_ins_routes)
 
-        update_cached_variables()
+        set_http_auth_from_file()
+        thread_function(update_cached_variables)
 
         try:
             # Removes excessive "SSL Error" messages to console when using a self signed certificate

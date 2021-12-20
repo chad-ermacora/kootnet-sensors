@@ -17,9 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules.app_cached_variables import running_with_root
+from operations_modules import file_locations
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -33,19 +36,16 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
+from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration
+from configuration_modules.config_database_graphs import CreateDatabaseGraphsConfiguration
 
 logger.primary_logger.info(" -- Loading Configurations")
 # Make sure all hardware based sensors are marked as not installed if lacking root permissions
-if running_with_root:
-    installed_sensors = CreateInstalledSensorsConfiguration()
-else:
-    installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
-    if CreateInstalledSensorsConfiguration().kootnet_dummy_sensor:
-        installed_sensors.kootnet_dummy_sensor = 1
-        installed_sensors.no_sensors = False
-        installed_sensors.update_configuration_settings_list()
-
+installed_sensors = CreateInstalledSensorsConfiguration()
+sensor_offsets = CreateSensorOffsetsConfiguration()
 primary_config = CreatePrimaryConfiguration()
+upgrades_config = CreateUpgradesConfiguration()
+urls_config = CreateURLConfiguration()
 interval_recording_config = CreateIntervalRecordingConfiguration()
 trigger_high_low = CreateTriggerHighLowConfiguration()
 trigger_variances = CreateTriggerVariancesConfiguration()
@@ -55,8 +55,12 @@ mqtt_broker_config = CreateMQTTBrokerConfiguration()
 mqtt_publisher_config = CreateMQTTPublisherConfiguration()
 mqtt_subscriber_config = CreateMQTTSubscriberConfiguration()
 email_config = CreateEmailConfiguration()
+email_reports_config = CreateSensorControlConfiguration(config_file_location=file_locations.email_reports_config)
+email_db_graph_config = CreateDatabaseGraphsConfiguration(config_file_location=file_locations.email_db_graph_config)
 weather_underground_config = CreateWeatherUndergroundConfiguration()
 luftdaten_config = CreateLuftdatenConfiguration()
 open_sense_map_config = CreateOpenSenseMapConfiguration()
 checkin_config = CreateCheckinConfiguration()
+live_graphs_config = CreateLiveGraphsConfiguration()
+db_graphs_config = CreateDatabaseGraphsConfiguration()
 logger.primary_logger.info(" -- Configurations Loaded")

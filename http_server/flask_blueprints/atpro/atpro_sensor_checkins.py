@@ -23,49 +23,31 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_size, adjust_datetime
-from configuration_modules import app_config_access
+from operations_modules.app_generic_functions import get_file_size, adjust_datetime, thread_function
+from operations_modules.app_generic_disk import get_file_content
 from operations_modules.sqlite_database import sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, \
     get_sql_element, get_sqlite_tables_in_list, get_one_db_entry
+from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from http_server.flask_blueprints.sensor_checkin_server import check_sensor_checkin_columns
 
 html_atpro_sensor_check_ins_routes = Blueprint("html_atpro_sensor_check_ins_routes", __name__)
 db_loc = file_locations.sensor_checkin_database
 db_v = app_cached_variables.database_variables
 
+checkin_temp_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
+checkin_temp_location += "sensor_checkins/sensor-checkin-table-entry-template.html"
+checkin_table_entry_template = get_file_content(checkin_temp_location).strip()
+updating_checkin_info_html_msg = "<h3><strong><a style='color: red;'>Updating Information, please wait ...</a></strong></h3>"
+checkin_table_failed = "<h3><strong><a style='color: red;'>Sensor Checkins List Generation Failed</a></strong></h3>"
+
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-view")
 @auth.login_required
 def html_atpro_sensor_checkin_main_view():
-    get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table'" + \
-                                   "AND name != 'android_metadata' AND name != 'sqlite_sequence';"
-    sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_loc)
-    sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
-
-    sensor_statistics = ""
-    current_date_time = datetime.utcnow()
-
-    sensor_contact_count = 0
-    count_contact_days = app_config_access.checkin_config.count_contact_days
-    for count, sensor_id_and_date in enumerate(sensor_ids_and_date_list):
-        cleaned_id = sensor_id_and_date[0]
-        checkin_date = sensor_id_and_date[1]
-        if (current_date_time - checkin_date) < timedelta(days=count_contact_days):
-            sensor_contact_count += 1
-        if count < app_config_access.checkin_config.main_page_max_sensors:
-            sensor_statistics += _get_sensor_info_string(cleaned_id)
-
-    try:
-        past_checkin_percent = round(((sensor_contact_count / int(get_sql_element(sensor_count))) * 100), 2)
-    except ZeroDivisionError:
-        logger.primary_logger.debug("No Sensors found for Sensor Checkin View")
-        past_checkin_percent = 0.0
-    except Exception as error:
-        logger.primary_logger.warning("Unknown Sensor Checkin View Error: " + str(error))
-        past_checkin_percent = 0.0
-
+    sensor_count = len(get_sqlite_tables_in_list(db_loc))
+    app_cached_variables.checkins_db_sensors_count = sensor_count
     if os.path.isfile(db_loc):
         db_size_mb = get_file_size(db_loc, round_to=3)
     else:
@@ -75,23 +57,76 @@ def html_atpro_sensor_checkin_main_view():
     if app_config_access.checkin_config.enable_checkin_recording:
         enabled_text = "<span style='color: green;'>Enabled</span>"
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-main-view.html",
-                           MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,
-                           SensorsInDatabase=get_sql_element(sensor_count),
+                           SensorsInDatabase=str(sensor_count),
                            CheckinDBSize=db_size_mb,
-                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
-                           TotalSensorsContactDays=sensor_contact_count,
-                           PercentOfTotalDays=past_checkin_percent,
                            DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
-                           CheckinEnabledText=enabled_text,
-                           CheckinSensorStatistics=sensor_statistics)
+                           CheckinEnabledText=enabled_text)
+
+
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
+@auth.login_required
+def clear_check_ins_counts():
+    thread_function(_thread_clear_check_ins_counts)
+    return_msg = "Clearing all but the last Sensor Checkin from all sensors, check Logs for more info"
+    return get_message_page("Redundant Sensor Checkins Clean-up Started", return_msg, page_url="sensor-checkin-view")
+
+
+def _thread_clear_check_ins_counts():
+    logger.network_logger.info("Checkin Database 'Clear Old Checkin Data' Started")
+    for sensor_id in get_sqlite_tables_in_list(db_loc):
+        _clear_old_sensor_checkin_data(sensor_id)
+    write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
+    logger.network_logger.info("Checkin Database 'Clear Old Checkin Data' Finished")
+
+
+def _clear_old_sensor_checkin_data(sensor_id):
+    last_checkin_date = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
+    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
+    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
+    program_version = get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version)
+    installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
+    sensor_uptime = get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime)
+
+    primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
+    network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)
+    sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
+
+    try:
+        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_loc)
+
+        check_sensor_checkin_columns(sensor_id)
+        sql_ex_string = "INSERT OR IGNORE INTO '" + sensor_id + "' (" + \
+                        db_v.all_tables_datetime + "," + \
+                        db_v.sensor_name + "," + \
+                        db_v.ip + "," + \
+                        db_v.kootnet_sensors_version + "," + \
+                        db_v.sensor_check_in_installed_sensors + "," + \
+                        db_v.sensor_uptime + "," + \
+                        db_v.sensor_check_in_primary_log + "," + \
+                        db_v.sensor_check_in_network_log + "," + \
+                        db_v.sensor_check_in_sensors_log + ")" + \
+                        " VALUES (?,?,?,?,?,?,?,?,?);"
+
+        sql_data = [last_checkin_date, sensor_name, sensor_ip, program_version, installed_sensors,
+                    sensor_uptime, primary_logs, network_logs, sensors_logs]
+        write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_loc)
+    except Exception as error:
+        logger.primary_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-delete-old-sensors", methods=["POST"])
 @auth.login_required
 def delete_sensors_older_then():
+    delete_sensors_older_days = 365000  # 1000 years
+    if request.form.get("delete_sensors_older_days") is not None:
+        delete_sensors_older_days = float(request.form.get("delete_sensors_older_days"))
+    thread_function(_thread_delete_sensors_older_then, args=delete_sensors_older_days)
+    return get_message_page("Old Sensor Clean-up Started", "Check Logs for more info", page_url="sensor-checkin-view")
+
+
+def _thread_delete_sensors_older_then(delete_sensors_older_days):
+    logger.network_logger.info("Checkin Database Clean-up Started")
     try:
-        app_config_access.checkin_config.update_with_html_request(request, skip_all_but_delete_setting=True)
-        delete_sensors_older_days = app_config_access.checkin_config.delete_sensors_older_days
         datetime_sensor_ids_list = _get_sensor_id_and_last_checkin_date_as_list()
         current_date_time = datetime.utcnow() + timedelta(hours=app_config_access.primary_config.utc0_hour_offset)
         for date_and_sensor_id in datetime_sensor_ids_list:
@@ -99,47 +134,83 @@ def delete_sensors_older_then():
             if (current_date_time - clean_last_checkin_date).days >= delete_sensors_older_days:
                 _delete_sensor_id(date_and_sensor_id[0])
         write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
+        logger.network_logger.info("Checkin Database Clean-up Finished")
     except Exception as error:
         logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
-    return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/checkin-sensors-list")
 @auth.login_required
 def html_atpro_checkin_sensors_list():
-    checkin_sensors = get_sqlite_tables_in_list(db_loc)
-    sensors_count = len(checkin_sensors)
-
-    sensors_html_list = []
-    for sensor_id in checkin_sensors:
-        sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
-
-    sensors_html_list.sort(key=lambda x: x[1], reverse=True)
-    html_sensor_table_code = ""
-    for sensor in sensors_html_list:
-        html_sensor_table_code += sensor[0]
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    checkin_info_last_updated = app_cached_variables.checkins_sensors_html_list_last_updated
+    checkins_sensors_html_list_last_updated = adjust_datetime(checkin_info_last_updated, utc0_hour_offset)
+    run_script = ""
+    if app_cached_variables.checkins_sensors_html_table_list == updating_checkin_info_html_msg:
+        run_script = "CreatingSensorCheckinsTable();"
     return render_template(
         "ATPro_admin/page_templates/sensor_checkins/checkin-sensors-list.html",
         DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
-        SQLSensorsInDB=str(sensors_count),
-        HTMLSensorsTableCode=html_sensor_table_code)
+        SQLSensorsInDB=str(app_cached_variables.checkins_db_sensors_count),
+        CheckinsLastTableUpdateDatetime=str(checkins_sensors_html_list_last_updated) + " UTC" + str(utc0_hour_offset),
+        ContactInPastDays=str(app_config_access.checkin_config.count_contact_days),
+        TotalSensorsContactDays=str(app_cached_variables.checkins_db_sensors_count_from_past_days),
+        HTMLSensorsTableCode=app_cached_variables.checkins_sensors_html_table_list,
+        RunScript=run_script)
+
+
+@html_atpro_sensor_check_ins_routes.route("/atpro/generate-checkin-sensors-list")
+@auth.login_required
+def html_atpro_sensor_checkins_generate_sensors_html_list():
+    if app_cached_variables.checkins_sensors_html_table_list != updating_checkin_info_html_msg:
+        thread_function(_generate_sensors_checkins_html_list)
+    return html_atpro_checkin_sensors_list()
+
+
+def _generate_sensors_checkins_html_list():
+    app_cached_variables.checkins_sensors_html_table_list = updating_checkin_info_html_msg
+    try:
+        sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
+        app_cached_variables.checkins_db_sensors_count = len(sensor_ids_and_date_list)
+        current_date_time = datetime.utcnow()
+
+        sensor_contact_count = 0
+        sensors_html_list = []
+        for sensor_id_and_date in sensor_ids_and_date_list:
+            sensors_html_list.append(_get_sensor_html_table_code(sensor_id_and_date[0]))
+            checkin_date = sensor_id_and_date[1]
+            if (current_date_time - checkin_date) < timedelta(days=app_config_access.checkin_config.count_contact_days):
+                sensor_contact_count += 1
+        app_cached_variables.checkins_db_sensors_count_from_past_days = sensor_contact_count
+
+        sensors_html_list.sort(key=lambda x: x[1], reverse=True)
+        html_sensor_table_code = ""
+        for sensor in sensors_html_list:
+            html_sensor_table_code += sensor[0]
+        app_cached_variables.checkins_sensors_html_table_list = html_sensor_table_code
+        dt_format = "%Y-%m-%d %H:%M:%S"
+        app_cached_variables.checkins_sensors_html_list_last_updated = datetime.utcnow().strftime(dt_format)
+    except Exception as error:
+        logger.network_logger.warning("Failed to Generate Sensor Checkins HTML List: " + str(error))
+        app_cached_variables.checkins_sensors_html_table_list = checkin_table_failed
+        app_cached_variables.checkins_sensors_html_list_last_updated = "NA"
 
 
 def _get_sensor_html_table_code(sensor_id):
     utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
     sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
     sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
-    sw_version = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version)
+    sw_version = get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version)
     first_contact = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime, order="ASC")
     raw_datetime = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
     last_contact = adjust_datetime(raw_datetime, utc0_hour_offset)
-    html_code = render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-table-entry-template.html",
-                                SensorID=sensor_id,
-                                SensorHostName=sensor_name,
-                                IPAddress=sensor_ip,
-                                SoftwareVersion=sw_version,
-                                FirstContact=first_contact,
-                                LastContact=last_contact)
+
+    html_code = checkin_table_entry_template.replace("{{ SensorID }}", sensor_id)
+    html_code = html_code.replace("{{ SensorHostName }}", sensor_name)
+    html_code = html_code.replace("{{ IPAddress }}", sensor_ip)
+    html_code = html_code.replace("{{ SoftwareVersion }}", sw_version)
+    html_code = html_code.replace("{{ FirstContact }}", first_contact)
+    html_code = html_code.replace("{{ LastContact }}", last_contact)
     return [html_code, last_contact]
 
 
@@ -236,53 +307,9 @@ def _get_sensor_info_string(sensor_id):
                            SensorIP=get_one_db_entry_wrapper(sensor_id, db_v.ip),
                            LastCheckinDate=adjusted_datetime,
                            TotalCheckins=get_sql_element(checkin_count),
-                           SoftwareVersion=get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version),
+                           SoftwareVersion=get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version),
                            SensorUptime=get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime),
                            InstalledSensors=installed_sensors)
-
-
-@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
-@auth.login_required
-def clear_check_ins_counts():
-    for sensor_id in get_sqlite_tables_in_list(db_loc):
-        _clear_old_sensor_checkin_data(sensor_id)
-    write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
-    return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
-
-
-def _clear_old_sensor_checkin_data(sensor_id):
-    last_checkin_date = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
-    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
-    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
-    program_version = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version)
-    installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
-    sensor_uptime = get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime)
-
-    primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
-    network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)
-    sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
-
-    try:
-        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_loc)
-
-        check_sensor_checkin_columns(sensor_id)
-        sql_ex_string = "INSERT OR IGNORE INTO '" + sensor_id + "' (" + \
-                        db_v.all_tables_datetime + "," + \
-                        db_v.sensor_name + "," + \
-                        db_v.ip + "," + \
-                        db_v.sensor_check_in_version + "," + \
-                        db_v.sensor_check_in_installed_sensors + "," + \
-                        db_v.sensor_uptime + "," + \
-                        db_v.sensor_check_in_primary_log + "," + \
-                        db_v.sensor_check_in_network_log + "," + \
-                        db_v.sensor_check_in_sensors_log + ")" + \
-                        " VALUES (?,?,?,?,?,?,?,?,?);"
-
-        sql_data = [last_checkin_date, sensor_name, sensor_ip, program_version, installed_sensors,
-                    sensor_uptime, primary_logs, network_logs, sensors_logs]
-        write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_loc)
-    except Exception as error:
-        logger.network_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
 
 
 def _get_sensor_id_and_last_checkin_date_as_list(sort_by_date_time=True):

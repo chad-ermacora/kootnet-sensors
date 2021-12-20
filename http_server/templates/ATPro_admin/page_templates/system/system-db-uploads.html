@@ -22,6 +22,13 @@
                 <form class="pure-form" method="POST" enctype="multipart/form-data" action="/atpro/system-db-uploads">
                     <h2><i class="fas fa-upload"></i> Upload Custom Database</h2>
 
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="overwrite-toggle-switch" class="toggle-switch-input"
+                               name="overwrite_database" {{ OverwriteDatabase }}>
+                        <label class="toggle-switch-label" for="overwrite-toggle-switch"></label>
+                        <span>Overwrite Database if file name exists</span>
+                    </label>
+
                     <div style="display: table; margin-left: auto; margin-right: auto;">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">

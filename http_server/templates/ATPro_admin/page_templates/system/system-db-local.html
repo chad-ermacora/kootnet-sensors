@@ -21,7 +21,7 @@
 
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
-        <div class="card-content" id="db-info-resize">
+        <div class="card-content">
             <form method="POST" action="/atpro/system-db-management" target="_blank">
                 <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
                 <p>
@@ -42,7 +42,8 @@
                 <button type="submit" class="pure-button" value="download_backup_db" name="db_backups">
                     <i class="fas fa-file-archive"></i> Download Backup
                 </button>
-            </form>
+            </form><br>
+            <p class="blink_shadow" style="color: green;" hidden>Generating Database Zip Please Wait ...</p>
         </div>
     </div>
 </div>
@@ -63,7 +64,8 @@
                 <div class="row">
                     <div class="col-12 col-m-12 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Date Range</span><br>{{ SQLDatabaseDateRange }}
+                            <span class="sensor-info">Date Range in UTC{{ HourOffset }}</span><br>
+                            {{ SQLDatabaseDateRange }}
                         </div>
                     </div>
 
@@ -81,8 +83,6 @@
                 </div>
 
                 <h2>Downloads</h2>
-                <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
-
                 <h3 class="db-header-items-name">
                     Zip Created: <span class="db-header-items-data">{{ ZipMainDBCreated }} UTC{{ HourOffset }}</span>
                     <br>
@@ -135,8 +135,6 @@
                 </div>
 
                 <h2>Downloads</h2>
-                <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
-
                 <h3 class="db-header-items-name">
                     Zip Created: <span class="db-header-items-data">{{ ZipMQTTDBCreated }} UTC{{ HourOffset }}</span>
                     <br>
@@ -189,8 +187,6 @@
                 </div>
 
                 <h2>Downloads</h2>
-                <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
-
                 <h3 class="db-header-items-name">
                     Zip Created: <span class="db-header-items-data">{{ ZipCheckinDBCreated }} UTC{{ HourOffset }}</span>
                     <br>
@@ -239,10 +235,6 @@
     function RefreshPageTimed() {
         SelectNav('sensor-system', skip_menu_select=true);
     }
-
-    if (screen.width < 610) {
-            document.getElementById('db-info-resize').style.width = 'fit-content';
-        }
 
     {{ RunScript | safe }}
 </script>

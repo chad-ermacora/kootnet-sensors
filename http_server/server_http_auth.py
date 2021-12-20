@@ -16,62 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash
-from operations_modules import logger
-from operations_modules import file_locations
+from datetime import datetime
+from flask import session, redirect
 from operations_modules import app_cached_variables
+from configuration_modules import app_config_access
 
-default_http_flask_user = "Kootnet"
-default_http_flask_password = "sensors"
-
-min_length_username = 4
-min_length_password = 4
+auth_error_msg_contains = '<form class="pure-form" method="POST" action="/atpro/login">'
 
 
-def set_http_auth_from_file():
-    """ Loads Web Portal (flask app) login credentials from file and updates them in the configuration. """
-    logger.primary_logger.debug("Loading HTTP Authentication File")
-
-    if os.path.isfile(file_locations.http_auth):
-        try:
-            with open(file_locations.http_auth, "r") as auth_file:
-                auth_file_lines = auth_file.readlines()
-                app_cached_variables.http_flask_user = auth_file_lines[0].strip()
-                app_cached_variables.http_flask_password = auth_file_lines[1].strip()
-        except Exception as error:
-            logger.primary_logger.error("Problem loading Web Login Credentials - Using Defaults: " + str(error))
-            save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
-            app_cached_variables.http_flask_user = default_http_flask_user
-            app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
-    else:
-        log_msg = "Web Login Credentials not found, using and saving default of Kootnet/sensors"
-        logger.primary_logger.warning(log_msg)
-        logger.primary_logger.warning("It is Recommended to change default Login Credentials")
-        save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)
-        app_cached_variables.http_flask_user = default_http_flask_user
-        app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
+class CreateLoginManager:
+    @staticmethod
+    def login_required(func):
+        def secure_function(*args, **kwargs):
+            if app_config_access.primary_config.demo_mode:
+                return func(*args, **kwargs)
+            if "user_id" in session and session['user_id'] in app_cached_variables.http_flask_login_session_ids:
+                app_cached_variables.http_flask_login_session_ids[session['user_id']] = datetime.utcnow()
+                return func(*args, **kwargs)
+            return redirect("/atpro/login")
+        secure_function.__name__ = func.__name__
+        return secure_function
 
 
-def save_http_auth_to_file(new_http_flask_user, new_http_flask_password, logging_enabled=True):
-    """ Saves Web Portal (flask app) login credentials to file. """
-    try:
-        if len(new_http_flask_user) < min_length_username or len(new_http_flask_password) < min_length_password:
-            logger.primary_logger.error("Unable to change Web Portal Credentials")
-            if len(new_http_flask_user) < min_length_username:
-                logger.primary_logger.warning("Web Login user provided is too short")
-            if len(new_http_flask_password) < min_length_password:
-                logger.primary_logger.warning("Web Login Password provided is too short")
-        else:
-            save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
-            with open(file_locations.http_auth, "w") as auth_file:
-                auth_file.write(save_data)
-            if logging_enabled:
-                logger.primary_logger.info("New Web Portal Username & Password Set")
-    except Exception as error:
-        logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
-
-
-# Create Flask app HTTP login
-auth = HTTPBasicAuth()
+auth = CreateLoginManager()

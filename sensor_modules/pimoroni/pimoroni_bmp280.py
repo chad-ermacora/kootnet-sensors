@@ -30,7 +30,7 @@ class CreateBMP280:
         self.sensor_in_use = False
         try:
             bmp280_import = __import__("sensor_modules.drivers.bmp280", fromlist=["BMP280"])
-            smbus2_import = __import__("smbus2", fromlist=["SMBus"])
+            smbus2_import = __import__("sensor_modules.drivers.smbus2.smbus2", fromlist=["SMBus"])
             bus = smbus2_import.SMBus(1)
             self.bmp280 = bmp280_import.BMP280(i2c_dev=bus)
             self.bmp280.get_temperature()

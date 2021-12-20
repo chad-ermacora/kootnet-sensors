@@ -19,7 +19,7 @@ import time
 from threading import Thread
 from operations_modules import logger
 from configuration_modules import app_config_access
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
 
 round_decimal_to = 5
 # Update readings in seconds
@@ -78,7 +78,7 @@ class CreatePimoroniPMS5003:
         logger.sensors_logger.debug("Enabling Serial for Pimoroni PSM5003")
         try:
             serial_disabled = True
-            boot_config_lines = app_generic_functions.get_file_content("/boot/config.txt").split("\n")
+            boot_config_lines = get_file_content("/boot/config.txt").split("\n")
 
             new_config = ""
             for line in boot_config_lines:
@@ -94,6 +94,6 @@ class CreatePimoroniPMS5003:
                 time.sleep(0.5)
                 new_config = new_config.strip()
                 new_config += "\n\n# Kootnet Sensors Addition\ndtoverlay=pi3-miniuart-bt\n"
-                app_generic_functions.write_file_to_disk("/boot/config.txt", new_config)
+                write_file_to_disk("/boot/config.txt", new_config)
         except Exception as error:
             logger.sensors_logger.error("Pimoroni PSM5003 Enable Serial - Failed: " + str(error))

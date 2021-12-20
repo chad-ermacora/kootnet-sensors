@@ -1,12 +1,13 @@
 # Kootnet Sensors - RPi Sensor Recording Software
-This program is used to record sensor readings on a Raspberry Pi to an SQLite3 database or transfer sensor data to 
+This program is used to record sensor readings on a Raspberry Pi to an SQLite3 database and or transfer sensor data to 
 another sensor or service using MQTT. Add one or more of the 21+ supported sensors.  
 
-Sensor types include heat, pressure, altitude, humidity, distance, gas, particulate matter 1/2.5/4/10, light, 
-color, ultra-violet, acceleration, electromagnetic fields, angular velocity (gyroscope) & GPS coordinates.
+Sensor types include heat, pressure, altitude, humidity, distance, gas, particulate matter, 
+electromagnetic spectrum (lumen / colours / ultraviolet), acceleration, electromagnetic fields, 
+angular velocity (gyroscope) & GPS coordinates.
 
-Features include a Web Portal to graph, view live readings, generate reports, 
-upload data to 3rd party weather services and more!  
+Features include a Web Portal to create graphs based on realtime data (live) or recordings (database),
+generate Kootnet Sensor reports, upload data to 3rd party services and much more!  
 
 [Project Website](https://kootenay-networks.com/?page_id=170)  
 
@@ -58,6 +59,48 @@ To uninstall Kootnet Sensors, run the following command in a terminal.
 sudo apt-get remove kootnet-sensors
 ```
 
+Manually Download & Run
+-------------------------
+
+Although not recommended, you can download the source code directly and run it from a terminal.  
+Follow the instructions below to install prerequisites. 
+
+**Note**: *Kootnet Sensors will not autostart when using this method*  
+**Note**: *Program updates will be disabled*  
+**Note**: *You only need to run steps 1-7 once, to start Kootnet Sensors after that, follow steps 1 & 7 only*
+
+1. Open a terminal window
+2. Download Kootnet Sensors
+```
+wget https://codeload.github.com/chad-ermacora/kootnet-sensors/zip/refs/heads/master
+```
+
+3. Extract Kootnet Sensors
+```
+unzip master -d ~/
+```
+
+4. Install prerequisites
+```
+sudo apt-get update && sudo apt-get -y install python3 python3-venv python3-pip python3-dev bash wget openssl libssl-dev
+```
+
+5. Create Python Virtual Environment
+```
+python3 -m venv ~/ks_venv
+```
+
+6. If you are using a Raspberry Pi, run these, if not, skip this step
+```
+sudo apt-get -y install libffi-dev libatlas3-base fake-hwclock libopenjp2-7 libtiff-dev
+```
+
+7. Start Kootnet Sensors 
+
+```
+sudo ~/ks_venv/bin/python3 ~/kootnet-sensors-master/start_sensor_services.py
+```
+
 Controlling the Sensor
 -------------------------
 
@@ -75,7 +118,7 @@ from any device with a web browser on the same network.
 
 Configurations can also be changed using the terminal by running the following command.
 ```
-sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py
+sudo /home/kootnet_data/upgrade_env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py
 ```
 
 Sensor System Service

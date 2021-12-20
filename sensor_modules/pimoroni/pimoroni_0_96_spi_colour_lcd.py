@@ -15,9 +15,6 @@ Created on Tue July 9 15:53:56 2019
 @author: OO-Dragon
 """
 import time
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import file_locations
@@ -29,6 +26,7 @@ class CreateST7735:
     def __init__(self):
         self.display_in_use = False
         try:
+            self.pill_import = __import__("PIL", fromlist=["Image", "ImageDraw", "ImageFont"])
             st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735", "BG_SPI_CS_FRONT"])
             # Create ST7735 LCD display class.
             self.display = st7735_import.ST7735(
@@ -53,9 +51,9 @@ class CreateST7735:
         if not self.display_in_use:
             self.display_in_use = True
             try:
-                img = Image.new("RGB", (self.display.width, self.display.height), color=(0, 0, 0))
-                draw = ImageDraw.Draw(img)
-                font = ImageFont.truetype(file_locations.display_font, 30)
+                img = self.pill_import.Image.new("RGB", (self.display.width, self.display.height), color=(0, 0, 0))
+                draw = self.pill_import.ImageDraw.Draw(img)
+                font = self.pill_import.ImageFont.truetype(file_locations.display_font, 30)
                 size_x, size_y = draw.textsize(message, font)
 
                 text_x = 160

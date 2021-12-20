@@ -15,7 +15,7 @@
                     <br><br>
 
                     <label>
-                        <i>Leave Configuration Blank for a default open MQTT Broker</i><br><br>
+                        <i>Enter your Mosquitto configuration below</i><br><br>
                         <textarea id="mosquitto_config" name="mosquitto_config" cols="50" rows="20">{{ BrokerMosquittoConfig }}</textarea>
                     </label>
 
@@ -29,7 +29,7 @@
 </div>
 
 <script>
-    if (screen.width < 500) {
+    if (window.innerWidth < 500) {
             document.getElementById('mosquitto_config').style.width = '350px';
         }
 </script>

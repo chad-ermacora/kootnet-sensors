@@ -19,7 +19,7 @@
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
 from operations_modules import app_cached_variables
 
 database_variables = app_cached_variables.database_variables

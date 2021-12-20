@@ -19,10 +19,13 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import write_file_to_disk
+from operations_modules.app_generic_disk import write_file_to_disk
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -38,19 +41,35 @@ def remote_management_receive_configuration(request):
     new_config_str = str(request.form.get("new_config_str")).strip()
     logger.network_logger.info("* Received Push Configuration '" + config_type + "' from " + str(request.remote_addr))
 
-    restart_hw_sensors = False
     if config_type == "primary":
         config_instance = CreatePrimaryConfiguration(load_from_file=False)
         new_config = _apply_config(config_instance, new_config_str, "Main")
         if new_config is not None:
             app_config_access.primary_config = new_config
+    elif config_type == "urls":
+        config_instance = CreateURLConfiguration(load_from_file=False)
+        new_config = _apply_config(config_instance, new_config_str, "URLs")
+        if new_config is not None:
+            app_config_access.urls_config = new_config
+            app_cached_variables.restart_automatic_upgrades_thread = True
+    elif config_type == "upgrades":
+        config_instance = CreateUpgradesConfiguration(load_from_file=False)
+        new_config = _apply_config(config_instance, new_config_str, "Upgrades")
+        if new_config is not None:
+            app_config_access.upgrades_config = new_config
             app_cached_variables.restart_automatic_upgrades_thread = True
     elif config_type == "installed_sensors":
         config_instance = CreateInstalledSensorsConfiguration(load_from_file=False)
         new_config = _apply_config(config_instance, new_config_str, "Installed Sensors")
         if new_config is not None:
             app_config_access.installed_sensors = new_config
-            restart_hw_sensors = True
+            # This also restarts most Kootnet Sensors 'servers' (recording for example)
+            sensor_access.sensors_direct.__init__()
+    elif config_type == "sensor_offsets":
+        config_instance = CreateSensorOffsetsConfiguration(load_from_file=False)
+        new_config = _apply_config(config_instance, new_config_str, "Sensor Offsets")
+        if new_config is not None:
+            app_config_access.sensor_offsets = new_config
     elif config_type == "checkins":
         config_instance = CreateCheckinConfiguration(load_from_file=False)
         new_config = _apply_config(config_instance, new_config_str, "Checkins")
@@ -110,20 +129,17 @@ def remote_management_receive_configuration(request):
         app_cached_variables.restart_luftdaten_thread = True
         logger.network_logger.info("Applied Luftdaten configuration push successfully")
     elif config_type == "wifi":
-        if app_config_access.running_with_root:
+        if app_cached_variables.running_with_root:
             write_file_to_disk(file_locations.wifi_config_file, new_config_str.strip())
             atpro_notifications.manage_service_restart()
         else:
             logger.primary_logger.warning("Wifi set skipped, not running with root")
     elif config_type == "network":
-        if app_config_access.running_with_root:
+        if app_cached_variables.running_with_root:
             write_file_to_disk(file_locations.dhcpcd_config_file, new_config_str.strip())
             atpro_notifications.manage_service_restart()
         else:
             logger.primary_logger.warning("Network set skipped, not running with root")
-    if restart_hw_sensors:
-        # This also restarts most Kootnet Sensors 'servers' (recording for example)
-        sensor_access.sensors_direct.__init__()
     return "Received"
 
 

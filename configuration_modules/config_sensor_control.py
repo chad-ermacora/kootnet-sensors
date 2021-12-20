@@ -20,18 +20,21 @@ from threading import Thread
 from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_cached_variables
 from operations_modules import app_validation_checks
-from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_http_sensor_reading, \
-    get_list_of_filenames_in_dir, get_file_content, write_file_to_disk
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
+from operations_modules.app_generic_functions import get_list_of_filenames_in_dir
+from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
+from operations_modules.http_generic_network import get_http_sensor_reading
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
 
 class CreateSensorControlConfiguration(CreateGeneralConfiguration):
     """ Creates the HTML Sensor Control Configuration object and loads settings from file (by default). """
 
-    def __init__(self, load_from_file=True):
-        html_sensor_control_config = file_locations.html_sensor_control_config
-        CreateGeneralConfiguration.__init__(self, html_sensor_control_config, load_from_file=load_from_file)
+    def __init__(self, load_from_file=True, config_file_location=None):
+        if config_file_location is None:
+            config_file_location = file_locations.html_sensor_control_config
+        CreateGeneralConfiguration.__init__(self, config_file_location, load_from_file=load_from_file)
         self.config_file_header = "This contains saved values for HTML Sensor Control"
         self.valid_setting_count = 3
         self.config_settings_names = ["selected_action", "selected_send_type", "selected_ip_list"]
@@ -52,6 +55,10 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.custom_ip_list_names = get_list_of_filenames_in_dir(file_locations.custom_ip_lists_folder)
 
         self.selected_ip_list = self.custom_ip_list_names[0]
+        # ToDo: Have program use these instead of rm_cached_variables http_login & http_password
+        # Save hash of user/pass to config file? send hash as auth?
+        self.logon_user = "Kootnet"
+        self.logon_password = "sensors"
 
         # Dictionary filled with Class instances of CreateIPList
         self.ip_list_instance = None
@@ -155,9 +162,9 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         online_ip_list = []
         threaded_checks = []
         try:
-            for ip in raw_ip_list:
-                if app_validation_checks.ip_address_is_valid(ip):
-                    valid_ip_list.append(ip)
+            for sensor_address in raw_ip_list:
+                if app_validation_checks.sensor_address_is_valid(sensor_address):
+                    valid_ip_list.append(sensor_address)
             for address in valid_ip_list:
                 threaded_checks.append(Thread(target=self._check_address, args=[address]))
             for thread in threaded_checks:
@@ -177,7 +184,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         """ Checks if a remote sensor is online and if so, saves the results to a queue. """
 
         try:
-            sensor_online_check = get_http_sensor_reading(sensor_address, timeout=4)
+            sensor_online_check = get_http_sensor_reading(sensor_address)
             if sensor_online_check == "OK":
                 self.local_queue.put(sensor_address)
         except Exception as error:
@@ -236,9 +243,11 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             http_login = html_request.form.get("sensor_username")
             http_password = html_request.form.get("sensor_password")
             if http_login != "":
-                app_cached_variables.http_login = http_login
+                self.logon_user = http_login
+                rm_cached_variables.http_login = http_login
             if http_password != "":
-                app_cached_variables.http_password = http_password
+                self.logon_password = http_password
+                rm_cached_variables.http_password = http_password
 
             self._save_current_ip_list()
         except Exception as error:

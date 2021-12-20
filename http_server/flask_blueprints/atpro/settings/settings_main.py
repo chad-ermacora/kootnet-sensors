@@ -17,12 +17,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from flask import Blueprint, render_template, request
+from operations_modules import logger
+from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
+from operations_modules.software_automatic_upgrades import update_checks_interface
+from operations_modules.app_validation_checks import validate_smb_username, validate_smb_password
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
 
@@ -39,30 +44,84 @@ def html_atpro_sensor_settings_main():
     if request.method == "POST":
         app_config_access.primary_config.update_with_html_request(request)
         app_config_access.primary_config.save_config_to_file()
-        app_cached_variables.restart_automatic_upgrades_thread = True
-        msg = "If you changed the Web Portal HTTPS Port Number, you will need to restart the program"
-        return get_message_page("Main Settings Updated", msg, page_url="sensor-settings")
+        if app_config_access.primary_config.web_portal_port_changed:
+            atpro_notifications.manage_service_restart()
+        return get_message_page("Main Settings Updated", page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
-    custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
-    custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
-    enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_feature)
-    enable_minor_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_minor)
-    enable_dev_up = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_developmental)
+    enable_major_upgrades = get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades_feature)
+    enable_minor_upgrades = get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades_minor)
+    enable_dev_up = get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades_developmental)
+    upgrade_method_http = ""
+    upgrade_method_smb = ""
+    if app_config_access.upgrades_config.selected_upgrade_type == app_config_access.upgrades_config.upgrade_type_http:
+        upgrade_method_http = "selected"
+    else:
+        upgrade_method_smb = "selected"
     return render_template(
         "ATPro_admin/page_templates/settings/settings-main.html",
         IPWebPort=app_config_access.primary_config.web_portal_port,
         CheckedDebug=debug_logging,
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
-        AutoUpDelayHours=str(app_config_access.primary_config.automatic_upgrade_delay_hours),
+        SelectedUpgradeType=app_config_access.upgrades_config.selected_upgrade_type.upper(),
+        CheckinAddress=app_config_access.urls_config.url_checkin_server,
+        UpdateServerAddress=app_config_access.urls_config.url_update_server,
+        UpdateServerAddressSMB=app_config_access.urls_config.url_update_server_smb,
+        EnableAutoUpgrades=get_html_checkbox_state(app_config_access.upgrades_config.enable_automatic_upgrades),
+        AutoUpDelayHours=str(app_config_access.upgrades_config.automatic_upgrade_delay_hours),
+        EnableMD5Validation=get_html_checkbox_state(app_config_access.upgrades_config.md5_validation_enabled),
+        SMBUsername=app_config_access.upgrades_config.smb_user,
+        HTTPSelected=upgrade_method_http,
+        SMBSelected=upgrade_method_smb,
         EnableStableFeatureAutoUpgrades=enable_major_upgrades,
         EnableStableMinorAutoUpgrades=enable_minor_upgrades,
         EnableDevAutoUpgrades=enable_dev_up,
-        CheckedCustomTempOffset=custom_temp_offset,
-        temperature_offset=float(app_config_access.primary_config.temperature_offset),
-        CheckedCustomTempComp=custom_temp_comp,
-        CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor)
+        USMD5=_get_file_present_color(update_checks_interface.update_server_file_present_md5),
+        USVersion=_get_file_present_color(update_checks_interface.update_server_file_present_version),
+        USFullInstaller=_get_file_present_color(update_checks_interface.update_server_file_present_full_installer),
+        USUpgradeInstaller=_get_file_present_color(update_checks_interface.update_server_file_present_upgrade_installer)
     )
+
+
+def _get_file_present_color(upgrade_file):
+    if upgrade_file is None:
+        return ""
+    if upgrade_file:
+        return "green"
+    return "red"
+
+
+@html_atpro_settings_routes.route("/atpro/settings-upgrades", methods=["POST"])
+@auth.login_required
+def html_atpro_sensor_settings_upgrades():
+    bad_cred_msg = "The username must be alphanumeric and the password must not contain single quotes or ="
+    if not validate_smb_username(request.form.get("smb_username")) \
+            or not validate_smb_password(request.form.get("smb_password")) and request.form.get("smb_password") != "":
+        logger.primary_logger.warning("The provided SMB username or password has invalid characters")
+        return get_message_page("Invalid SMB username or password", message=bad_cred_msg, page_url="sensor-settings")
+    app_config_access.upgrades_config.update_with_html_request(request)
+    app_config_access.upgrades_config.save_config_to_file()
+    thread_function(update_checks_interface.update_versions_info_variables)
+    app_cached_variables.restart_automatic_upgrades_thread = True
+    return get_message_page("Upgrade Settings Updated", page_url="sensor-settings")
+
+
+@html_atpro_settings_routes.route("/atpro/settings-urls", methods=["POST"])
+@auth.login_required
+def html_atpro_sensor_settings_urls():
+    app_config_access.urls_config.update_with_html_request(request)
+    app_config_access.urls_config.save_config_to_file()
+    thread_function(update_checks_interface.update_versions_info_variables)
+    app_cached_variables.restart_automatic_upgrades_thread = True
+    return get_message_page("URL Settings Updated", page_url="sensor-settings")
+
+
+@html_atpro_settings_routes.route("/atpro/reset-urls-config")
+@auth.login_required
+def html_atpro_sensor_settings_urls_reset():
+    app_config_access.urls_config.reset_urls_to_default()
+    thread_function(update_checks_interface.update_versions_info_variables)
+    return get_message_page("URLs Configuration Reset", page_url="sensor-settings")
 
 
 @html_atpro_settings_routes.route("/atpro/settings-is", methods=["GET", "POST"])
@@ -78,9 +137,7 @@ def html_atpro_sensor_settings_installed_sensors():
 
     return render_template(
         "ATPro_admin/page_templates/settings/settings-installed-sensors.html",
-        GnuLinux=get_html_checkbox_state(installed_sensors.linux_system),
         KootnetDummySensors=get_html_checkbox_state(installed_sensors.kootnet_dummy_sensor),
-        RaspberryPi=get_html_checkbox_state(installed_sensors.raspberry_pi),
         SenseHAT=get_html_checkbox_state(installed_sensors.raspberry_pi_sense_hat),
         PimoroniBH1745=get_html_checkbox_state(installed_sensors.pimoroni_bh1745),
         PimoroniAS7262=get_html_checkbox_state(installed_sensors.pimoroni_as7262),
@@ -107,6 +164,23 @@ def html_atpro_sensor_settings_installed_sensors():
         PimoroniMonoOLED128x128BW=get_html_checkbox_state(installed_sensors.pimoroni_mono_oled_luma),
         SensirionSPS30=get_html_checkbox_state(installed_sensors.sensirion_sps30),
         W1ThermSensor=get_html_checkbox_state(installed_sensors.w1_therm_sensor)
+    )
+
+
+@html_atpro_settings_routes.route("/atpro/settings-sensor-offsets", methods=["GET", "POST"])
+@auth.login_required
+def html_atpro_sensor_settings_offsets():
+    if request.method == "POST":
+        app_config_access.sensor_offsets.update_with_html_request(request)
+        app_config_access.sensor_offsets.save_config_to_file()
+        return get_message_page("Sensor Offset Settings Updated", page_url="sensor-settings")
+
+    return render_template(
+        "ATPro_admin/page_templates/settings/settings-sensor-offsets.html",
+        CheckedCustomTempOffset=get_html_checkbox_state(app_config_access.sensor_offsets.enable_temp_offset),
+        temperature_offset=app_config_access.sensor_offsets.temperature_offset,
+        CheckedCustomTempComp=get_html_checkbox_state(app_config_access.sensor_offsets.enable_temperature_comp_factor),
+        CustomTempComp=app_config_access.sensor_offsets.temperature_comp_factor,
     )
 
 
@@ -183,7 +257,6 @@ def _get_checkin_settings_page_render():
         "ATPro_admin/page_templates/settings/settings-checkin-server.html",
         CheckedSensorCheckIns=sensor_check_ins,
         CheckinHours=app_config_access.checkin_config.checkin_wait_in_hours,
-        CheckinAddress=app_config_access.checkin_config.checkin_url,
         CheckedEnableCheckin=get_html_checkbox_state(app_config_access.checkin_config.enable_checkin_recording),
         ContactInPastDays=app_config_access.checkin_config.count_contact_days,
         MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,

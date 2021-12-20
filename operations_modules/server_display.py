@@ -18,7 +18,7 @@
 """
 from time import sleep
 from operations_modules import logger
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules.system_access import get_uptime_minutes
@@ -31,14 +31,13 @@ def start_display_server():
     text_name = "Display"
     function = _display_server
     app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
-    if not app_config_access.display_config.enable_display:
-        logger.primary_logger.debug("Display Disabled in Primary Configuration")
-        app_cached_variables.mini_display_thread.current_state = "Disabled"
 
 
 def _display_server():
     sleep(5)
     app_cached_variables.mini_display_thread.current_state = "Disabled"
+    if not app_config_access.display_config.enable_display:
+        logger.primary_logger.debug("Display Disabled in Primary Configuration")
     while not app_config_access.display_config.enable_display:
         sleep(5)
     app_cached_variables.mini_display_thread.current_state = "Running"

@@ -23,13 +23,13 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.software_version import version
 from operations_modules.software_version import version as kootnet_version
-from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
+from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text, update_checks_interface
 from configuration_modules import app_config_access
 from sensor_modules import system_access
 from sensor_modules import sensor_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
-    get_message_page, get_text_check_enabled, get_uptime_str
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_text_check_enabled, \
+    get_uptime_str
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 
@@ -61,8 +61,8 @@ def html_atpro_dashboard():
         "ATPro_admin/page_templates/dashboard.html",
         AutoUpgrades=get_automatic_upgrade_enabled_text(),
         KootnetVersion=version,
-        StdVersion=app_cached_variables.standard_version_available,
-        DevVersion=app_cached_variables.developmental_version_available,
+        StdVersion=update_checks_interface.new_standard_version,
+        DevVersion=update_checks_interface.new_developmental_version,
         LastUpdated=app_cached_variables.program_last_updated,
         DateTime=strftime("%Y-%m-%d %H:%M:%S %Z"),
         DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
@@ -125,11 +125,6 @@ def html_atpro_sensor_help():
 @html_atpro_main_routes.route("/atpro/system-about")
 def html_atpro_about():
     return render_template("ATPro_admin/page_templates/system/system-about.html", KootnetVersion=kootnet_version)
-
-
-@html_atpro_main_routes.route("/atpro/logout")
-def html_atpro_logout():
-    return get_message_page("Logged Out", "You have been logged out"), 401
 
 
 @html_atpro_main_routes.route("/atpro/get-notification-count")

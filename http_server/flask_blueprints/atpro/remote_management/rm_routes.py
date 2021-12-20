@@ -17,21 +17,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import requests
 from threading import Thread
 from datetime import datetime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
-    get_list_of_filenames_in_dir, get_file_size, check_for_port_in_address, get_ip_and_port_split
-from operations_modules.app_validation_checks import url_is_valid
+from operations_modules.app_generic_functions import get_list_of_filenames_in_dir, get_file_size
+from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from operations_modules.software_version import version
 from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
+from configuration_modules.config_upgrades import CreateUpgradesConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -50,16 +51,23 @@ from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs imp
 from http_server.flask_blueprints.atpro.remote_management.rm_post import remote_management_main_post
 from http_server.flask_blueprints.atpro.remote_management.rm_main import \
     get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
 base_rm_template_loc = "ATPro_admin/page_templates/remote_management/report_templates/"
 db_v = app_cached_variables.database_variables
-network_commands = app_cached_variables.CreateNetworkGetCommands()
-network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
+network_commands = app_cached_variables.network_get_commands
+network_system_commands = app_cached_variables.network_system_commands
 
 default_primary_config = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
 default_primary_config = default_primary_config.replace("\n", "\\n")
+default_urls_config = CreateURLConfiguration(load_from_file=False).get_config_as_str()
+default_urls_config = default_urls_config.replace("\n", "\\n")
+default_upgrade_config = CreateUpgradesConfiguration(load_from_file=False).get_config_as_str()
+default_upgrade_config = default_upgrade_config.replace("\n", "\\n")
 default_installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False).get_config_as_str()
 default_installed_sensors_config = default_installed_sensors_config.replace("\n", "\\n")
+default_sensor_offsets_config = CreateSensorOffsetsConfiguration(load_from_file=False).get_config_as_str()
+default_sensor_offsets_config = default_sensor_offsets_config.replace("\n", "\\n")
 default_checkins_config = CreateCheckinConfiguration(load_from_file=False).get_config_as_str()
 default_checkins_config = default_checkins_config.replace("\n", "\\n")
 default_interval_recording_config = CreateIntervalRecordingConfiguration(load_from_file=False).get_config_as_str()
@@ -76,36 +84,6 @@ default_wifi_config = "# https://manpages.debian.org/stretch/wpasupplicant/wpa_s
 default_network_config = "# https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
 
 html_atpro_remote_management_routes = Blueprint("html_atpro_remote_management_routes", __name__)
-
-
-class CreateSensorHTTPCommand:
-    """ Creates Object to use for Sending a command and optional data to a remote sensor. """
-
-    def __init__(self, sensor_address, command, command_data=None):
-        if command_data is None:
-            self.sensor_command_data = {"NotSet": True}
-        else:
-            self.sensor_command_data = command_data
-
-        self.sensor_address = sensor_address
-        self.http_port = "10065"
-        self.sensor_command = command
-        self._check_ip_port()
-
-    def send_http_command(self):
-        """ Sends command and data to sensor. """
-        try:
-            url = "https://" + self.sensor_address + ":" + self.http_port + "/" + self.sensor_command
-            requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data,
-                          auth=(app_cached_variables.http_login, app_cached_variables.http_password))
-        except Exception as error:
-            logger.network_logger.error("Unable to send command to " + str(self.sensor_address) + ": " + str(error))
-
-    def _check_ip_port(self):
-        if check_for_port_in_address(self.sensor_address):
-            ip_and_port = get_ip_and_port_split(self.sensor_address)
-            self.sensor_address = ip_and_port[0]
-            self.http_port = ip_and_port[1]
 
 
 @html_atpro_remote_management_routes.route("/atpro/sensor-rm", methods=["GET", "POST"])
@@ -146,7 +124,7 @@ def get_system_report_entry():
                                CheckinDBSize=get_file_size(file_locations.sensor_checkin_database))
     except Exception as error:
         logger.network_logger.error("System Report - " + str(error))
-        return "System Report - " + str(error)
+        return "System Report Error - Unable to generate system report entry"
 
 
 def _get_cpu_background_colour(cpu_temp):
@@ -179,8 +157,8 @@ def get_config_report_entry():
     interval_recording = _get_enabled_disabled_text(aca.interval_recording_config.enable_interval_recording)
     high_low_recording = _get_enabled_disabled_text(aca.trigger_high_low.enable_high_low_trigger_recording)
     variance_recording = _get_enabled_disabled_text(aca.trigger_variances.enable_trigger_variance)
-    temp_offset = _get_enabled_disabled_text(aca.primary_config.enable_custom_temp)
-    temp_comp_factor = _get_enabled_disabled_text(aca.primary_config.enable_temperature_comp_factor)
+    temp_offset = _get_enabled_disabled_text(aca.sensor_offsets.enable_temp_offset)
+    temp_comp_factor = _get_enabled_disabled_text(aca.sensor_offsets.enable_temperature_comp_factor)
     mqtt_broker = _get_enabled_disabled_text(aca.mqtt_broker_config.enable_mqtt_broker)
     mqtt_subscriber = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_subscriber)
     mqtt_sub_rec = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_sql_recording)
@@ -211,9 +189,9 @@ def get_config_report_entry():
                            HighLowRecording=high_low_recording,
                            VarianceRecording=variance_recording,
                            TemperatureOffset=temp_offset,
-                           TOValue=str(app_config_access.primary_config.temperature_offset),
+                           TOValue=str(app_config_access.sensor_offsets.temperature_offset),
                            TemperatureCorrectionFactor=temp_comp_factor,
-                           TCFValue=str(app_config_access.primary_config.temperature_comp_factor),
+                           TCFValue=str(app_config_access.sensor_offsets.temperature_comp_factor),
                            MQTTBroker=mqtt_broker,
                            MQTTSubscriber=mqtt_subscriber,
                            MQTTSubscriberRecording=mqtt_sub_rec,
@@ -324,7 +302,10 @@ def html_atpro_rm_configurations():
     return render_template(
         "ATPro_admin/page_templates/remote_management/configurations.html",
         DefaultPrimaryText=default_primary_config,
+        DefaultURLsText=default_urls_config,
+        DefaultUpgradeText=default_upgrade_config,
         DefaultInstalledSensorsText=default_installed_sensors_config,
+        DefaultSensorOffsetsText=default_sensor_offsets_config,
         DefaultCheckinsText=default_checkins_config,
         DefaultIntervalRecText=default_interval_recording_config,
         DefaultVarianceRecText=default_variance_config,
@@ -354,20 +335,24 @@ def html_atpro_sensor_rm_push_configuration():
 def _push_data_to_sensors(url_command, html_dictionary_data):
     if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
         return _get_missing_sensor_addresses_page()
-    if _missing_login_credentials():
+    elif _missing_login_credentials():
         return _get_missing_login_credentials_page()
 
-    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) < 1:
-        return get_message_page("All sensors appear to be Offline", page_url="sensor-rm")
-    for ip in ip_list:
-        http_command_instance = CreateSensorHTTPCommand(ip, url_command, command_data=html_dictionary_data)
-        http_command_instance.send_http_command()
-    msg_2 = "HTML configuration data sent to " + str(len(ip_list)) + " Sensors"
+    ip_address_length = len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list())
+    push_thread = Thread(target=_push_config_thread_worker, args=[url_command, html_dictionary_data])
+    push_thread.daemon = True
+    push_thread.start()
+    msg_2 = "Kootnet Sensors configuration data is being sent to " + str(ip_address_length) + " Sensors"
     return get_message_page("Sensor Control - Configuration(s) Sent", msg_2, page_url="sensor-rm")
 
 
-@html_atpro_remote_management_routes.route("/atpro/sensor-rm-receive-config", methods=["POST"])
+def _push_config_thread_worker(url_command, html_dictionary_data):
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+    for ip in ip_list:
+        send_http_command(ip, url_command, dic_data=html_dictionary_data)
+
+
+@html_atpro_remote_management_routes.route("/atpro/sensor-rm-receive-config", methods=["POST", "PUT"])
 @auth.login_required
 def html_atpro_sensor_rm_receive_configuration():
     return remote_management_receive_configuration(request)
@@ -385,50 +370,47 @@ def html_atpro_rm_system_commands():
 
 @html_atpro_remote_management_routes.route('/atpro/rm-report/<path:filename>')
 def html_atpro_get_remote_management_reports(filename):
-    if url_is_valid(filename):
-        if filename == "combination":
-            return app_cached_variables.html_combo_report
-        if filename == "system":
-            return app_cached_variables.html_system_report
-        if filename == "configuration":
-            return app_cached_variables.html_config_report
-        if filename == "readings":
-            return app_cached_variables.html_readings_report
-        if filename == "latency":
-            return app_cached_variables.html_latency_report
+    if filename == "combination":
+        return rm_cached_variables.html_combo_report
+    elif filename == "system":
+        return rm_cached_variables.html_system_report
+    elif filename == "configuration":
+        return rm_cached_variables.html_config_report
+    elif filename == "readings":
+        return rm_cached_variables.html_readings_report
+    elif filename == "latency":
+        return rm_cached_variables.html_latency_report
     return ""
 
 
 @html_atpro_remote_management_routes.route('/atpro/rm/functions/<path:filename>')
 def html_atpro_remote_management_functions(filename):
-    if url_is_valid(filename):
-        if filename == "rm-upgrade-http":
-            return run_system_command(network_system_commands.upgrade_http)
-        elif filename == "rm-upgrade-smb":
-            return run_system_command(network_system_commands.upgrade_smb)
-        elif filename == "rm-upgrade-dev-http":
-            return run_system_command(network_system_commands.upgrade_http_dev)
-        elif filename == "rm-upgrade-dev-smb":
-            return run_system_command(network_system_commands.upgrade_smb_dev)
-        elif filename == "rm-upgrade-clean-http":
-            return run_system_command(network_system_commands.upgrade_http_clean)
-        elif filename == "rm-upgrade-system-os":
-            return run_system_command(network_system_commands.upgrade_system_os)
-        elif filename == "rm-upgrade-pip-modules":
-            return run_system_command(network_system_commands.upgrade_pip_modules)
-        elif filename == "rm-power-restart-program":
-            return run_system_command(network_system_commands.restart_services)
-        elif filename == "rm-power-reboot-system":
-            return run_system_command(network_system_commands.restart_system)
+    if filename == "rm-upgrade-http":
+        return run_system_command(network_system_commands.upgrade_http)
+    elif filename == "rm-upgrade-smb":
+        return run_system_command(network_system_commands.upgrade_smb)
+    elif filename == "rm-upgrade-dev-http":
+        return run_system_command(network_system_commands.upgrade_http_dev)
+    elif filename == "rm-upgrade-dev-smb":
+        return run_system_command(network_system_commands.upgrade_smb_dev)
+    elif filename == "rm-upgrade-clean-http":
+        return run_system_command(network_system_commands.upgrade_http_clean)
+    elif filename == "rm-upgrade-system-os":
+        return run_system_command(network_system_commands.upgrade_system_os)
+    elif filename == "rm-upgrade-pip-modules":
+        return run_system_command(network_system_commands.upgrade_pip_modules)
+    elif filename == "rm-power-restart-program":
+        return run_system_command(network_system_commands.restart_services)
+    elif filename == "rm-power-reboot-system":
+        return run_system_command(network_system_commands.restart_system)
     return get_message_page("Invalid Remote Sensor Management Command", page_url="sensor-rm", full_reload=False)
 
 
-def run_system_command(command, include_data=None):
+def run_system_command(command):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
     if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
         return _get_missing_sensor_addresses_page()
-
-    if _missing_login_credentials():
+    elif _missing_login_credentials():
         return _get_missing_login_credentials_page(full_reload=False)
 
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
@@ -438,30 +420,27 @@ def run_system_command(command, include_data=None):
         return get_message_page(msg_1, msg_2, page_url="sensor-rm", full_reload=False)
 
     for ip in ip_list:
-        thread = Thread(target=_system_command_thread, args=(ip, command, include_data))
+        thread = Thread(target=_system_command_thread, args=(ip, command))
         thread.daemon = True
         thread.start()
     msg_1 = command + " is now being sent to " + str(len(ip_list)) + " Sensors"
     return get_message_page("Sending Sensor Commands", msg_1, page_url="sensor-rm", full_reload=False)
 
 
-def _system_command_thread(ip, command, include_data=None):
+def _system_command_thread(ip, command):
     if _login_successful(ip):
-        if include_data is not None:
-            send_http_command(ip, command, included_data=include_data)
-        else:
-            get_http_sensor_reading(ip, command=command)
+        get_http_sensor_reading(ip, http_command=command)
 
 
 def _login_successful(ip):
-    if get_http_sensor_reading(ip, command=network_commands.check_portal_login) == "OK":
+    if get_http_sensor_reading(ip, http_command=network_commands.check_portal_login) == "OK":
         return True
     logger.network_logger.warning("The Sensor " + str(ip) + " did not accept provided Login Credentials")
     return False
 
 
 def _missing_login_credentials():
-    if app_cached_variables.http_login == "" or app_cached_variables.http_password == "":
+    if rm_cached_variables.http_login == "" or rm_cached_variables.http_password == "":
         return True
     return False
 

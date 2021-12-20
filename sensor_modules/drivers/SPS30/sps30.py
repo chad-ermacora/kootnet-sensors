@@ -31,7 +31,7 @@
     Units for measurements:
         PM1, PM2.5, PM4 and PM10 are in ug/m^3, number concentrations are in #/cm^3
 """
-import serial
+from sensor_modules.drivers import pyserial as serial
 import struct
 import time
 

@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_disk import get_file_content
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 
@@ -80,7 +80,7 @@ def html_request_to_config_wifi(html_request):
     """ Takes the provided HTML wireless settings and creates a new WPA Supplicant string and returns it. """
     logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
     if html_request.form.get("ssid1") is not None:
-        wifi_template = app_generic_functions.get_file_content(file_locations.wifi_config_file_template)
+        wifi_template = get_file_content(file_locations.wifi_config_file_template)
 
         wifi_country_code = "CA"
         if len(html_request.form.get("country_code")) == 2:

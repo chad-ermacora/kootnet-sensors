@@ -17,297 +17,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from platform import system
-from os import geteuid
+from os import geteuid, path
+from operations_modules.app_generic_classes import CreateDatabaseVariables, CreateNetworkSystemCommands, \
+    CreateNetworkGetCommands, CreateLatencyVariables, CreateEmptyThreadClass
 
-
-class CreateNetworkSystemCommands:
-    """ Create a object instance holding available network "System" commands (Mostly Upgrades). """
-
-    def __init__(self):
-        self.upgrade_system_os = "UpgradeSystemOS"
-        self.upgrade_pip_modules = "UpdatePipModules"
-
-        self.upgrade_http = "UpgradeOnline"
-        self.upgrade_http_dev = "UpgradeOnlineDev"
-        self.upgrade_http_clean = "UpgradeOnlineClean"
-        self.upgrade_http_clean_dev = "UpgradeOnlineCleanDEV"
-
-        self.upgrade_smb = "UpgradeSMB"
-        self.upgrade_smb_dev = "UpgradeSMBDev"
-        self.upgrade_smb_clean = "UpgradeSMBClean"
-        self.upgrade_smb_clean_dev = "UpgradeSMBCleanDEV"
-
-        self.restart_services = "RestartServices"
-        self.restart_system = "RebootSystem"
-        self.shutdown_system = "ShutdownSystem"
-
-
-class CreateNetworkSetCommands:
-    """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
-
-    def __init__(self):
-        self.set_primary_configuration = "SetPrimaryConfiguration"
-        self.set_installed_sensors = "SetInstalledSensors"
-
-        self.set_interval_configuration = "SetIntervalConfiguration"
-        self.set_high_low_trigger_config = "SetHighLowTriggerConfiguration"
-        self.set_variance_configuration = "SetVarianceConfiguration"
-
-        self.set_display_config = "SetDisplayConfiguration"
-        self.set_email_configuration = "SetEmailConfiguration"
-        self.set_wifi_configuration = "SetWifiConfiguration"
-
-        self.set_weather_underground_configuration = "SetWeatherUndergroundConfiguration"
-        self.set_luftdaten_configuration = "SetLuftdatenConfiguration"
-        self.set_open_sense_map_configuration = "SetOpenSenseMapConfiguration"
-
-
-class CreateNetworkGetCommands:
-    """ Create a object instance holding available network "Get" commands (AKA get data from remote sensor). """
-
-    def __init__(self):
-        self.check_online_status = "CheckOnlineStatus"
-        self.check_portal_login = "TestLogin"
-
-        self.sensor_name = "GetHostName"
-        self.sensor_id = "GetSensorID"
-
-        self.os_version = "GetOSVersion"
-        self.program_version = "GetSensorVersion"
-        self.program_last_updated = "GetProgramLastUpdated"
-
-        self.rm_system_report = "/atpro/rm-get-system-entry"
-        self.rm_config_report = "/atpro/rm-get-config-entry"
-        self.rm_readings_report = "/atpro/rm-get-readings-entry"
-        self.rm_latency_report = "/atpro/rm-get-latency-entry"
-
-        self.system_uptime = "GetSystemUptime"
-        self.system_date_time = "GetSystemDateTime"
-        self.system_ram_used = "GetRAMUsed"
-        self.system_ram_free = "GetRAMFree"
-        self.system_ram_total = "GetRAMTotal"
-        self.system_ram_size_type = "GetRAMTotalSizeType"
-        self.system_disk_space_free = "GetFreeDiskSpace"
-
-        self.sensor_sql_all_databases_zip = "DownloadALLSQLDatabases"
-        self.sensor_sql_database = "DownloadSQLDatabase"
-        self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
-        self.sensor_sql_database_size = "GetSQLDBSize"
-        self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
-
-        self.sensor_configuration_file = "GetConfiguration"
-        self.installed_sensors_file = "GetInstalledSensors"
-        self.interval_configuration_file = "GetIntervalConfiguration"
-        self.high_low_trigger_configuration_file = "GetHighLowTriggerConfiguration"
-        self.variance_config_file = "GetVarianceConfiguration"
-        self.display_configuration_file = "GetDisplayConfiguration"
-        self.email_configuration_file = "GetEmailConfiguration"
-        self.wifi_config_file = "GetWifiConfiguration"
-        self.weather_underground_config_file = "GetWeatherUndergroundConfiguration"
-        self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
-        self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
-
-        self.download_zipped_logs = "DownloadZippedLogs"
-
-        self.download_zipped_everything = "DownloadZippedEverything"
-
-        self.sensor_readings = "GetAllSensorReadings"
-        self.sensors_latency = "GetSensorsLatency"
-
-        self.cpu_temp = "GetCPUTemperature"
-        self.environmental_temp = "GetEnvTemperature"
-        self.env_temp_offset = "GetTempOffsetEnv"
-        self.pressure = "GetPressure"
-        self.altitude = "GetAltitude"
-        self.humidity = "GetHumidity"
-        self.distance = "GetDistance"
-        self.all_gas = "GetAllGas"
-        self.all_particulate_matter = "GetAllParticulateMatter"
-        self.lumen = "GetLumen"
-        self.electromagnetic_spectrum = "GetEMSColors"
-        self.all_ultra_violet = "GetAllUltraViolet"
-        self.accelerometer_xyz = "GetAccelerometerXYZ"
-        self.magnetometer_xyz = "GetMagnetometerXYZ"
-        self.gyroscope_xyz = "GetGyroscopeXYZ"
-
-
-class CreateDatabaseVariables:
-    """ Creates a object instance holding SQLite3 database table and row names. """
-
-    def __init__(self):
-        self.table_interval = "IntervalData"
-        self.table_trigger = "TriggerData"
-        self.table_other = "OtherData"
-
-        self.other_table_column_user_date_time = "UserDateTime"
-        self.other_table_column_notes = "Notes"
-
-        self.sensor_check_in_version = "KootnetVersion"
-        self.sensor_check_in_installed_sensors = "InstalledSensors"
-        self.sensor_check_in_primary_log = "PrimaryLog"
-        self.sensor_check_in_network_log = "NetworkLog"
-        self.sensor_check_in_sensors_log = "SensorsLog"
-
-        self.trigger_state = "TriggerState"
-
-        self.all_tables_datetime = "DateTime"
-        self.sensor_name = "SensorName"
-        self.ip = "IP"
-        self.sensor_uptime = "SensorUpTime"
-
-        self.system_temperature = "SystemTemp"
-        self.env_temperature = "EnvironmentTemp"
-        self.env_temperature_offset = "EnvTempOffset"
-        self.pressure = "Pressure"
-        self.altitude = "Altitude"
-        self.humidity = "Humidity"
-        self.dew_point = "Dew_Point"
-        self.distance = "Distance"
-
-        self.gas_all_dic = "All_Gas_As_Dictionary"
-        self.gas_resistance_index = "Gas_Resistance_Index"
-        self.gas_oxidising = "Gas_Oxidising"
-        self.gas_reducing = "Gas_Reducing"
-        self.gas_nh3 = "Gas_NH3"
-
-        self.particulate_matter_all_dic = "All_Particulate_Matter_As_Dictionary"
-        self.particulate_matter_1 = "Particulate_Matter_1"
-        self.particulate_matter_2_5 = "Particulate_Matter_2_5"
-        self.particulate_matter_4 = "Particulate_Matter_4"
-        self.particulate_matter_10 = "Particulate_Matter_10"
-
-        self.lumen = "Lumen"
-
-        self.colour_all_dic = "All_Colours_As_Dictionary"
-        self.red = "Red"
-        self.orange = "Orange"
-        self.yellow = "Yellow"
-        self.green = "Green"
-        self.blue = "Blue"
-        self.violet = "Violet"
-
-        self.ultra_violet_all_dic = "All_Ultra_Violet_As_Dictionary"
-        self.ultra_violet_index = "Ultra_Violet_Index"
-        self.ultra_violet_a = "Ultra_Violet_A"
-        self.ultra_violet_b = "Ultra_Violet_B"
-
-        self.acc_all_dic = "All_Acceleration_As_Dictionary"
-        self.acc_x = "Acc_X"
-        self.acc_y = "Acc_Y"
-        self.acc_z = "Acc_Z"
-
-        self.mag_all_dic = "All_Magnetometer_As_Dictionary"
-        self.mag_x = "Mag_X"
-        self.mag_y = "Mag_Y"
-        self.mag_z = "Mag_Z"
-
-        self.gyro_all_dic = "All_Gyroscope_As_Dictionary"
-        self.gyro_x = "Gyro_X"
-        self.gyro_y = "Gyro_Y"
-        self.gyro_z = "Gyro_Z"
-
-        self.gps_all_dic = "All_GPS_As_Dictionary"
-        self.latitude = "Latitude"
-        self.longitude = "Longitude"
-        self.gps_timestamp = "GPS_Timestamp"
-        self.gps_num_satellites = "GPS_Number_Of_Satellites"
-        self.gps_quality = "GPS_Quality"
-        self.gps_mode_fix_type = "GPS_Mode_Fix_Type"
-        self.gps_speed_over_ground = "GPS_Speed_Over_Ground"
-
-        self.gps_pdop = "GPS_PDOP"
-        self.gps_hdop = "GPS_HDOP"
-        self.gps_vdop = "GPS_VDOP"
-
-    def get_sensor_columns_list(self):
-        """ Returns SQL Table columns used for Interval recording as a list. """
-        sensor_sql_columns = [self.all_tables_datetime,
-                              self.sensor_name,
-                              self.ip,
-                              self.sensor_uptime,
-                              self.system_temperature,
-                              self.env_temperature,
-                              self.env_temperature_offset,
-                              self.pressure,
-                              self.altitude,
-                              self.humidity,
-                              self.dew_point,
-                              self.distance,
-                              self.gas_resistance_index,
-                              self.gas_oxidising,
-                              self.gas_reducing,
-                              self.gas_nh3,
-                              self.particulate_matter_1,
-                              self.particulate_matter_2_5,
-                              self.particulate_matter_4,
-                              self.particulate_matter_10,
-                              self.lumen,
-                              self.red,
-                              self.orange,
-                              self.yellow,
-                              self.green,
-                              self.blue,
-                              self.violet,
-                              self.ultra_violet_index,
-                              self.ultra_violet_a,
-                              self.ultra_violet_b,
-                              self.acc_x,
-                              self.acc_y,
-                              self.acc_z,
-                              self.mag_x,
-                              self.mag_y,
-                              self.mag_z,
-                              self.gyro_x,
-                              self.gyro_y,
-                              self.gyro_z,
-                              self.latitude,
-                              self.longitude,
-                              self.gps_timestamp,
-                              self.gps_num_satellites,
-                              self.gps_quality,
-                              self.gps_mode_fix_type,
-                              self.gps_speed_over_ground,
-                              self.gps_pdop,
-                              self.gps_hdop,
-                              self.gps_vdop]
-        return sensor_sql_columns
-
-    def get_other_columns_list(self):
-        """ Returns "Other" SQL Table columns as a list. """
-        other_sql_columns = [self.other_table_column_user_date_time,
-                             self.other_table_column_notes]
-        return other_sql_columns
-
-
-class CreateLatencyVariables:
-    def __init__(self):
-        self.cpu_temperature = "CPU Temperature"
-        self.environment_temperature = "Environmental Temperature"
-        self.pressure = "Pressure"
-        self.altitude = "Altitude"
-        self.humidity = "Humidity"
-        self.distance = "Distance"
-        self.gas = "GAS"
-        self.particulate_matter = "Particulate Matter"
-        self.lumen = "Lumen"
-        self.colours = "Colours"
-        self.ultra_violet = "Ultra Violet"
-        self.accelerometer_xyz = "Accelerometer XYZ"
-        self.magnetometer_xyz = "Magnetometer XYZ"
-        self.gyroscope_xyz = "Gyroscope XYZ"
-        self.gps = "GPS"
-
-    def get_all_latency_as_list(self):
-        return [self.cpu_temperature, self.environment_temperature, self.pressure, self.altitude,
-                self.humidity, self.distance, self.gas, self.particulate_matter, self.lumen,
-                self.colours, self.ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz,
-                self.gps]
-
-
-class CreateEmptyThreadClass:
-    def __init__(self):
-        self.current_state = "Disabled"
-
+database_variables = CreateDatabaseVariables()
+network_system_commands = CreateNetworkSystemCommands()
+network_get_commands = CreateNetworkGetCommands()
+latency_variables = CreateLatencyVariables()
 
 # Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
@@ -316,45 +33,42 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
                  "StartService": "systemctl start KootnetSensors.service",
                  "DisableService": "systemctl disable KootnetSensors.service",
                  "StopService": "systemctl stop KootnetSensors.service",
-                 "UpgradeOnline": "systemctl start SensorUpgradeOnline.service",
-                 "UpgradeOnlineClean": "systemctl start SensorUpgradeOnlineClean.service",
-                 "UpgradeOnlineCleanDEV": "systemctl start SensorUpgradeOnlineCleanDEV.service",
-                 "UpgradeOnlineDEV": "systemctl start SensorUpgradeOnlineDEV.service",
-                 "UpgradeSMB": "systemctl start SensorUpgradeSMB.service",
-                 "UpgradeSMBClean": "systemctl start SensorUpgradeSMBClean.service",
-                 "UpgradeSMBCleanDEV": "systemctl start SensorUpgradeSMBCleanDEV.service",
-                 "UpgradeSMBDEV": "systemctl start SensorUpgradeSMBDEV.service",
                  "UpgradeSystemOS": "apt-get update && apt-get -y upgrade",
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now"}
-
 
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
 running_with_root = True
-if geteuid() != 0:
+if geteuid():
+    # root has UID of 0
     running_with_root = False
+running_as_service = False
+
+program_root_dir = ""
+try:
+    split_location = path.dirname(path.realpath(__file__)).split("/")[:-1]
+    for section in split_location:
+        program_root_dir += "/" + str(section)
+    program_root_dir = program_root_dir[1:]
+except Exception as error:
+    print("App Cached Variables - Script Location Error: " + str(error))
+
+if program_root_dir == "/opt/kootnet-sensors":
+    running_as_service = True
 operating_system_name = ""
 program_last_updated = ""
 reboot_count = ""
 total_ram_memory = 0.0
 total_disk_space = 0.0
 tmp_sensor_id = ""
-database_variables = CreateDatabaseVariables()
-latency_variables = CreateLatencyVariables()
 
 # Names of all the uploaded databases for graphing (Only names, no directory path)
 uploaded_databases_list = []
 
 # Names of all the backed-up main databases (Only names, no directory path)
 zipped_db_backup_list = []
-
-# Is filled with Currently available online Stable / Developmental versions
-standard_version_available = "Retrieving"
-developmental_version_available = "Retrieving"
-software_update_available = False
-software_update_dev_available = False
 
 # Static variables
 command_data_separator = "[new_data_section]"
@@ -378,7 +92,12 @@ wifi_psk = ""
 
 # Flask App Login Variables (Web Portal Login)
 http_flask_user = "Kootnet"
-http_flask_password = "sensors"
+http_flask_password_hash = b''
+http_flask_password_salt = b''
+# Place holder for logged in http users {user_id: datetime.utcnow()}
+http_flask_login_session_ids = {}
+# Failed login IPs are stored here, {IP: [last_failed_login_date, number_of_failed_login_attempts]}
+failed_flask_logins_dic = {}
 
 # Sensor Check-in View Variables
 checkin_search_sensor_id = ""
@@ -387,6 +106,16 @@ checkin_sensor_info = ""
 checkin_search_primary_log = ""
 checkin_search_network_log = ""
 checkin_search_sensors_log = ""
+# Checkin Cached Table Variables
+checkins_sensors_html_list_last_updated = "Please Refresh Information || Datetime is displayed in "
+checkins_db_sensors_count = 0
+checkins_db_sensors_count_from_past_days = 0
+checkins_sensors_html_table_list = ""
+
+# MQTT Subscriber Variables
+mqtt_subscriber_sensors_html_list_last_updated = "Please Refresh Table Content || Datetime is displayed in "
+mqtt_subscriber_sensors_count = 0
+mqtt_subscriber_sensors_html_list = ""
 
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()
@@ -450,87 +179,17 @@ restart_weather_underground_thread = False
 restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
 
-# Checked before running OS or pip3 upgrades
-# Set to False when stating a upgrade, returns to True after program restarts
+# Checked before running Kootnet Sensors, OS or pip3 upgrades (Kootnet Sensors and OS use sensor_ready_for_upgrade)
+# Set to False when stating an upgrade, returns to True after program restarts or upgrade fails
 sensor_ready_for_upgrade = True
+pip_ready_for_upgrades = True
 
 # Variables to make sure the same zip is not being generated multiple times at the same time
 creating_zip_main_db = False
 creating_zip_checkin_db = False
 creating_zip_mqtt_sub_db = False
 
-# Variables to make sure Remote Management is only creating a single copy at any given time
-creating_the_reports_zip = False
-creating_the_big_zip = False
-creating_databases_zip = False
-creating_logs_zip = False
-
-creating_combo_report = False
-creating_system_report = False
-creating_config_report = False
-creating_readings_report = False
-creating_latency_report = False
-
-# Cached Reports
-default_report = """
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="robots" content="noindex">
-        <title>Kootnet Sensors</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    </head>
-    <body style='background-color: black;'>
-        <h2 style='text-decoration: underline; color: red;'>Report Not Found</h3>
-        <p style='color: white;'>No report found, please generated the report first</p>
-    </body>
-</html>
-"""
-html_combo_report = default_report
-html_system_report = default_report
-html_config_report = default_report
-html_readings_report = default_report
-html_latency_report = default_report
-
-# Login used for remote sensors (Used in Sensor Remote Management)
-http_login = ""
-http_password = ""
-
-# Download Sensor SQL Database in a zip placeholder
-sensor_database_zipped = b''
-
-# Sensor Control Download placeholders
-sc_reports_zip_name = ""
-sc_logs_zip_name = ""
-sc_databases_zip_name = ""
-sc_big_zip_name = ""
-sc_databases_zip_in_memory = False
-sc_big_zip_in_memory = False
-sc_in_memory_zip = b''
-
 # HTML Sensor Notes Variables
 notes_total_count = 0
 note_current = 1
 cached_notes_as_list = []
-
-# Quick Graph's Variables
-quick_graph_max_sql_entries = 1000
-quick_graph_skip_sql_entries = 0
-quick_graph_hours = 48
-quick_graph_uptime = 1
-quick_graph_cpu_temp = 0
-quick_graph_env_temp = 1
-quick_graph_pressure = 0
-quick_graph_altitude = 0
-quick_graph_humidity = 1
-quick_graph_dew_point = 0
-quick_graph_distance = 0
-quick_graph_gas = 0
-quick_graph_particulate_matter = 0
-quick_graph_lumen = 0
-quick_graph_colours = 0
-quick_graph_ultra_violet = 0
-quick_graph_acc = 0
-quick_graph_mag = 0
-quick_graph_gyro = 0

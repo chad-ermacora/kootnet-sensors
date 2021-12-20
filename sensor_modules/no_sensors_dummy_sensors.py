@@ -1,6 +1,7 @@
 """
-This module is a 'dummy' sensor class used when you don't want to load the real sensor
-It Returns 'NoSensor' for every sensor
+This module contains a 'dummy' sensor class
+Used during initial sensor initializations as a fallback in case the real sensor doesn't initialize properly
+It Returns '0.0' for every sensor or it's equivalent value
 
 Created on Wed June 3 12:21:56 2020
 
@@ -16,10 +17,11 @@ class CreateNoSensorsDummySensor:
     def __init__(self):
         # Variable used during sensor hardware re-initializations
         self.initialized_sensor = False
+        self.sensor_latency = 0.0
 
     @staticmethod
     def display_text(message):
-        """ Does Nothing. """
+        """ Prints message to console. """
         logger.sensors_logger.warning("Dummy 'NoSensor' Display Accessed")
         print(str(message))
 
@@ -39,6 +41,12 @@ class CreateNoSensorsDummySensor:
     def pressure():
         """ Returns 0.0 """
         logger.sensors_logger.warning("Dummy 'NoSensor' Pressure Accessed")
+        return 0.0
+
+    @staticmethod
+    def altitude():
+        """ Returns 0.0 """
+        logger.sensors_logger.warning("Dummy 'NoSensor' Altitude Accessed")
         return 0.0
 
     @staticmethod

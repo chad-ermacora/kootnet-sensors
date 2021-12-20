@@ -1,32 +1,25 @@
 # Required Sensor Program Modules
+# --- Required for Flask
+Werkzeug
+Jinja2
+MarkupSafe
+itsdangerous
+click
+# ---
 flask
 Flask-Compress
-Flask-HTTPAuth
 gevent
 greenlet
-werkzeug
-cryptography
 paho-mqtt
 requests
 psutil
-python-dateutil
 plotly
 numpy
 # Required for Testing GUI
 guizero
 # ---
-# Commented Modules are left for requirement reference
-# The following entries before 'Sensor Hardware Modules' are installed only in Raspbian
-# Using the Debian installer script postinst
-# ---
-#gpiozero
-#pyserial
-#spidev
-#smbus
-#smbus2
-# ---
 # All Commented out Sensor Hardware Modules are included in the main app
-# luma.core luma.oled are actually installed later in the Debian installer postinst script
+# luma.core luma.oled are actually installed on demand when Pimoroni 1.12" OLED is enabled
 # ---
 #luma.core
 #luma.oled
@@ -44,3 +37,9 @@ guizero
 #matrix11x7
 #st7735
 #enviroplus
+# ---
+# These shared physical access libraries are also included in the main app
+# ---
+# smbus -> using local copy (using smbus2 instead)
+# smbus2  -> using local copy for MANY sensors
+# pyserial -> using local copy for SPS30/PMS5003

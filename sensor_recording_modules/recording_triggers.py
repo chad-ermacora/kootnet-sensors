@@ -19,7 +19,8 @@
 from time import sleep
 from datetime import datetime
 from operations_modules import logger
-from operations_modules.app_generic_functions import thread_function, CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
+from operations_modules.app_generic_functions import thread_function
 from configuration_modules import app_config_access
 from operations_modules.app_cached_variables import database_variables
 from operations_modules import app_cached_variables
@@ -84,12 +85,9 @@ class StartTriggerVariance:
         sql_query = "INSERT OR IGNORE INTO TriggerData ("
 
         sql_data_list = [datetime_stamp]
-        if installed_sensors.linux_system:
-            sql_query += "DateTime,SensorName,IP," + sql_column_name + ") VALUES ("
-            sql_data_list.append(app_cached_variables.hostname)
-            sql_data_list.append(app_cached_variables.ip)
-        else:
-            sql_query += "DateTime," + sql_column_name + ") VALUES ("
+        sql_query += "DateTime,SensorName,IP," + sql_column_name + ") VALUES ("
+        sql_data_list.append(app_cached_variables.hostname)
+        sql_data_list.append(app_cached_variables.ip)
 
         sql_data_list.append(str(reading))
 
@@ -109,7 +107,9 @@ def start_trigger_variance_recording_server():
 
 def _trigger_variance_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
-    logger.primary_logger.debug("Trigger Thread(s) Starting")
+    # Sleep to allow cached variables like sensor IP & hostname to populate
+    sleep(10)
+    logger.primary_logger.info(" -- Trigger Variance Recording Started")
     if trigger_variances.cpu_temperature_enabled:
         sensor_get_function = sensor_access.get_cpu_temperature
         sql_column_name_list = [database_variables.system_temperature]

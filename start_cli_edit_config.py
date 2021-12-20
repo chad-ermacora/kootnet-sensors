@@ -21,36 +21,51 @@ import logging
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from upgrade_modules.generic_upgrade_functions import reset_all_configurations
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from upgrade_modules.upgrade_functions import CreateUpgradeScriptInterface, CreateUpdateChecksInterface, \
+    download_type_smb
 from operations_modules.software_version import version
-try:
-    import requests
-    from http_server import server_http_auth
-except Exception as import_error:
-    logger.primary_logger.error("Terminal Configuration Tool - Import Error: " + str(import_error))
+from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
+from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
+from http_server.server_http_generic_functions import save_http_auth_to_file
+from build_deb_packages import start_deb_build_cli_menu
 
 logging.captureWarnings(True)
 logger.primary_logger.debug("Terminal Configuration Tool Starting")
-
-remote_get = app_cached_variables.CreateNetworkGetCommands()
+primary_config = CreatePrimaryConfiguration()
+local_sensor_address = "127.0.0.1:" + str(primary_config.web_portal_port)
 
 options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
-1. View/Edit Primary Config & Installed Sensors
-2. Reset ALL Configurations to Default
-3. Change Web Login Credentials
-4. Update Python Modules
+1. View/Edit Primary & Installed Sensors Configurations
+2. Change Web Login Credentials
+3. Update Python Modules
+4. Upgrade Operating System
 5. Upgrade Kootnet Sensors (Standard HTTP)
-6. Upgrade Kootnet Sensors (Development HTTP)
-7. Re-Install Kootnet Sensors (Latest Standard HTTP)
-8. Create New Self Signed SSL Certificate
-9. Enable & Start KootnetSensors
-10. Disable & Stop KootnetSensors
-11. Restart KootnetSensors Service
-12. Run Sensor Local Tests
-13. Exit
+6. Re-Install Kootnet Sensors (Latest Standard HTTP)
+7. Create New Self Signed SSL Certificate
+8. Restart KootnetSensors Service
+9. Run Sensor Local Tests
+10. View Logs
+11. Advanced Menu
+12. Exit
 """.replace("{{ Version }}", version)
 
-any_key_shutdown = "\nThe TCT must be restarted\n\nPress enter to close"
+extra_options_menu = """Advanced Menu\n
+21. Upgrade Kootnet Sensors (Development HTTP)
+22. Re-Install Kootnet Sensors (Latest Development HTTP)
+23. Enable & Start KootnetSensors
+24. Disable & Stop KootnetSensors
+25. Reset ALL Configurations to Default
+26. Upgrade Kootnet Sensors (Standard SMB)
+27. Upgrade Kootnet Sensors (Development SMB)
+28. Re-Install Kootnet Sensors (Latest Standard SMB)
+29. Re-Install Kootnet Sensors (Latest Developmental SMB)
+31. Build Kootnet Sensors Debian Installers
+"""
+remote_get_commands = app_cached_variables.network_get_commands
+msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
+msg_upgrade_started = "Kootnet Sensors upgrade has started\nCheck Logs for more Info /home/kootnet_data/logs/"
+view_log_system_command = "tail -n 50 "
 
 
 def start_script():
@@ -66,48 +81,164 @@ def start_script():
             if selection == 1:
                 os.system("nano " + file_locations.primary_config)
                 os.system("nano " + file_locations.installed_sensors_config)
-                _restart_service()
-            elif selection == 2:
-                if input("Are you sure you want to reset ALL configurations? (y/n): ").lower() == "y":
-                    os.system("clear")
-                    reset_all_configurations()
+                if app_cached_variables.running_as_service:
                     _restart_service()
-                else:
-                    print("Configuration Reset Cancelled")
-            elif selection == 3:
+            elif selection == 2:
                 _change_https_auth()
+            elif selection == 3:
+                if app_cached_variables.running_as_service:
+                    upgrade_python_pip_modules(python_location="/home/kootnet_data/env/bin/python")
+                else:
+                    print(msg_service_not_installed)
             elif selection == 4:
-                _pip_upgrades()
+                if app_cached_variables.running_with_root:
+                    print("Starting Operating System Upgrade\n")
+                    upgrade_linux_os(thread_the_function=False)
+                else:
+                    print("OS Upgrade Cancelled - Not Running as root")
             elif selection == 5:
-                os.system("/bin/bash /home/kootnet_data/scripts/update_kootnet-sensors_http.sh")
-                input(any_key_shutdown)
-                running = False
+                if app_cached_variables.running_as_service:
+                    update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
+                    if update_checks_interface.standard_update_available:
+                        print("Starting HTTP Standard Upgrade\n")
+                        upgrade_interface = CreateUpgradeScriptInterface()
+                        upgrade_interface.thread = False
+                        upgrade_interface.start_kootnet_sensors_upgrade()
+                        print(msg_upgrade_started)
+                    else:
+                        print("No New Version Available\n")
+                else:
+                    print(msg_service_not_installed)
             elif selection == 6:
-                os.system("/bin/bash /home/kootnet_data/scripts/update_kootnet-sensors_http.sh dev")
-                input(any_key_shutdown)
-                running = False
+                if app_cached_variables.running_as_service:
+                    print("Starting HTTP Standard Re-Install\n")
+                    upgrade_interface = CreateUpgradeScriptInterface()
+                    upgrade_interface.thread = False
+                    upgrade_interface.clean_upgrade = True
+                    upgrade_interface.start_kootnet_sensors_upgrade()
+                    print(msg_upgrade_started)
+                else:
+                    print(msg_service_not_installed)
             elif selection == 7:
-                os.system("/bin/bash /home/kootnet_data/scripts/clean_upgrade_http.sh")
-                input(any_key_shutdown)
-                running = False
-            elif selection == 8:
                 os.system("rm -f -r " + file_locations.http_ssl_folder)
-                _restart_service(msg="SSL Certificate Removed, Restarting Service to Create a New Certificate")
+                if app_cached_variables.running_as_service:
+                    _restart_service(msg="SSL Certificate Removed\nRestarting Service to Create a New Certificate")
+                else:
+                    print("SSL Certificate Removed")
+            elif selection == 8:
+                if app_cached_variables.running_as_service:
+                    _restart_service(msg="Kootnet Sensors Restarting")
+                else:
+                    print(msg_service_not_installed)
             elif selection == 9:
-                os.system(app_cached_variables.bash_commands["EnableService"])
-                os.system(app_cached_variables.bash_commands["StartService"])
-                logger.primary_logger.info("TCT - Kootnet Sensors Enabled")
-            elif selection == 10:
-                os.system(app_cached_variables.bash_commands["DisableService"])
-                os.system(app_cached_variables.bash_commands["StopService"])
-                logger.primary_logger.info("TCT - Kootnet Sensors Disabled")
-            elif selection == 11:
-                _restart_service(msg="Kootnet Sensors Restarting")
-            elif selection == 12:
                 _test_sensors()
                 print("Testing Complete")
-            elif selection == 13:
+            elif selection == 10:
+                os.system("clear")
+                print("Primary Log\n\n")
+                os.system(view_log_system_command + file_locations.primary_log)
+                input("\nPress enter for the next log")
+                os.system("clear")
+                print("Network Log\n\n")
+                os.system(view_log_system_command + file_locations.network_log)
+                input("\nPress enter for the next log")
+                os.system("clear")
+                print("Sensors Log\n\n")
+                os.system(view_log_system_command + file_locations.sensors_log)
+                print("\nEnd of Logs")
+            elif selection == 11:
+                print(extra_options_menu)
+            elif selection == 12:
                 running = False
+            elif selection == 21:
+                if app_cached_variables.running_as_service:
+                    update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
+                    if update_checks_interface.developmental_update_available:
+                        print("Starting HTTP Developmental Upgrade\n")
+                        upgrade_interface = CreateUpgradeScriptInterface()
+                        upgrade_interface.thread = False
+                        upgrade_interface.dev_upgrade = True
+                        upgrade_interface.start_kootnet_sensors_upgrade()
+                        print(msg_upgrade_started)
+                    else:
+                        print("No New Version Available\n")
+                else:
+                    print(msg_service_not_installed)
+            elif selection == 22:
+                if app_cached_variables.running_as_service:
+                    print("Starting HTTP Developmental Re-Install\n")
+                    upgrade_interface = CreateUpgradeScriptInterface()
+                    upgrade_interface.thread = False
+                    upgrade_interface.dev_upgrade = True
+                    upgrade_interface.clean_upgrade = True
+                    upgrade_interface.start_kootnet_sensors_upgrade()
+                    print(msg_upgrade_started)
+                else:
+                    print(msg_service_not_installed)
+            elif selection == 23:
+                if app_cached_variables.running_as_service:
+                    os.system(app_cached_variables.bash_commands["EnableService"])
+                    os.system(app_cached_variables.bash_commands["StartService"])
+                    logger.primary_logger.info("TCT - Kootnet Sensors Enabled")
+                else:
+                    print(msg_service_not_installed)
+            elif selection == 24:
+                if app_cached_variables.running_as_service:
+                    os.system(app_cached_variables.bash_commands["DisableService"])
+                    os.system(app_cached_variables.bash_commands["StopService"])
+                    logger.primary_logger.info("TCT - Kootnet Sensors Disabled")
+                else:
+                    print(msg_service_not_installed)
+            elif selection == 25:
+                if input("Are you sure you want to reset ALL configurations? (y/n): ").lower() == "y":
+                    os.system("clear")
+                    config_list = [file_locations.primary_config, file_locations.installed_sensors_config,
+                                   file_locations.display_config, file_locations.checkin_configuration,
+                                   file_locations.interval_config, file_locations.trigger_high_low_config,
+                                   file_locations.trigger_variances_config, file_locations.email_config,
+                                   file_locations.mqtt_publisher_config, file_locations.mqtt_subscriber_config,
+                                   file_locations.osm_config, file_locations.weather_underground_config,
+                                   file_locations.luftdaten_config]
+                    for config in config_list:
+                        os.remove(config)
+                    if app_cached_variables.running_as_service:
+                        _restart_service()
+                else:
+                    print("Configuration Reset Cancelled")
+            elif selection == 26:
+                print("Starting SMB Standard Upgrade\n")
+                upgrade_interface = CreateUpgradeScriptInterface()
+                upgrade_interface.download_type = download_type_smb
+                upgrade_interface.thread = False
+                upgrade_interface.start_kootnet_sensors_upgrade()
+                print(msg_upgrade_started)
+            elif selection == 27:
+                print("Starting SMB Developmental Upgrade\n")
+                upgrade_interface = CreateUpgradeScriptInterface()
+                upgrade_interface.download_type = download_type_smb
+                upgrade_interface.dev_upgrade = True
+                upgrade_interface.thread = False
+                upgrade_interface.start_kootnet_sensors_upgrade()
+                print(msg_upgrade_started)
+            elif selection == 28:
+                print("Starting SMB Standard Re-Install\n")
+                upgrade_interface = CreateUpgradeScriptInterface()
+                upgrade_interface.download_type = download_type_smb
+                upgrade_interface.clean_upgrade = True
+                upgrade_interface.thread = False
+                upgrade_interface.start_kootnet_sensors_upgrade()
+                print(msg_upgrade_started)
+            elif selection == 29:
+                print("Starting SMB Developmental Re-Install\n")
+                upgrade_interface = CreateUpgradeScriptInterface()
+                upgrade_interface.download_type = download_type_smb
+                upgrade_interface.dev_upgrade = True
+                upgrade_interface.clean_upgrade = True
+                upgrade_interface.thread = False
+                upgrade_interface.start_kootnet_sensors_upgrade()
+                print(msg_upgrade_started)
+            elif selection == 31:
+                start_deb_build_cli_menu()
             else:
                 os.system("clear")
                 print("Invalid Selection: " + str(selection))
@@ -126,29 +257,16 @@ def _change_https_auth():
     print("Please enter a new Username and Password for Kootnet Sensor's Web Portal")
     new_user = input("New Username: ")
     new_password = input("New Password: ")
-    server_http_auth.save_http_auth_to_file(new_user, new_password)
+    save_http_auth_to_file(new_user, new_password)
     _restart_service()
-
-
-def _pip_upgrades():
-    print("Upgrading all Python pip modules can take awhile.  Please wait ...\n")
-    try:
-        with open(file_locations.program_root_dir + "/requirements.txt") as file:
-            requirements_text_lines_list = file.readlines()
-        for line in requirements_text_lines_list:
-            if line[0] != "#":
-                command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
-                os.system(command)
-        logger.primary_logger.info("TCT - Python3 Module Upgrades Complete\n")
-        _restart_service()
-    except Exception as error:
-        logger.primary_logger.error("TCT - Python3 Module Upgrades: " + str(error))
 
 
 def _test_sensors():
     print("*** Starting Sensor Data test ***\n")
     try:
-        interval_data = _get_interval_sensor_data()
+        tmp_interval_data = get_http_sensor_reading(local_sensor_address, remote_get_commands.sensor_readings)
+        tmp_interval_data = tmp_interval_data.split(app_cached_variables.command_data_separator)
+        interval_data = [str(tmp_interval_data[0]), str(tmp_interval_data[1])]
         sensor_types = interval_data[0].split(",")
         sensor_readings = interval_data[1].split(",")
 
@@ -177,30 +295,13 @@ def _test_sensors():
 
         print(str_message)
         print("Showing Test Message on Installed Display (If Installed)\n")
-        _display_text_on_sensor("Display Test Message")
+        send_http_command(
+            sensor_address=local_sensor_address,
+            http_command="DisplayText",
+            dic_data={'command_data': "Display Test Message"}
+        )
     except Exception as error:
         logger.primary_logger.error("TCT - Tests Failed: " + str(error))
-
-
-def _get_interval_sensor_data():
-    """ Returns local sensor Interval data. """
-    try:
-        url = "https://127.0.0.1:10065/" + remote_get.sensor_readings
-        tmp_return_data = requests.get(url=url, verify=False)
-        return_data = tmp_return_data.text.split(app_cached_variables.command_data_separator)
-        return [str(return_data[0]), str(return_data[1])]
-    except Exception as error:
-        logger.primary_logger.warning("TCT - Get Sensor Data - Unable to connect to localhost: " + str(error))
-    return ["error", "error"]
-
-
-def _display_text_on_sensor(text_message):
-    """ Displays text on local sensors display (if any). """
-    try:
-        url = "https://127.0.0.1:10065/DisplayText"
-        requests.put(url=url, data={'command_data': text_message}, verify=False)
-    except Exception as error:
-        logger.primary_logger.warning("TCT - Display - Unable to connect to localhost: " + str(error))
 
 
 def _restart_service(msg="Restarting Kootnet Sensors service to apply changes"):

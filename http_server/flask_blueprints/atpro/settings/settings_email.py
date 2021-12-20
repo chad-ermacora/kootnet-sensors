@@ -21,7 +21,7 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function
 from operations_modules.app_validation_checks import email_is_valid
-from operations_modules.email_server import send_test_email, send_report_email, send_quick_graph_email
+from operations_modules.email_server import send_test_email, send_report_emails, send_db_graph_emails
 from configuration_modules import app_config_access
 from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
@@ -78,12 +78,6 @@ def html_atpro_sensor_settings_email_graphs():
         email_config.save_config_to_file()
         app_cached_variables.restart_graph_email_thread = True
         return get_message_page("Email Graph Settings Updated", page_url="sensor-settings")
-
-    quick_graph_checked = "checked"
-    plotly_graph_checked = ""
-    if email_config.graph_type:
-        plotly_graph_checked = "checked"
-        quick_graph_checked = ""
     graph_send_selected_options = _get_send_option_selection(email_config.send_graph_every)
     return render_template("ATPro_admin/page_templates/settings/settings-email-graphs.html",
                            CheckedEmailGraphs=get_html_checkbox_state(email_config.enable_graph_emails),
@@ -92,27 +86,7 @@ def html_atpro_sensor_settings_email_graphs():
                            EmailGraphSelectedMonthly=graph_send_selected_options[2],
                            EmailGraphSelectedYearly=graph_send_selected_options[3],
                            EmailGraphAtHourMin=email_config.email_graph_time_of_day,
-                           EmailGraphsToCSVAddresses=email_config.send_graphs_to_csv_emails,
-                           QuickGraphChecked=quick_graph_checked,
-                           PlotlyGraphChecked=plotly_graph_checked,
-                           GraphsPastHours=email_config.graph_past_hours,
-                           CheckedSensorUptime=get_html_checkbox_state(email_config.sensor_uptime),
-                           CheckedCPUTemperature=get_html_checkbox_state(email_config.system_temperature),
-                           CheckedEnvTemperature=get_html_checkbox_state(email_config.env_temperature),
-                           CheckedPressure=get_html_checkbox_state(email_config.pressure),
-                           CheckedAltitude=get_html_checkbox_state(email_config.altitude),
-                           CheckedHumidity=get_html_checkbox_state(email_config.humidity),
-                           CheckedDewPoint=get_html_checkbox_state(email_config.dew_point),
-                           CheckedDistance=get_html_checkbox_state(email_config.distance),
-                           CheckedGas=get_html_checkbox_state(email_config.gas),
-                           CheckedPM=get_html_checkbox_state(email_config.particulate_matter),
-                           CheckedLumen=get_html_checkbox_state(email_config.lumen),
-                           CheckedColour=get_html_checkbox_state(email_config.color),
-                           CheckedUltraViolet=get_html_checkbox_state(email_config.ultra_violet),
-                           CheckedAccelerometer=get_html_checkbox_state(email_config.accelerometer),
-                           CheckedMagnetometer=get_html_checkbox_state(email_config.magnetometer),
-                           CheckedGyroscope=get_html_checkbox_state(email_config.gyroscope)
-                           )
+                           EmailGraphsToCSVAddresses=email_config.send_graphs_to_csv_emails)
 
 
 @html_atpro_settings_email_routes.route("/atpro/settings-email-settings", methods=["GET", "POST"])
@@ -146,10 +120,10 @@ def html_atpro_send_reports_email():
     msg = "Check the Network logs for more information"
     if email_is_valid(email_address):
         if button_pressed == "reports":
-            thread_function(send_report_email, args=email_address)
+            thread_function(send_report_emails, args=[email_address])
             return get_message_page("Reports email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "graphs":
-            thread_function(send_quick_graph_email, args=email_address)
+            thread_function(send_db_graph_emails, args=[email_address])
             return get_message_page("Graph email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "settings":
             thread_function(send_test_email, args=email_address)

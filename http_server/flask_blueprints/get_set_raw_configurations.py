@@ -19,7 +19,7 @@
 from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_disk import write_file_to_disk
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from sensor_modules.system_access import restart_services
@@ -27,7 +27,10 @@ from sensor_modules.system_access import restart_services
 html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
 
 
-@html_get_set_config_routes.route("/GetConfiguration")
+# ToDo: Remove all set configs (Using rm_receive_configs.py for Remote Management instead)
+# Only being used in Unit tests & the depreciated desktop app
+@html_get_set_config_routes.route("/GetPrimaryConfiguration")
+@auth.login_required
 def get_primary_configuration():
     logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
     return app_config_access.primary_config.get_config_as_str()
@@ -176,6 +179,20 @@ def set_display_config():
     return "Failed"
 
 
+@html_get_set_config_routes.route("/GetEmailReportsConfiguration")
+@auth.login_required
+def get_email_reports_config():
+    logger.network_logger.debug("* Email Reports Configuration Sent to " + str(request.remote_addr))
+    return app_config_access.email_reports_config.get_config_as_str()
+
+
+@html_get_set_config_routes.route("/GetEmailDatabaseGraphsConfiguration")
+@auth.login_required
+def get_email_db_graphs_config():
+    logger.network_logger.debug("* Email Database Graphs Configuration Sent to " + str(request.remote_addr))
+    return app_config_access.email_db_graph_config.get_config_as_str()
+
+
 @html_get_set_config_routes.route("/GetEmailConfiguration")
 @auth.login_required
 def get_email_config():
@@ -288,7 +305,7 @@ def set_wifi_config():
     logger.network_logger.debug("* Wifi Set by " + str(request.remote_addr))
     try:
         new_wifi_config = request.form.get("command_data")
-        app_generic_functions.write_file_to_disk(file_locations.wifi_config_file, new_wifi_config)
+        write_file_to_disk(file_locations.wifi_config_file, new_wifi_config)
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Primary Configuration from " + str(request.remote_addr)

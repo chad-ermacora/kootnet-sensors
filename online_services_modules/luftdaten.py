@@ -19,7 +19,7 @@
 import requests
 from time import sleep
 from operations_modules import logger
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules.app_config_access import installed_sensors, luftdaten_config
 from sensor_modules import sensor_access

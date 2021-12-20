@@ -17,11 +17,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from os import geteuid
 from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_cached_variables import running_with_root
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
 
 
 class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
@@ -42,8 +42,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             "Pimoroni 1.12 Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor,
             "Pimoroni Enviro with Display", "Pimoroni BME280", "Pimoroni MICS6814", "Pimoroni RV3028", "PA1010D GPS"
         ]
-
-        self.no_sensors = True
 
         self.kootnet_dummy_sensor = 0
 
@@ -81,11 +79,11 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
         self.w1_therm_sensor = 0
 
+        self.check_for_raspberry_pi()
         self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
-            self.config_settings_names[2] = self.get_raspberry_pi_model()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
@@ -96,12 +94,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
 
         self.__init__(load_from_file=False)
-        try:
-            self.linux_system = 0
-            if html_request.form.get("linux_system") is not None:
-                self.linux_system = 1
-            if html_request.form.get("raspberry_pi") is not None:
-                self.raspberry_pi = 1
+        if running_with_root:
             if html_request.form.get("raspberry_pi_sense_hat") is not None:
                 self.raspberry_pi_sense_hat = 1
             if html_request.form.get("pimoroni_bh1745") is not None:
@@ -150,14 +143,12 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.pimoroni_rv3028 = 1
             if html_request.form.get("pimoroni_pa1010d") is not None:
                 self.pimoroni_pa1010d = 1
-            if html_request.form.get("kootnet_dummy_sensor") is not None:
-                self.kootnet_dummy_sensor = 1
             if html_request.form.get("sensirion_sps30") is not None:
                 self.sensirion_sps30 = 1
             if html_request.form.get("w1thermsensor") is not None:
                 self.w1_therm_sensor = 1
-        except Exception as error:
-            logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+        if html_request.form.get("kootnet_dummy_sensor") is not None:
+            self.kootnet_dummy_sensor = 1
         self.update_configuration_settings_list()
         self.load_from_file = True
 
@@ -170,8 +161,11 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             if int(setting):
                 new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
-            if not skip_root_check and geteuid():
-                return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
+            if not skip_root_check and not running_with_root:
+                new_file_content = "Hardware Sensors Disabled - Not running with root"
+                if self.kootnet_dummy_sensor:
+                    new_file_content = "Kootnet Dummy Sensors || " + new_file_content
+                return "Gnu/Linux || " + new_file_content
             return new_file_content[:-4]
         return "N/A"
 
@@ -193,8 +187,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     def _update_variables_from_settings_list(self):
         try:
             self.kootnet_dummy_sensor = int(self.config_settings[0])
-            self.linux_system = int(self.config_settings[1])
-            self.raspberry_pi = int(self.config_settings[2])
+            # self.linux_system = int(self.config_settings[1])  Removed - only Linux is supported
+            # self.raspberry_pi = int(self.config_settings[2])  Removed - it now auto-detects
             self.raspberry_pi_sense_hat = int(self.config_settings[3])
             self.pimoroni_bh1745 = int(self.config_settings[4])
             self.pimoroni_as7262 = int(self.config_settings[5])
@@ -221,9 +215,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_mics6814 = int(self.config_settings[26])
             self.pimoroni_rv3028 = int(self.config_settings[27])
             self.pimoroni_pa1010d = int(self.config_settings[28])
-            for sensor in self.config_settings:
-                if sensor:
-                    self.no_sensors = False
         except Exception as error:
             logger.primary_logger.debug("Installed Sensors Config: " + str(error))
             self.update_configuration_settings_list()
@@ -231,15 +222,18 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 logger.primary_logger.info("Saving Installed Sensors.")
                 self.save_config_to_file()
 
-    def get_raspberry_pi_model(self):
-        """ Returns the local Raspberry Pi model. """
-
-        if self.raspberry_pi and os.path.isfile("/proc/device-tree/model"):
-            try:
-                pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
+    def check_for_raspberry_pi(self):
+        """ Checks if running on a Raspberry Pi """
+        pi_version = "Raspberry Pi not detected"
+        try:
+            if os.path.isfile("/proc/device-tree/model"):
+                pi_version = str(check_output("cat /proc/device-tree/model", shell=True).decode())
                 logger.primary_logger.debug("Pi Version: " + str(pi_version))
-                if str(pi_version)[:12] == "Raspberry Pi":
-                    return str(pi_version)
-            except Exception as error:
-                logger.primary_logger.warning("Unable to get Raspberry Pi Model: " + str(error))
-        return "Raspberry Pi"
+                if str(pi_version)[:12] == "Raspberry Pi" and running_with_root:
+                    self.raspberry_pi = 1
+                else:
+                    self.raspberry_pi = 0
+        except Exception as error:
+            logger.primary_logger.warning("Detect Raspberry Pi Failed: " + str(error))
+            self.raspberry_pi = 0
+        self.config_settings_names[2] = pi_version

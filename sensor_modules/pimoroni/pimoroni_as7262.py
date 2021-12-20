@@ -15,14 +15,12 @@ pip3 install as7262
 
 @author: OO-Dragon
 """
-import time
-from threading import Thread
+from time import sleep
 from operations_modules import logger
 from configuration_modules import app_config_access
 
 round_decimal_to = 5
-# Update readings in seconds
-sleep_between_readings_seconds = 0.25
+pause_sensor_during_access_sec = 0.06
 use_as7262_led = 0  # 0=Disabled, 1=Enabled
 
 
@@ -31,13 +29,6 @@ class CreateAS7262:
 
     def __init__(self):
         self.sensor_in_use = False
-        self.red_650 = 0.0
-        self.orange_600 = 0.0
-        self.yellow_570 = 0.0
-        self.green_550 = 0.0
-        self.blue_500 = 0.0
-        self.violet_450 = 0.0
-        self.sensor_latency = 0.0
 
         try:
             as7262_import = __import__("sensor_modules.drivers.as7262", fromlist=["AS7262"])
@@ -47,41 +38,30 @@ class CreateAS7262:
             self.as7262_access.set_integration_time(17.857)
             self.as7262_access.set_measurement_mode(2)
             self.as7262_access.set_illumination_led(use_as7262_led)
-
-            self.thread_readings_updater = Thread(target=self._readings_updater)
-            self.thread_readings_updater.daemon = True
-            self.thread_readings_updater.start()
+            self.spectral_six_channel()
             logger.sensors_logger.debug("Pimoroni AS7262 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_as7262 = 0
             app_config_access.installed_sensors.update_configuration_settings_list()
 
-    def _readings_updater(self):
-        logger.sensors_logger.debug("Pimoroni AS7262 readings updater started")
-        while True:
-            try:
-                start_time = time.time()
-                ems_colors_list = self.as7262_access.get_calibrated_values()
-                end_time = time.time()
-                self.sensor_latency = float(end_time - start_time)
-
-                self.red_650 = round(ems_colors_list.red, round_decimal_to)
-                self.orange_600 = round(ems_colors_list.orange, round_decimal_to)
-                self.yellow_570 = round(ems_colors_list.yellow, round_decimal_to)
-                self.green_550 = round(ems_colors_list.green, round_decimal_to)
-                self.blue_500 = round(ems_colors_list.blue, round_decimal_to)
-                self.violet_450 = round(ems_colors_list.violet, round_decimal_to)
-            except Exception as error:
-                logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
-                self.red_650 = 0.0
-                self.orange_600 = 0.0
-                self.yellow_570 = 0.0
-                self.green_550 = 0.0
-                self.blue_500 = 0.0
-                self.violet_450 = 0.0
-            time.sleep(sleep_between_readings_seconds)
-
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
-        return [self.red_650, self.orange_600, self.yellow_570, self.green_550, self.blue_500, self.violet_450]
+        while self.sensor_in_use:
+            sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
+        try:
+            ems_colors_list = self.as7262_access.get_calibrated_values()
+
+            red_650 = round(ems_colors_list.red, round_decimal_to)
+            orange_600 = round(ems_colors_list.orange, round_decimal_to)
+            yellow_570 = round(ems_colors_list.yellow, round_decimal_to)
+            green_550 = round(ems_colors_list.green, round_decimal_to)
+            blue_500 = round(ems_colors_list.blue, round_decimal_to)
+            violet_450 = round(ems_colors_list.violet, round_decimal_to)
+            self.sensor_in_use = False
+            return [red_650, orange_600, yellow_570, green_550, blue_500, violet_450]
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
+        self.sensor_in_use = False
+        return [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

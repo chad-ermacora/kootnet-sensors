@@ -19,21 +19,19 @@
 import os
 import shutil
 from flask import Blueprint, render_template, request
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
-from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
 from operations_modules import app_validation_checks
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from sensor_modules.system_access import restart_services
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, sanitize_text
 
 html_atpro_system_networking_routes = Blueprint("html_atpro_system_networking_routes", __name__)
 
@@ -77,50 +75,60 @@ def html_atpro_system_ssl():
 @html_atpro_system_networking_routes.route("/atpro/system-ssl-new-self-sign")
 @auth.login_required
 def html_atpro_create_new_self_signed_ssl():
-    message2 = "Once complete, the sensor programs will be restarted. This may take a few minutes ..."
-    os.system("rm -f -r " + file_locations.http_ssl_folder)
-    restart_services()
-    return get_message_page("Creating new Self-Signed SSL", message2, page_url="sensor-system", skip_menu_select=True)
+    if app_config_access.primary_config.demo_mode:
+        message2 = "Unable to Create New SSL Certificate in Demo mode"
+    else:
+        message2 = "Restart Kootnet Sensors to create and use the new SSL Certificate"
+        os.system("rm -f -r " + file_locations.http_ssl_folder)
+        atpro_notifications.manage_service_restart()
+    return get_message_page("New Self-Signed SSL", message2, page_url="sensor-system", skip_menu_select=True)
 
 
 @html_atpro_system_networking_routes.route("/atpro/system-ssl-custom", methods=["POST"])
 @auth.login_required
 def html_atpro_set_custom_ssl():
     logger.network_logger.info("* Sensor's Web SSL Replacement accessed by " + str(request.remote_addr))
+    title_message = "Sensor SSL Certificate Upload Failed"
     return_message_ok = "SSL Certificate and Key files replaced.  Please restart program for changes to take effect."
     return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
-
-    try:
-        temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"
-        temp_ssl_key_location = file_locations.http_ssl_folder + "/custom_upload_key.key"
-        new_ssl_certificate = request.files["custom_crt"]
-        new_ssl_key = request.files["custom_key"]
-        new_ssl_certificate.save(temp_ssl_crt_location)
-        new_ssl_key.save(temp_ssl_key_location)
-        if _is_valid_ssl_certificate(get_file_content(temp_ssl_crt_location)):
-            os.system("mv -f " + file_locations.http_ssl_crt + " " + file_locations.http_ssl_folder + "/old_cert.crt")
-            os.system("mv -f " + file_locations.http_ssl_key + " " + file_locations.http_ssl_folder + "/old_key.key")
-            os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
-            os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
-            logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
-            atpro_notifications.manage_service_restart()
-            return get_message_page("Sensor SSL Certificate OK", return_message_ok,
+    if app_config_access.primary_config.demo_mode:
+        title_message = "Function Disabled"
+        return_message_fail = "Function Disabled in Demo mode"
+    else:
+        try:
+            move_old_key_to = file_locations.http_ssl_folder + "/old_key.key"
+            move_old_crt_to = file_locations.http_ssl_folder + "/old_cert.crt"
+            new_ssl_key = request.files["custom_key"].stream.read().decode()
+            new_ssl_certificate = request.files["custom_crt"].stream.read().decode()
+            if _is_valid_ssl_key(new_ssl_key) and _is_valid_ssl_certificate(new_ssl_certificate):
+                os.system("mv -f " + file_locations.http_ssl_key + " " + move_old_key_to)
+                os.system("mv -f " + file_locations.http_ssl_crt + " " + move_old_crt_to)
+                write_file_to_disk(file_locations.http_ssl_key, new_ssl_key)
+                write_file_to_disk(file_locations.http_ssl_crt, new_ssl_certificate)
+                logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
+                atpro_notifications.manage_service_restart()
+                return get_message_page("Sensor SSL Certificate Upload OK", return_message_ok,
+                                        page_url="sensor-system", skip_menu_select=True)
+            return get_message_page("Sensor SSL Certificate Upload Failed", return_message_fail,
                                     page_url="sensor-system", skip_menu_select=True)
-        logger.network_logger.error("Invalid Uploaded SSL Certificate")
-        return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
-                                page_url="sensor-system", skip_menu_select=True)
-    except Exception as error:
-        logger.network_logger.error("Failed to set Web Portal SSL Certificate and Key - " + str(error))
-    return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
-                            page_url="sensor-system", skip_menu_select=True)
+        except Exception as error:
+            logger.network_logger.error("Sensor SSL Certificate Upload Failed - " + str(error))
+    return get_message_page(title_message, return_message_fail, page_url="sensor-system", skip_menu_select=True)
 
 
-def _is_valid_ssl_certificate(cert):
-    try:
-        x509.load_pem_x509_certificate(str.encode(cert), default_backend())
-        return True
-    except Exception as error:
-        logger.network_logger.debug("Invalid SSL Certificate - " + str(error))
+def _is_valid_ssl_key(ssl_key):
+    if type(ssl_key) is str:
+        if "BEGIN PRIVATE KEY" in ssl_key.upper():
+            return True
+    logger.network_logger.warning("Invalid SSL Key")
+    return False
+
+
+def _is_valid_ssl_certificate(ssl_cert):
+    if type(ssl_cert) is str:
+        if "BEGIN CERTIFICATE" in str(ssl_cert).upper():
+            return True
+    logger.network_logger.warning("Invalid SSL Certificate")
     return False
 
 
@@ -129,95 +137,106 @@ def _is_valid_ssl_certificate(cert):
 @auth.login_required
 def html_atpro_set_ipv4_config():
     logger.network_logger.debug("** HTML Apply - IPv4 Configuration - Source " + str(request.remote_addr))
-    if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
-        hostname = request.form.get("ip_hostname")
-        app_cached_variables.hostname = hostname
-        os.system("hostnamectl set-hostname " + hostname)
-
-        ip_address = request.form.get("ip_address")
-        ip_subnet = request.form.get("ip_subnet")
-        ip_gateway = request.form.get("ip_gateway")
-        ip_dns1 = request.form.get("ip_dns1")
-        ip_dns2 = request.form.get("ip_dns2")
-
-        dhcpcd_template = str(get_file_content(file_locations.dhcpcd_config_file_template))
-        if request.form.get("ip_dhcp") is not None:
-            dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
-            write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
-            app_cached_variables.ip = ""
-            app_cached_variables.ip_subnet = ""
-            app_cached_variables.gateway = ""
-            app_cached_variables.dns1 = ""
-            app_cached_variables.dns2 = ""
-        else:
-            title_message = ""
-            if not app_validation_checks.ip_address_is_valid(ip_address):
-                title_message += "Invalid IP Address "
-            if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
-                title_message += "Invalid IP Subnet Mask "
-            if not app_validation_checks.ip_address_is_valid(ip_gateway) and ip_gateway != "":
-                title_message += "Invalid Gateway IP Address "
-            if not app_validation_checks.ip_address_is_valid(ip_dns1) and ip_dns1 != "":
-                title_message += "Invalid DNS Address "
-            if not app_validation_checks.ip_address_is_valid(ip_dns2) and ip_dns2 != "":
-                title_message += "Invalid DNS Address "
-            if title_message != "":
-                title_message = "Invalid IP Settings"
-                return get_message_page(title_message, page_url="sensor-system", skip_menu_select=True)
-
-            ip_network_text = "# Custom Static IP set by Kootnet Sensors" + \
-                              "\ninterface wlan0" + \
-                              "\nstatic ip_address=" + ip_address + ip_subnet + \
-                              "\nstatic routers=" + ip_gateway + \
-                              "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
-
-            new_dhcpcd_config = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
-            write_file_to_disk(file_locations.dhcpcd_config_file, new_dhcpcd_config)
-            shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
-            os.chmod(file_locations.dhcpcd_config_file, 0o664)
-
-        title_message = "IPv4 Configuration Updated"
-        message = "You must reboot for all settings to take effect."
-        app_cached_variables_update.update_cached_variables()
-        atpro_notifications.manage_system_reboot()
-        return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
+    if app_config_access.primary_config.demo_mode:
+        title_message = "Function Disabled"
+        message = "Function Disabled in Demo mode"
     else:
-        title_message = "Unable to Process IPv4 Configuration"
-        message = "Invalid or Missing Hostname.\n\nOnly Alphanumeric Characters, Dashes and Underscores may be used."
-        return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
+        hostname = sanitize_text(request.form.get("ip_hostname"))
+        if app_validation_checks.hostname_is_valid(hostname):
+            if app_cached_variables.running_with_root:
+                app_cached_variables.hostname = hostname
+                os.system("hostnamectl set-hostname " + hostname)
+
+                ip_address = request.form.get("ip_address")
+                ip_subnet = request.form.get("ip_subnet")
+                ip_gateway = request.form.get("ip_gateway")
+                ip_dns1 = request.form.get("ip_dns1")
+                ip_dns2 = request.form.get("ip_dns2")
+
+                dhcpcd_template = str(get_file_content(file_locations.dhcpcd_config_file_template))
+                if request.form.get("ip_dhcp") is not None:
+                    dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
+                    write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
+                    app_cached_variables.ip = ""
+                    app_cached_variables.ip_subnet = ""
+                    app_cached_variables.gateway = ""
+                    app_cached_variables.dns1 = ""
+                    app_cached_variables.dns2 = ""
+                else:
+                    title_message = ""
+                    if not app_validation_checks.ip_address_is_valid(ip_address):
+                        title_message += "Invalid IP Address "
+                    if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
+                        title_message += "Invalid IP Subnet Mask "
+                    if not app_validation_checks.ip_address_is_valid(ip_gateway) and ip_gateway != "":
+                        title_message += "Invalid Gateway IP Address "
+                    if not app_validation_checks.ip_address_is_valid(ip_dns1) and ip_dns1 != "":
+                        title_message += "Invalid DNS Address "
+                    if not app_validation_checks.ip_address_is_valid(ip_dns2) and ip_dns2 != "":
+                        title_message += "Invalid DNS Address "
+                    if title_message != "":
+                        title_message = "Invalid IP Settings"
+                        return get_message_page(title_message, page_url="sensor-system", skip_menu_select=True)
+
+                    ip_network_text = "# Custom Static IP set by Kootnet Sensors" + \
+                                      "\ninterface wlan0" + \
+                                      "\nstatic ip_address=" + ip_address + ip_subnet + \
+                                      "\nstatic routers=" + ip_gateway + \
+                                      "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
+
+                    new_dhcpcd_config = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
+                    write_file_to_disk(file_locations.dhcpcd_config_file, new_dhcpcd_config)
+                    shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
+                    os.chmod(file_locations.dhcpcd_config_file, 0o664)
+
+                title_message = "IPv4 Configuration Updated"
+                message = "You must reboot for all settings to take effect."
+                thread_function(app_cached_variables_update.update_cached_variables)
+                atpro_notifications.manage_system_reboot()
+                return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
+            else:
+                msg2 = "Kootnet Sensors must be running as root"
+                return get_message_page("Unable to Apply", msg2, page_url="sensor-system", skip_menu_select=True)
+        else:
+            title_message = "Unable to Process IPv4 Configuration"
+            message = "Invalid or Missing Hostname.\n\nOnly Alphanumeric Characters, Dashes and Underscores may be used."
+    return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
 
 
 @html_atpro_system_networking_routes.route("/atpro/system-wifi", methods=["POST"])
 @auth.login_required
 def html_atpro_set_wifi_config():
     logger.network_logger.debug("** HTML Apply - WiFi Configuration - Source " + str(request.remote_addr))
-    if request.method == "POST" and "ssid1" in request.form:
-        if app_validation_checks.text_has_no_double_quotes(request.form.get("wifi_key1")):
-            pass
-        else:
-            message = "Do not use double quotes in the Wireless Key Sections."
-            return get_message_page("Invalid Wireless Key", message, page_url="sensor-system", skip_menu_select=True)
-        if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
-            new_wireless_config = network_wifi.html_request_to_config_wifi(request)
-            if new_wireless_config is not "":
-                set_wpa_supplicant(new_wireless_config)
-                title_message = "WiFi Configuration Updated"
-                message = "You must reboot the sensor to take effect."
-                app_cached_variables_update.update_cached_variables()
-                atpro_notifications.manage_system_reboot()
-                return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
-        else:
-            logger.network_logger.debug("HTML WiFi Configuration Update Failed")
-            title_message = "Unable to Process Wireless Configuration"
-            message = "Network Names cannot be blank and can only use " + \
-                      "Alphanumeric Characters, dashes, underscores and spaces."
-            return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
-    return get_message_page("Unable to Process WiFi Configuration", page_url="sensor-system", skip_menu_select=True)
-
-
-def set_wpa_supplicant(wpa_supplicant):
-    try:
-        write_file_to_disk(file_locations.wifi_config_file, wpa_supplicant)
-        os.system("chmod 700 " + file_locations.wifi_config_file)
-    except Exception as error:
-        logger.network_logger.error("Write wpa_supplicant: " + str(error))
+    if app_config_access.primary_config.demo_mode:
+        title_page_msg = "Function Disabled"
+        page_msg = "Function Disabled in Demo mode"
+    else:
+        title_page_msg = "Unable to Process WiFi Configuration"
+        page_msg = "Not a POST request or missing SSID in form"
+        if request.method == "POST" and "ssid1" in request.form:
+            page_msg = "Kootnet Sensors not running as root?"
+            if app_cached_variables.running_with_root:
+                if app_validation_checks.text_has_no_double_quotes(request.form.get("wifi_key1")):
+                    pass
+                else:
+                    message = "Do not use double quotes in the Wireless Key Sections."
+                    return get_message_page("Invalid Wireless Key", message, page_url="sensor-system", skip_menu_select=True)
+                if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
+                    new_wireless_config = network_wifi.html_request_to_config_wifi(request)
+                    if new_wireless_config is not "":
+                        title_message = "WiFi Configuration Updated"
+                        message = "You must reboot the sensor to take effect."
+                        try:
+                            write_file_to_disk(file_locations.wifi_config_file, new_wireless_config)
+                            thread_function(app_cached_variables_update.update_cached_variables)
+                            atpro_notifications.manage_system_reboot()
+                            return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
+                        except Exception as error:
+                            logger.network_logger.error("Write wpa_supplicant: " + str(error))
+                else:
+                    logger.network_logger.debug("HTML WiFi Configuration Update Failed")
+                    title_message = "Unable to Process Wireless Configuration"
+                    message = "Network Names cannot be blank and can only use " + \
+                              "Alphanumeric Characters, dashes, underscores and spaces."
+                    return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
+    return get_message_page(title_page_msg, message=page_msg, page_url="sensor-system", skip_menu_select=True)

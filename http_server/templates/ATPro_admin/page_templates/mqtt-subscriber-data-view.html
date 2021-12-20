@@ -21,7 +21,7 @@
 
                 <button class="pure-button" type="button"
                         onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
-                    View MQTT Subscriber Sensors List
+                    View Sensors List
                 </button>
             </div>
         </div>
@@ -86,7 +86,7 @@
         RefreshPageTimed();
     }, 300000);
 
-    if (screen.width < 500) {
+    if (window.innerWidth < 500) {
         let sensor_id = document.getElementsByClassName("sensor-id");
         for (let i = 0; i < sensor_id.length; i++) {
             document.getElementsByClassName('sensor-id')[i].style.fontSize = 'medium';

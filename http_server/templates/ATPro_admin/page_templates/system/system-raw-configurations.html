@@ -7,6 +7,7 @@
         </li>
     </ul>
 </div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-main">
@@ -16,6 +17,27 @@
         </li>
     </ul>
 </div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-urls">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-urls')">
+                <i class="fas fa-link"></i> URLs Configuration
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-upgrades">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-upgrades')">
+                <i class="fas fa-arrow-circle-up"></i> Upgrades Configuration
+            </a>
+        </li>
+    </ul>
+</div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-is">
@@ -25,6 +47,17 @@
         </li>
     </ul>
 </div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-sensor-offsets">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-sensor-offsets')">
+                <i class="fas fa-sliders-h"></i> Sensor Offsets
+            </a>
+        </li>
+    </ul>
+</div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-display">
@@ -70,6 +103,26 @@
         </li>
     </ul>
 </div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-reports-email">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-reports-email')">
+                <i class="far fa-envelope"></i> Email Reports
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-db-graphs-email">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-db-graphs-email')">
+                <i class="far fa-envelope"></i> Email DB Graphs
+            </a>
+        </li>
+    </ul>
+</div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-email">
@@ -153,6 +206,24 @@
 </div>
 <div class="pure-menu">
     <ul class="pure-menu-list">
+        <li class="pure-menu-item config-live-graph">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-live-graph')">
+                <i class="fas fa-chart-line"></i> Live Graphing
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-db-graph">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-db-graph')">
+                <i class="fas fa-chart-bar"></i> Database Graphing
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
         <li class="pure-menu-item config-sc">
             <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-sc')">
                 <i class="fas fa-project-diagram"></i> Sensor Control
@@ -171,7 +242,10 @@
 
         document.getElementsByClassName("config-software-ver")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-main")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-urls")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-upgrades")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-is")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-sensor-offsets")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-cs")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-display")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-sc")[0].classList.remove("pure-menu-selected");
@@ -184,9 +258,13 @@
         document.getElementsByClassName("config-wu")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-luftdaten")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-osm")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-reports-email")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-db-graphs-email")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-email")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-networking")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-wifi")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-db-graph")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-live-graph")[0].classList.remove("pure-menu-selected");
 
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 

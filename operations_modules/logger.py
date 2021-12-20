@@ -26,6 +26,7 @@ ERROR - Due to a more serious problem, the software has not been able to perform
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
 import os
+from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 from operations_modules import file_locations
@@ -43,7 +44,7 @@ def initialize_logger(logger, log_location, formatter):
     logger.addHandler(stream_handler)
 
 
-def _debug_enabled():
+def _debug_status():
     if os.path.isfile(file_locations.primary_config):
         with open(file_locations.primary_config, "r") as loaded_file:
             file_lines_list = loaded_file.read().split("\n")
@@ -54,7 +55,7 @@ def _debug_enabled():
     return False
 
 
-def set_logging_level(debug_enabled=_debug_enabled()):
+def set_logging_level():
     if debug_enabled:
         primary_logger.setLevel(logging.DEBUG)
         network_logger.setLevel(logging.DEBUG)
@@ -94,19 +95,19 @@ def get_sensor_log(log_file, max_lines=max_log_lines_return):
 def clear_primary_log():
     """ Clears Primary Log. """
     with open(file_locations.primary_log, "w") as log_content:
-        log_content.write("")
+        log_content.write(_get_log_cleared_msg())
 
 
 def clear_network_log():
     """ Clears Network Log. """
     with open(file_locations.network_log, "w") as log_content:
-        log_content.write("")
+        log_content.write(_get_log_cleared_msg())
 
 
 def clear_sensor_log():
     """ Clears Sensors Log. """
     with open(file_locations.sensors_log, "w") as log_content:
-        log_content.write("")
+        log_content.write(_get_log_cleared_msg())
 
 
 def clear_mqtt_subscriber_log():
@@ -114,6 +115,12 @@ def clear_mqtt_subscriber_log():
     with open(file_locations.mqtt_subscriber_log, "w") as log_content:
         log_content.write("")
 
+
+def _get_log_cleared_msg():
+    return datetime.utcnow().strftime("Log Cleared on %Y-%m-%d %H:%M:%S UTC0") + "\n"
+
+
+debug_enabled = _debug_status()
 
 # Initialize 3 Logs, Primary, Network and Sensors
 primary_logger = logging.getLogger("PrimaryLog")
