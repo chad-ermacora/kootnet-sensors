@@ -39,7 +39,15 @@ db_v = app_cached_variables.database_variables
 checkin_temp_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
 checkin_temp_location += "sensor_checkins/sensor-checkin-table-entry-template.html"
 checkin_table_entry_template = get_file_content(checkin_temp_location).strip()
-updating_checkin_info_html_msg = "<h3><strong><a style='color: red;'>Updating Information, please wait ...</a></strong></h3>"
+updating_checkin_info_html_msg = """
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="card">
+        <div class="card-content">
+            <h2><i class="fas fa-info-circle"></i> Updating Information, Please Wait ...</h2>
+        </div>
+    </div>
+</div>
+"""
 checkin_table_failed = "<h3><strong><a style='color: red;'>Sensor Checkins List Generation Failed</a></strong></h3>"
 
 
@@ -56,11 +64,24 @@ def html_atpro_sensor_checkin_main_view():
     enabled_text = "<span style='color: red;'>Disabled</span>"
     if app_config_access.checkin_config.enable_checkin_recording:
         enabled_text = "<span style='color: green;'>Enabled</span>"
+
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    checkin_info_last_updated = app_cached_variables.checkins_sensors_html_list_last_updated
+    checkins_sensors_html_list_last_updated = adjust_datetime(checkin_info_last_updated, utc0_hour_offset)
+    run_script = ""
+    if app_cached_variables.checkins_sensors_html_table_list == updating_checkin_info_html_msg:
+        run_script = "CreatingSensorCheckinsTable();"
+    checkin_table_last_update = str(checkins_sensors_html_list_last_updated) + " UTC" + str(utc0_hour_offset)
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-main-view.html",
                            SensorsInDatabase=str(sensor_count),
                            CheckinDBSize=db_size_mb,
                            DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
-                           CheckinEnabledText=enabled_text)
+                           CheckinEnabledText=enabled_text,
+                           CheckinsLastTableUpdateDatetime=checkin_table_last_update,
+                           ContactInPastDays=str(app_config_access.checkin_config.count_contact_days),
+                           TotalSensorsContactDays=str(app_cached_variables.checkins_db_sensors_count_from_past_days),
+                           HTMLSensorsTableCode=app_cached_variables.checkins_sensors_html_table_list,
+                           RunScript=run_script)
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
@@ -139,32 +160,13 @@ def _thread_delete_sensors_older_then(delete_sensors_older_days):
         logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
 
 
-@html_atpro_sensor_check_ins_routes.route("/atpro/checkin-sensors-list")
-@auth.login_required
-def html_atpro_checkin_sensors_list():
-    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
-    checkin_info_last_updated = app_cached_variables.checkins_sensors_html_list_last_updated
-    checkins_sensors_html_list_last_updated = adjust_datetime(checkin_info_last_updated, utc0_hour_offset)
-    run_script = ""
-    if app_cached_variables.checkins_sensors_html_table_list == updating_checkin_info_html_msg:
-        run_script = "CreatingSensorCheckinsTable();"
-    return render_template(
-        "ATPro_admin/page_templates/sensor_checkins/checkin-sensors-list.html",
-        DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
-        SQLSensorsInDB=str(app_cached_variables.checkins_db_sensors_count),
-        CheckinsLastTableUpdateDatetime=str(checkins_sensors_html_list_last_updated) + " UTC" + str(utc0_hour_offset),
-        ContactInPastDays=str(app_config_access.checkin_config.count_contact_days),
-        TotalSensorsContactDays=str(app_cached_variables.checkins_db_sensors_count_from_past_days),
-        HTMLSensorsTableCode=app_cached_variables.checkins_sensors_html_table_list,
-        RunScript=run_script)
-
-
 @html_atpro_sensor_check_ins_routes.route("/atpro/generate-checkin-sensors-list")
 @auth.login_required
 def html_atpro_sensor_checkins_generate_sensors_html_list():
     if app_cached_variables.checkins_sensors_html_table_list != updating_checkin_info_html_msg:
         thread_function(_generate_sensors_checkins_html_list)
-    return html_atpro_checkin_sensors_list()
+    # This just initiates generation and does not return a page to "View"
+    return "OK"
 
 
 def _generate_sensors_checkins_html_list():
