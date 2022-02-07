@@ -61,6 +61,7 @@ extra_options_menu = """Advanced Menu\n
 28. Re-Install Kootnet Sensors (Latest Standard SMB)
 29. Re-Install Kootnet Sensors (Latest Developmental SMB)
 31. Build Kootnet Sensors Debian Installers
+32. Manually start Kootnet Sensors Here (Press Ctrl + C to exit)
 """
 remote_get_commands = app_cached_variables.network_get_commands
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
@@ -239,6 +240,12 @@ def start_script():
                 print(msg_upgrade_started)
             elif selection == 31:
                 start_deb_build_cli_menu()
+            elif selection == 32:
+                run_ks_command = "/home/kootnet_data/env/bin/python3 /opt/kootnet-sensors/start_sensor_services.py"
+                if app_cached_variables.running_with_root:
+                    os.system(run_ks_command)
+                else:
+                    os.system("sudo " + run_ks_command)
             else:
                 os.system("clear")
                 print("Invalid Selection: " + str(selection))
