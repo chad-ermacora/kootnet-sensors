@@ -305,7 +305,7 @@ def _pip_upgrades_thread(requirements_and_py_loc):
     python_location = requirements_and_py_loc[1]
     if python_location is None:
         python_location = sys.executable
-    subprocess.check_call([python_location, "-m", "pip", "install", "-U", "pip"])
+    subprocess.check_call([python_location, "-m", "pip", "install", "-U", "pip", "wheel", "setuptools"])
     for requirement in requirements_list:
         try:
             requirement = requirement.strip()
