@@ -139,7 +139,7 @@ def create_the_big_zip(ip_list):
                 except Exception as error:
                     print(str(error))
 
-                return_names.append(current_file_name)
+                return_names.append(current_file_name.replace(":", "_"))
                 return_files.append(sensor[2])
 
             zip_location = file_locations.html_sensor_control_big_zip
@@ -237,7 +237,7 @@ def create_all_databases_zipped(ip_list):
                     sensor_data[2] = "Incorrect Login Provided"
             except Exception as error:
                 print(str(error))
-            database_names.append(db_name)
+            database_names.append(db_name.replace(":", "_"))
             sensors_database.append(sensor_data[2])
 
         rm_cached_variables.sc_databases_zip_in_memory = False
@@ -270,7 +270,7 @@ def create_multiple_sensor_logs_zipped(ip_list):
                     sensor_data[2] = "Incorrect Login Provided"
             except Exception as error:
                 print(str(error))
-            zip_names.append(zip_name)
+            zip_names.append(zip_name.replace(":", "_"))
             logs_zipped.append(sensor_data[2])
 
         clear_zip_names()
