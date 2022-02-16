@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from datetime import datetime, timedelta
 from operations_modules.app_cached_variables import database_variables as db_v
 
 graph_creation_in_progress = False
@@ -40,8 +41,15 @@ class CreateGraphData:
         self.graph_db_table = graph_config.graph_db_table
         self.save_plotly_graph_to = graph_config.plotly_graph_saved_location
 
-        self.graph_datetime_start = graph_config.graph_start_date
-        self.graph_datetime_end = graph_config.graph_end_date
+        if graph_config.graph_using_date_range:
+            self.graph_datetime_start = graph_config.graph_start_date
+            self.graph_datetime_end = graph_config.graph_end_date
+        else:
+            self.graph_datetime_start = datetime.utcnow() - timedelta(hours=graph_config.graph_past_hours)
+            if graph_config.date_time_hours_offset < 0.0:
+                self.graph_datetime_start -= timedelta(hours=abs(graph_config.date_time_hours_offset))
+            self.graph_datetime_start = self.graph_datetime_start.strftime("%Y-%m-%d %H:%M:%S")
+            self.graph_datetime_end = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         self.enable_plotly_webgl = False
         if graph_config.render_engine == "OpenGL":
             self.enable_plotly_webgl = True

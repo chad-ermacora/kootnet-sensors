@@ -349,6 +349,19 @@ def html_atpro_sensor_graphing_database():
     if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
         run_script = "CreatingGraph();"
 
+    open_gl_selected = True
+    cpu_selected = False
+    if app_config_access.db_graphs_config.render_engine == "CPU":
+        open_gl_selected = False
+        cpu_selected = True
+
+    interval_selected = False
+    trigger_selected = True
+    if app_config_access.db_graphs_config.sql_recording_type == app_cached_variables.database_variables.table_interval:
+        interval_selected = True
+        trigger_selected = False
+
+    p_hours = app_config_access.db_graphs_config.graph_past_hours / app_config_access.db_graphs_config.hours_multiplier
     return render_template(
         "ATPro_admin/page_templates/graphing-database.html",
         RunScript=run_script,
@@ -359,8 +372,17 @@ def html_atpro_sensor_graphing_database():
         TriggerPlotlyDate=get_file_creation_date(file_locations.plotly_graph_triggers),
         MQTTPlotlyDate=get_file_creation_date(file_locations.plotly_graph_mqtt),
         CustomPlotlyDate=get_file_creation_date(file_locations.plotly_graph_custom),
+        CheckedManualDateRange=get_html_checkbox_state(app_config_access.db_graphs_config.graph_using_date_range),
+        HoursSelected=_check_hour_multiplier(1.0),
+        DaysSelected=_check_hour_multiplier(24.0),
+        YearsSelected=_check_hour_multiplier(8760.0),
+        CheckedInterval=get_html_checkbox_state(interval_selected),
+        CheckedTrigger=get_html_checkbox_state(trigger_selected),
+        CheckedOpenGL=get_html_checkbox_state(open_gl_selected),
+        CheckedCPU=get_html_checkbox_state(cpu_selected),
         MaxDataPoints=app_config_access.db_graphs_config.max_graph_data_points,
         SkipDataPoints=app_config_access.db_graphs_config.skip_data_between_plots,
+        GraphPastHours=p_hours,
         DateTimeStart=app_config_access.db_graphs_config.graph_start_date.replace(" ", "T")[:-3],
         DateTimeEnd=app_config_access.db_graphs_config.graph_end_date.replace(" ", "T")[:-3],
         UTCOffset=app_config_access.db_graphs_config.date_time_hours_offset,
@@ -383,6 +405,12 @@ def html_atpro_sensor_graphing_database():
     )
 
 
+def _check_hour_multiplier(multiplier):
+    if multiplier == app_config_access.db_graphs_config.hours_multiplier:
+        return "selected"
+    return ""
+
+
 @html_atpro_graphing_routes.route("/atpro/graphing-create-plotly", methods=["POST"])
 @auth.login_required
 def html_create_plotly_graph():
@@ -395,8 +423,11 @@ def generate_plotly_graph(graph_request, graph_config=None):
         if graph_request.form.get("button_function") == "create":
             logger.network_logger.debug("* Plotly Graph Create Initiated by " + str(request.remote_addr))
             app_config_access.db_graphs_config.update_with_html_request(graph_request)
-            app_config_access.db_graphs_config.save_config_to_file()
             graph_config = app_config_access.db_graphs_config
+        elif graph_request.form.get("button_function") == "save":
+            logger.network_logger.debug("* Plotly Graph Config Update Initiated by " + str(request.remote_addr))
+            app_config_access.db_graphs_config.update_with_html_request(graph_request)
+            app_config_access.db_graphs_config.save_config_to_file()
         elif graph_request.form.get("button_function") == "email":
             logger.network_logger.debug("* Plotly Graph Email Config Update Initiated by " + str(request.remote_addr))
             app_config_access.email_db_graph_config.update_with_html_request(graph_request)
