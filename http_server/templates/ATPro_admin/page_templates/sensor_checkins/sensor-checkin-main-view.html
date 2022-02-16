@@ -116,8 +116,9 @@
         document.getElementById("sensor-checkin-table-refresh-btn").disabled = true;
         if (refresh_info===true) {
             fetch("/atpro/generate-checkin-sensors-list");
-            window.setTimeout(RefreshPageTimed, 5000);
             SelectNav("sensor-checkin-view");
+        } else {
+            window.setTimeout(RefreshPageTimed, 5000);
         }
     }
 
