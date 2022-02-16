@@ -114,7 +114,7 @@ checkins_sensors_html_table_list = """
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
         <div class="card-content">
-            <h2><i class="fas fa-info-circle"></i> Press the 'Refresh Table Information' button to view checkins</h2>
+            <h2><i class="fa fa-exclamation-triangle"></i> Press the 'Refresh Table Information' button to view checkins</h2>
         </div>
     </div>
 </div>
