@@ -48,7 +48,7 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.skip_data_between_plots = 3
         self.date_time_hours_offset = 0.0
 
-        self.graph_past_hours = 7.0
+        self.graph_past_hours = 168.0
         self.hours_multiplier = 24.0
         self.graph_using_date_range = 0
         self.graph_start_date = "2019-07-01 00:00:00"
