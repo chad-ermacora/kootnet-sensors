@@ -30,7 +30,7 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             config_file_location = file_locations.db_graphs_config
         CreateGeneralConfiguration.__init__(self, config_file_location, load_from_file=load_from_file)
         self.config_file_header = "Database Graphs Configuration. Enable = 1 and Disable = 0"
-        self.valid_setting_count = 29
+        self.valid_setting_count = 32
         self.config_settings_names = [
             "SQL Recording Type", "Render Engine", "Maximum Data Points per Graph", "Skip Data Points between Plots",
             "DateTime Offset in Hours", "Start Date", "End Date", "SQL Database Selection", "MQTT Database Checked",
@@ -38,7 +38,8 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             "Enable Environmental Temperature", "Enable Pressure", "Enable Altitude", "Enable Humidity",
             "Enable Dew Point", "Enable Distance", "Enable GAS", "Enable Particulate Matter", "Enable Lumen",
             "Enable Colours", "Enable Ultra Violet", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope",
-            "Database Location", "Graph Database Table Name"
+            "Database Location", "Graph Database Table Name", "Graph using Date Range", "Graph Past Hours",
+            "Graph Past Hours Multiplier"
         ]
 
         self.sql_recording_type = app_cached_variables.database_variables.table_interval
@@ -47,6 +48,9 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.skip_data_between_plots = 3
         self.date_time_hours_offset = 0.0
 
+        self.graph_past_hours = 7.0
+        self.hours_multiplier = 24.0
+        self.graph_using_date_range = 0
         self.graph_start_date = "2019-07-01 00:00:00"
         self.graph_end_date = "2219-07-01 00:00:00"
 
@@ -147,6 +151,7 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         """ Updates the Database Graphs configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Database Graphs Configuration Update Check")
         self.mqtt_database_checked = 0
+        self.graph_using_date_range = 0
 
         self.db_graph_uptime = 0
         self.db_graph_cpu_temp = 0
@@ -165,6 +170,26 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.db_graph_mag = 0
         self.db_graph_gyro = 0
 
+        if html_request.form.get("manual_date_range") is not None:
+            self.graph_using_date_range = 1
+            # The datetime format should look like "2019-01-01 00:00:00"
+            if html_request.form.get("graph_datetime_start") is not None:
+                self.graph_start_date = str(html_request.form.get("graph_datetime_start")).replace("T", " ") + ":00"
+            if html_request.form.get("graph_datetime_end") is not None:
+                self.graph_end_date = str(html_request.form.get("graph_datetime_end")).replace("T", " ") + ":00"
+        else:
+            try:
+                self.hours_multiplier = 1.0
+                if html_request.form.get("time_interval_selection") == "Days":
+                    self.hours_multiplier = 24.0
+                elif html_request.form.get("time_interval_selection") == "Years":
+                    self.hours_multiplier = 8760.0
+                self.graph_past_hours = self.hours_multiplier * float(html_request.form.get("graph_past_hours"))
+            except Exception as error:
+                logger.primary_logger.error("Database Graphs Config - Graph past hours: " + str(error))
+                self.graph_past_hours = 7.0
+                self.hours_multiplier = 24.0
+
         if html_request.form.get("sql_recording_type") is not None:
             self.sql_recording_type = str(html_request.form.get("sql_recording_type"))
         if html_request.form.get("plotly_render_engine") is not None:
@@ -177,12 +202,6 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("utc_hour_offset") is not None:
             self.date_time_hours_offset = float(html_request.form.get("utc_hour_offset"))
-
-        # The datetime format should look like "2019-01-01 00:00:00"
-        if html_request.form.get("graph_datetime_start") is not None:
-            self.graph_start_date = str(html_request.form.get("graph_datetime_start")).replace("T", " ") + ":00"
-        if html_request.form.get("graph_datetime_end") is not None:
-            self.graph_end_date = str(html_request.form.get("graph_datetime_end")).replace("T", " ") + ":00"
 
         if html_request.form.get("mqtt_database_checked") is not None:
             self.mqtt_database_checked = 1
@@ -256,7 +275,8 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             str(self.db_graph_distance), str(self.db_graph_gas), str(self.db_graph_particulate_matter),
             str(self.db_graph_lumen), str(self.db_graph_colours), str(self.db_graph_ultra_violet),
             str(self.db_graph_acc), str(self.db_graph_mag), str(self.db_graph_gyro), str(self.database_location),
-            str(self.graph_db_table)
+            str(self.graph_db_table), str(self.graph_using_date_range), str(self.graph_past_hours),
+            str(self.hours_multiplier)
         ]
 
     def update_variables_from_settings_list(self):
@@ -290,6 +310,9 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             self.db_graph_gyro = int(self.config_settings[26].strip())
             self.database_location = self.config_settings[27].strip()
             self.graph_db_table = self.config_settings[28].strip()
+            self.graph_using_date_range = int(self.config_settings[29].strip())
+            self.graph_past_hours = float(self.config_settings[30].strip())
+            self.hours_multiplier = float(self.config_settings[31].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Database Graphs Config: " + str(error))
