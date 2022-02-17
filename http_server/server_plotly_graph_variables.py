@@ -45,11 +45,11 @@ class CreateGraphData:
             self.graph_datetime_start = graph_config.graph_start_date
             self.graph_datetime_end = graph_config.graph_end_date
         else:
-            self.graph_datetime_start = datetime.utcnow() - timedelta(hours=graph_config.graph_past_hours)
-            if graph_config.date_time_hours_offset < 0.0:
-                self.graph_datetime_start -= timedelta(hours=abs(graph_config.date_time_hours_offset))
+            self.graph_datetime_start = datetime.utcnow() + timedelta(hours=graph_config.date_time_hours_offset)
+            self.graph_datetime_start = self.graph_datetime_start - timedelta(hours=graph_config.graph_past_hours)
             self.graph_datetime_start = self.graph_datetime_start.strftime("%Y-%m-%d %H:%M:%S")
-            self.graph_datetime_end = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            self.graph_datetime_end = datetime.utcnow() + timedelta(hours=abs(graph_config.date_time_hours_offset))
+            self.graph_datetime_end = self.graph_datetime_end.strftime("%Y-%m-%d %H:%M:%S")
         self.enable_plotly_webgl = False
         if graph_config.render_engine == "OpenGL":
             self.enable_plotly_webgl = True
