@@ -112,7 +112,7 @@ def html_atpro_sensor_settings_database_management():
                     return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
             elif sanitize_text(request.form.get("db_management")) == "rename_db":
                 old_name = db_full_path.split("/")[-1]
-                new_name = get_clean_db_name(str(request.form.get("rename_db")))
+                new_name = get_clean_db_name(sanitize_text(request.form.get("rename_db")))
                 new_db_full_path = upload_db_folder + new_name
                 os.rename(db_full_path, new_db_full_path)
                 uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
@@ -129,11 +129,12 @@ def html_atpro_sensor_settings_database_management():
                 msg = sanitize_text(request.form.get("db_selected")) + " Database has been deleted"
                 return get_message_page("Database Deleted", msg, page_url="sensor-system", skip_menu_select=True)
             elif sanitize_text(request.form.get("db_management")) == "delete_backup_db":
-                db_full_path = file_locations.database_backup_folder + "/" + str(request.form.get("db_selected"))
+                db_full_path = file_locations.database_backup_folder + "/" + \
+                               sanitize_text(request.form.get("db_selected"))
                 os.remove(db_full_path)
                 backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.database_backup_folder)
                 app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
-                msg = str(request.form.get("db_selected")) + " Database backup has been deleted"
+                msg = sanitize_text(request.form.get("db_selected")) + " Database backup has been deleted"
                 return get_message_page("Database Backup Deleted", msg, page_url="sensor-system", skip_menu_select=True)
             return get_html_atpro_index(run_script="SelectNav('sensor-system');")
         except Exception as error:
@@ -155,7 +156,7 @@ def html_atpro_sensor_settings_database_uploads():
         zip_location = uploaded_databases_folder + "/temp_zip" + str(randint(100, 999)) + ".zip"
         if os.path.isfile(zip_location):
             os.remove(zip_location)
-        button_pressed = str(request.form.get("db_upload_button"))
+        button_pressed = sanitize_text(request.form.get("db_upload_button"))
         if button_pressed == "upload":
             uploaded_file = request.files["command_data"]
 
@@ -171,7 +172,7 @@ def html_atpro_sensor_settings_database_uploads():
                     system_thread.daemon = True
                     system_thread.start()
                 elif upload_file_name.split(".")[-1] in sqlite_valid_extensions_list:
-                    original_new_db_name = str(request.form.get("UploadDatabaseName")).strip()
+                    original_new_db_name = sanitize_text(request.form.get("UploadDatabaseName"))
                     if overwrite:
                         new_db_name = get_clean_db_name(original_new_db_name, find_unique_name=False)
                         if os.path.isfile(uploaded_databases_folder + "/" + new_db_name):
@@ -187,7 +188,7 @@ def html_atpro_sensor_settings_database_uploads():
                 else:
                     logger.network_logger.error("Upload Database: Invalid extension on uploaded file")
         elif button_pressed == "replace":
-            selected_database = str(request.form.get("DatabaseReplacementSelection"))
+            selected_database = sanitize_text(request.form.get("DatabaseReplacementSelection"))
             uploaded_file = request.files["command_data"]
             temp_db_location = file_locations.sensor_data_dir + "/upload_test " + str(randint(111, 999)) + ".sqlite"
             save_db_to = temp_db_location + ".invalid"
