@@ -99,27 +99,6 @@ http_flask_login_session_ids = {}
 # Failed login IPs are stored here, {IP: [last_failed_login_date, number_of_failed_login_attempts]}
 failed_flask_logins_dic = {}
 
-# Sensor Check-in View Variables
-checkin_search_sensor_id = ""
-checkin_search_sensor_installed_sensors = ""
-checkin_sensor_info = ""
-checkin_search_primary_log = ""
-checkin_search_network_log = ""
-checkin_search_sensors_log = ""
-# Checkin Cached Table Variables
-checkins_sensors_html_list_last_updated = "Please Refresh Information || Datetime is displayed in "
-checkins_db_sensors_count = 0
-checkins_db_sensors_count_from_past_days = 0
-checkins_sensors_html_table_list = """
-<div class="col-12 col-m-12 col-sm-12">
-    <div class="card">
-        <div class="card-content">
-            <h2><i class="fa fa-exclamation-triangle"></i> Press the 'Refresh Table Information' button to view checkins</h2>
-        </div>
-    </div>
-</div>
-"""
-
 # MQTT Subscriber Variables
 mqtt_subscriber_sensors_html_list_last_updated = "Please Refresh Table Content || Datetime is displayed in "
 mqtt_subscriber_sensors_count = 0

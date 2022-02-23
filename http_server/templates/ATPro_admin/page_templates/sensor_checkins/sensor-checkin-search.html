@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
     <link rel="stylesheet" type="text/css" href="/atpro/style.css">
     <link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+    <link rel="stylesheet" type="text/css" href="/extras/fontawesome-free/css/all.min.css">
 </head>
 
 <style>
@@ -22,88 +23,105 @@
 </style>
 
 <body>
-<h2><a style="color: red;" href="/atpro/sensor-checkin-search">Sensor Checkins Search</a></h2>
-
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
+            <h2><i class="fas fa-search"></i> <a style="color: var(--main-color);" href="/atpro/sensor-checkin-search">
+                Sensor Checkins Search
+            </a></h2>
             <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
-                    <label style="color: red; font-size: medium; font-weight: bolder;">
-                        Sensor ID<br>
+                <form id="checkin-form-post" class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
+                    <label style="color: red; font-size: medium; font-weight: bolder;">Sensor ID<br>
                         <input style="width: 375px;" type="text" maxlength="64" name="sensor_id" id="sensor_id"
                                placeholder="Eg. KSNLs6RDX4Xvthru6WjjJpDkxdoTR9RUNh" required>
                     </label>
 
                     <br><br>
 
-                    <button type="submit" class="pure-button">Find Sensor</button>
+                    <button type="button" id="find-sensor-btn" onclick="FindSensor('')" class="pure-button">Find Sensor</button>
+
+                    <br><br>
+
+                    <div id="checkin-selection" {{ HiddenSensorInfo }}>
+                        <label for="checkin_selection">Choose a Checkin Date (Shown in UTC0):<br>
+                            <select name="checkin_selection" onchange="FindSensor(this.value)">
+                                <optgroup label="Checkins Listed by Date">
+                                    {{ CheckinSelectionNames | safe }}
+                                </optgroup>
+                            </select>
+                        </label>
+
+                        <p>
+                            <b>Legend</b><br>SN = Sensor Name, V = Version, IP = IP Address, IS = Installed Sensors<br>
+                            PL = Primary Log, NL = Network Log, SL = Sensor Log
+                        </p>
+                    </div>
+
+                    <br>
+
+                    <div id="sensor-id-info">
+                        {{ SearchSensorInfo | safe }}
+                    </div>
                 </form>
-
-                <row>
-                    {{ SearchSensorInfo | safe }}
-                </row>
-
-                <br>
-
-                <button type="button" class="pure-button"
-                        onclick="SearchCheckinDeletion('sensor-checkin-search-delete-sensor')" {{ SearchSensorDeleteDisabled }}>
-                    Delete Sensor
-                </button>
-
-                &nbsp;&nbsp;
-
-                <button type="button" class="pure-button"
-                        onclick="SearchCheckinDeletion('sensor-checkin-clear-old-checkins')" {{ SearchSensorClearDisabled }}>
-                    Remove Old Checkin Data
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <div class="pure-menu">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item log-primary">
-                            <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
-                                Primary Log
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="pure-menu">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item log-network">
-                            <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-network')">
-                                Network Log
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="pure-menu">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item log-sensors">
-                            <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
-                                Sensor Log
-                            </a>
-                        </li>
-                    </ul>
-                </div>
 
                 <br><br>
 
-                <div class="log-page-content" id="log-primary">
-                    {{ PrimaryLogs | safe }}
-                </div>
+                <div id="hidden-sensor-info" {{ HiddenSensorInfo }}>
+                    <button type="button" class="pure-button"
+                            onclick="SearchCheckinDeletion('sensor-checkin-search-delete-sensor')" {{ SearchSensorDeleteDisabled }}>
+                        Delete Sensor
+                    </button>
 
-                <div class="log-page-content" id="log-network">
-                    {{ NetworkLogs | safe }}
-                </div>
+                    &nbsp;&nbsp;
 
-                <div class="log-page-content" id="log-sensors">
-                    {{ SensorsLogs | safe }}
+                    <button type="button" class="pure-button"
+                            onclick="SearchCheckinDeletion('sensor-checkin-clear-old-checkins')" {{ SearchSensorClearDisabled }}>
+                        Remove Old Checkin Data
+                    </button>
+
+                    <br><br>
+
+                    <div class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item log-primary">
+                                <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                                    Primary Log
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item log-network">
+                                <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-network')">
+                                    Network Log
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item log-sensors">
+                                <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                                    Sensor Log
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <br><br>
+
+                    <div class="log-page-content" id="log-primary">
+                        {{ PrimaryLogs | safe }}
+                    </div>
+
+                    <div class="log-page-content" id="log-network">
+                        {{ NetworkLogs | safe }}
+                    </div>
+
+                    <div class="log-page-content" id="log-sensors">
+                        {{ SensorsLogs | safe }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -113,6 +131,32 @@
 </html>
 
 <script>
+    function FindSensor(date_change) {
+        Searching();
+        if (date_change !== "") {
+            document.getElementById("checkin-selection").disabled = false;
+            document.getElementById("sensor_id").value = "DateSearch";
+        }
+        document.getElementById("checkin-form-post").submit();
+    }
+
+    function Searching() {
+        const updating_html_var = '<div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content">' +
+            '<h2><i class="fas fa-info-circle"></i> Updating Information, Please Wait ...</h2></div></div></div>'
+
+        document.getElementById("find-sensor-btn").disabled = true;
+        document.getElementById("checkin-selection").disabled = true;
+        document.getElementById("hidden-sensor-info").hidden = true;
+        document.getElementById("sensor-id-info").innerHTML = updating_html_var;
+    }
+
+    function PageRefresh() {
+        Searching();
+        window.setTimeout(PRefresh, 5000);
+    }
+
+    function PRefresh() {window.location="sensor-checkin-search";}
+
     function SearchCheckinDeletion(url_location) {
         let r = confirm("Sensor deletions cannot be undone, are you sure?");
         if (r === true) {
@@ -135,9 +179,10 @@
     if (window.innerWidth < 500) {
         document.getElementById('sensor_id').style.fontSize = 'medium';
         document.getElementById('sensor_id').style.width = '325px';
-        document.getElementsByClassName('sensor-id')[0].style.fontSize = '15px';
+        document.getElementById('sensor-id-info').style.fontSize = '15px';
     }
     SelectLogNav("log-primary");
+    {{ SearchingScript }}
 </script>
 
 <script src="/atpro/index.js"></script>
