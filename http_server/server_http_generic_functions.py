@@ -22,7 +22,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import create_password_hash
 
-default_http_flask_user = "Kootnet"
+default_http_flask_user = "kootnet"
 default_http_flask_password = "sensors"
 
 min_length_username = 4
