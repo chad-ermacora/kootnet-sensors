@@ -41,20 +41,27 @@ def html_atpro_system_change_login():
         if primary_config.demo_mode:
             return get_message_page("Function Disabled", "Unable to change Login in Demo mode")
         else:
-            new_http_flask_user = app_cached_variables.http_flask_user
-            temp_username = str(request.form.get("login_username"))
-            temp_password = str(request.form.get("login_password"))
-            if len(temp_username) >= min_length_username and len(temp_password) >= min_length_password:
-                save_http_auth_to_file(temp_username, temp_password)
-                default_password = default_http_flask_password
-                if default_http_flask_user == new_http_flask_user and verify_password_to_hash(default_password):
-                    atpro_notifications.manage_default_login_detected()
+            current_username = str(request.form.get("login_username")).lower()
+            current_password = str(request.form.get("login_password"))
+            if current_username == app_cached_variables.http_flask_user.lower() and \
+                    verify_password_to_hash(current_password):
+                new_username = str(request.form.get("new_login_username")).lower()
+                new_password = str(request.form.get("new_login_password"))
+                if len(new_username) >= min_length_username and len(new_password) >= min_length_password:
+                    save_http_auth_to_file(new_username, new_password)
+                    if default_http_flask_user == new_username and verify_password_to_hash(default_http_flask_password):
+                        atpro_notifications.manage_default_login_detected()
+                    else:
+                        atpro_notifications.manage_default_login_detected(enable=False)
+                    msg1 = "Username and Password Updated"
+                    msg2 = "The Username and Password has been updated"
                 else:
-                    atpro_notifications.manage_default_login_detected(enable=False)
-                msg1 = "Username and Password Updated"
-                msg2 = "The Username and Password has been updated"
+                    msg1 = "Invalid Username or Password"
+                    msg2 = "Username and Password must be 4 to 62 characters long and cannot be blank"
             else:
-                msg1 = "Invalid Username or Password"
-                msg2 = "Username and Password must be 4 to 62 characters long and cannot be blank"
+                msg1 = "Invalid Current Username and or Password"
+                msg2 = "You must enter the correct current username and password. " + \
+                       "If you do not have the current username or password, " + \
+                       "you can change it by logging into the local sensor and running the Terminal Configuration Tool."
             return get_message_page(msg1, msg2)
     return render_template("ATPro_admin/page_templates/system/system-change-login.html")
