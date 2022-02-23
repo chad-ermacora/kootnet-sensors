@@ -45,7 +45,7 @@ from sensor_modules.sensor_access import get_cpu_temperature, get_reading_unit, 
     get_all_available_sensor_readings
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
-    get_message_page, get_clean_ip_list_name, get_uptime_str
+    get_message_page, get_clean_ip_list_name, get_uptime_str, sanitize_text
 from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs import \
     remote_management_receive_configuration
 from http_server.flask_blueprints.atpro.remote_management.rm_post import remote_management_main_post
@@ -263,10 +263,10 @@ def _convert_lists_to_html_thread(list_names, list_data, latency=False):
 @html_atpro_remote_management_routes.route("/atpro/rm-ip-list-management", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_control_save_settings():
-    if request.method == "POST":
-        ip_list_command = str(request.form.get("ip_list_command"))
-        selected_ip_list = str(request.form.get("selected_ip_list"))
-        new_name = get_clean_ip_list_name(str(request.form.get("ip_list_new_name")))
+    if sanitize_text(request.method) == "POST":
+        ip_list_command = sanitize_text(request.form.get("ip_list_command"))
+        selected_ip_list = sanitize_text(request.form.get("selected_ip_list"))
+        new_name = get_clean_ip_list_name(request.form.get("ip_list_new_name"))
         current_location = file_locations.custom_ip_lists_folder + "/" + selected_ip_list
         if ip_list_command == "CreateNewIPList":
             CreateIPList(new_name=new_name)
