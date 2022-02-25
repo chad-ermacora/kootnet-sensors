@@ -43,13 +43,15 @@ class CreateOtherDataEntry:
 def write_to_sql_database(sql_query, data_entries, sql_database_location=file_locations.sensor_database):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     try:
-        db_connection = sqlite3.connect(sql_database_location)
+        db_connection = sqlite3.connect(sql_database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
         if data_entries is None:
             db_cursor.execute(sql_query)
         else:
             db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
         logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
     except Exception as error:
@@ -60,10 +62,12 @@ def write_to_sql_database(sql_query, data_entries, sql_database_location=file_lo
 def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_database):
     """ Returns SQL data based on provided sql_query. """
     try:
-        database_connection = sqlite3.connect(sql_database_location)
+        database_connection = sqlite3.connect(sql_database_location, isolation_level=None)
+        database_connection.execute('pragma journal_mode=wal')
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
+        database_connection.execute("PRAGMA optimize;")
         database_connection.close()
     except Exception as error:
         if str(error)[:13] == "no such table":
@@ -118,7 +122,8 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
     columns_created = 0
     columns_already_made = 0
     try:
-        db_connection = sqlite3.connect(database_location)
+        db_connection = sqlite3.connect(database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_main, db_cursor)
@@ -146,6 +151,7 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
                 columns_already_made += 1
 
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
         debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
         logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
@@ -159,7 +165,8 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
     try:
-        db_connection = sqlite3.connect(database_location)
+        db_connection = sqlite3.connect(database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_sensor_checkins, db_cursor)
@@ -182,6 +189,7 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
                         if str(error)[:21] != "duplicate column name":
                             logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
         return True
@@ -193,7 +201,8 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
 def check_mqtt_subscriber_database_structure(database_location=file_locations.mqtt_subscriber_database):
     logger.primary_logger.debug("Running Check on 'MQTT Subscriber' Database")
     try:
-        db_connection = sqlite3.connect(database_location)
+        db_connection = sqlite3.connect(database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_mqtt, db_cursor)
@@ -211,6 +220,7 @@ def check_mqtt_subscriber_database_structure(database_location=file_locations.mq
                         if str(error)[:21] != "duplicate column name":
                             logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
         return True
@@ -278,13 +288,15 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
     try:
         start_time = datetime.utcnow()
 
-        db_connection = sqlite3.connect(sqlite_database_location)
+        db_connection = sqlite3.connect(sqlite_database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
         if quick:
             integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()
         else:
             integrity_check_fetch = db_cursor.execute("PRAGMA integrity_check;").fetchall()
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
 
         integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)

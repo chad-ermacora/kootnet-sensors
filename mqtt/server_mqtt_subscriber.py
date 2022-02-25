@@ -124,7 +124,8 @@ def _write_mqtt_message_to_sql_database(mqtt_message):
 
 
 def _check_sql_table_column_exists(table_name, column_text):
-    db_connection = sqlite3.connect(mqtt_sub_db_location)
+    db_connection = sqlite3.connect(mqtt_sub_db_location, isolation_level=None)
+    db_connection.execute('pragma journal_mode=wal')
     db_cursor = db_connection.cursor()
     sql_query = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table_name + "';"
     db_cursor.execute(sql_query)
@@ -144,4 +145,5 @@ def _check_sql_table_column_exists(table_name, column_text):
         if str(error)[:21] != "duplicate column name":
             logger.primary_logger.error("MQTT Subscriber SQL Database Error: " + str(error))
     db_connection.commit()
+    db_connection.execute("PRAGMA optimize;")
     db_connection.close()

@@ -133,7 +133,8 @@ def _update_ks_info_table_data():
     sleep(30)
     logger.primary_logger.debug("Updating Kootnet Sensors Database Information Table")
     try:
-        db_connection = sqlite3.connect(file_locations.sensor_database)
+        db_connection = sqlite3.connect(file_locations.sensor_database, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
         create_table_and_datetime(db_v.table_ks_info, db_cursor)
 
@@ -166,6 +167,7 @@ def _update_ks_info_table_data():
         data_entries = _check_for_changes_in_sensor_info_data(data_entries)
         db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
         logger.primary_logger.debug("Kootnet Sensors Database Information Updated OK")
     except Exception as error:
