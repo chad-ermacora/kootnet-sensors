@@ -41,7 +41,7 @@ def html_atpro_system_change_login():
         if primary_config.demo_mode:
             return get_message_page("Function Disabled", "Unable to change Login in Demo mode")
         else:
-            current_username = str(request.form.get("login_username")).lower()
+            current_username = str(request.form.get("login_username")).lower().strip()
             current_password = str(request.form.get("login_password"))
             if current_username == app_cached_variables.http_flask_user.lower() and \
                     verify_password_to_hash(current_password):

@@ -158,7 +158,7 @@ def login():
             return_msg = "Too many failed login attempts, your IP address has been banned for 15 Min"
             return get_message_page("IP Banned from Logins", message=return_msg)
         else:
-            username = str(request.form['login_username']).lower()
+            username = str(request.form['login_username']).lower().strip()
             password = request.form['login_password']
 
             if username == app_cached_variables.http_flask_user.lower() and verify_password_to_hash(password):
