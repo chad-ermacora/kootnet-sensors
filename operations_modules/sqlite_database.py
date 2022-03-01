@@ -44,7 +44,6 @@ def write_to_sql_database(sql_query, data_entries, sql_database_location=file_lo
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     try:
         db_connection = sqlite3.connect(sql_database_location, isolation_level=None)
-        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
         if data_entries is None:
             db_cursor.execute(sql_query)
@@ -63,7 +62,6 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
     """ Returns SQL data based on provided sql_query. """
     try:
         database_connection = sqlite3.connect(sql_database_location, isolation_level=None)
-        database_connection.execute('pragma journal_mode=wal')
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
@@ -289,7 +287,6 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
         start_time = datetime.utcnow()
 
         db_connection = sqlite3.connect(sqlite_database_location, isolation_level=None)
-        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
         if quick:
             integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()

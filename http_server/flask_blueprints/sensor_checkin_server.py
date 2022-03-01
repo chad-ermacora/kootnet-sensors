@@ -73,7 +73,6 @@ def remote_sensor_check_ins():
 
 def check_sensor_checkin_columns(checkin_id):
     db_connection = sqlite3.connect(sc_database_location, isolation_level=None)
-    db_connection.execute('pragma journal_mode=wal')
     db_cursor = db_connection.cursor()
 
     create_table_and_datetime(checkin_id, db_cursor)

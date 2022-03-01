@@ -526,7 +526,6 @@ def _check_sensor_id_exists(sensor_id):
     sql_query = "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + sensor_id + "'"
     try:
         database_connection = sqlite3.connect(db_loc, isolation_level=None)
-        database_connection.execute('pragma journal_mode=wal')
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         if sqlite_database.fetchone()[0]:

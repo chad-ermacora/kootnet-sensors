@@ -134,7 +134,6 @@ def _update_ks_info_table_data():
     logger.primary_logger.debug("Updating Kootnet Sensors Database Information Table")
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database, isolation_level=None)
-        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
         create_table_and_datetime(db_v.table_ks_info, db_cursor)
 
