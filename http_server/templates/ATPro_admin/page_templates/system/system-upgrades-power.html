@@ -8,26 +8,21 @@
                     <b>Standard Upgrade - HTTP</b>
                 </button>
 
-                <br><br><br>
+                <br>
 
-                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
-                    Show Advanced Upgrade Options
+                <p>
+                    <span style="color: red;"><b>Warning</b>:</span> Developmental Upgrades can be unstable!
+                </p>
+
+                <button type="button" class="pure-button" style="color: white; background-color: red;"
+                        onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
+                    <b>Developmental Upgrade - HTTP</b>
                 </button>
 
                 <br><br>
 
                 <div id="adv-upgrade-content">
-                    <p>
-                        Want to see what's coming?<br>Don't mind losing settings and or functionality?<br>
-                        Try "Developmental Upgrade - HTTP"
-                    </p>
-
-                    <button type="button" class="pure-button" style="color: white; background-color: red;"
-                            onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
-                        <b>Developmental Upgrade - HTTP</b>
-                    </button>
-
-                    <br><br><hr>
+                    <hr>
 
                     <h2><i class="fas fa-redo-alt"></i> Re-install Kootnet Sensors</h2>
 
@@ -69,21 +64,47 @@
     <div class="col-4 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2><i class="far fa-arrow-alt-circle-up"></i> Other Updates</h2>
-
-                <button type="button" class="pure-button"
-                        onclick="ConfirmFunction('Internet Required! Kootnet Sensors will restart when done. Proceed with Python3 Modules upgrades?','/system/upgrade-py3-modules')">
-                    Update Python3 Modules
+                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
+                    Show Advanced Options
                 </button>
+            </div>
+        </div>
 
-                <br><br>
+        <div class="card">
+            <div class="card-content">
+                <div id="adv-other-content1">
+                    <h2><i class="far fa-arrow-alt-circle-up"></i> Other Updates</h2>
 
-                <button type="button" class="pure-button"
-                        onclick="ConfirmFunction('Internet Required! OS Upgrade may take some time, proceed?','/system/upgrade-os')">
-                    Update OS
-                </button>
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Internet Required! Kootnet Sensors will restart when done. Proceed with Python3 Modules upgrades?','/system/upgrade-py3-modules')">
+                        Update Python3 Modules
+                    </button>
 
-                <br><br><hr>
+                    <br><br>
+
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Internet Required! OS Upgrade may take some time, proceed?','/system/upgrade-os')">
+                        Update OS
+                    </button>
+
+                    <br><br><hr>
+
+                    <h2><i class="fas fa-database"></i> Database Checks</h2>
+
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('This will run Quick Integrity checks on all 3 system databases, continue?','/system/db-integrity-quick')">
+                        Quick Integrity Check
+                    </button>
+
+                    <br><br>
+
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('This will run Full Integrity checks on all 3 system databases, continue?','/system/db-integrity-full')">
+                        Full Integrity Check
+                    </button>
+
+                    <br><br><hr>
+                </div>
 
                 <h2><i class="fas fa-power-off"></i> Power Commands</h2>
 
@@ -91,16 +112,20 @@
                         onclick="ConfirmFunction('Restart Program?','/system/system-restart-program')">
                     Restart Program
                 </button>
-                <br><br><br>
-                <button type="button" class="pure-button"
-                        onclick="ConfirmFunction('Restart System?','/system/system-restart')">
-                    Restart System
-                </button>
+
                 <br><br>
-                <button type="button" class="pure-button"
-                        onclick="ConfirmFunction('Shutdown System?','/system/system-shutdown')">
-                    Shutdown System
-                </button>
+
+                <div id="adv-other-content2">
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Restart System?','/system/system-restart')">
+                        Restart System
+                    </button>
+                    <br><br>
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Shutdown System?','/system/system-shutdown')">
+                        Shutdown System
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -117,10 +142,14 @@
     function ShowHideAdvUpgrades() {
         if (document.getElementById("adv-upgrade-content").style.display === "none") {
             document.getElementById("adv-upgrade-content").style.display = "inline-block";
-            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Upgrade Options";
+            document.getElementById("adv-other-content1").style.display = "inline-block";
+            document.getElementById("adv-other-content2").style.display = "inline-block";
+            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Options";
         } else {
             document.getElementById("adv-upgrade-content").style.display = "none";
-            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Upgrade Options";
+            document.getElementById("adv-other-content1").style.display = "none";
+            document.getElementById("adv-other-content2").style.display = "none";
+            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Options";
         }
     }
     ShowHideAdvUpgrades()

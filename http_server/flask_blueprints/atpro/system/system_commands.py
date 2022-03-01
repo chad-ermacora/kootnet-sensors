@@ -17,11 +17,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from threading import Thread
 from flask import Blueprint, request, render_template
 from configuration_modules.app_config_access import primary_config
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from operations_modules import file_locations
 from operations_modules.app_generic_functions import thread_function
+from operations_modules.sqlite_database import run_database_integrity_check
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from upgrade_modules.upgrade_functions import CreateUpdateChecksInterface, CreateUpgradeScriptInterface, \
     download_type_smb
@@ -46,12 +49,20 @@ def atpro_upgrade_urls(url_path):
     message = "Kootnet Sensors must be running as a service with root access"
     if primary_config.demo_mode:
         message = "Function Disabled in Demo mode"
-    msg_page = get_message_page(title, message, full_reload=False)
-    if running_as_service and running_with_root and not primary_config.demo_mode:
+
+    url_path = sanitize_text(url_path)
+    if url_path == "db-integrity-quick":
+        title = "Quick Integrity Checks"
+        message = "Starting Integrity Checks on Main, Sensor Checkins & MQTT databases"
+        _start_db_integrity_checks(True)
+    elif url_path == "db-integrity-full":
+        title = "Full Integrity Checks"
+        message = "Starting Integrity Checks on Main, Sensor Checkins & MQTT databases"
+        _start_db_integrity_checks(False)
+    elif running_as_service and running_with_root and not primary_config.demo_mode:
         title = "Error!"
         message = "An Error occurred"
         system_command = "exit"
-        url_path = sanitize_text(url_path)
         if url_path == "system-restart-program":
             logger.network_logger.info("** Program Restart Initiated by " + str(request.remote_addr))
             title = "Restarting Program"
@@ -136,6 +147,14 @@ def atpro_upgrade_urls(url_path):
             notification_short_msg = "Python Module upgrades in progress ...<br>Click Here for more information"
             atpro_notifications.add_custom_message(notification_short_msg, click_msg)
             upgrade_python_pip_modules()
-        msg_page = get_message_page(title, message, full_reload=False)
         thread_function(os.system, args=system_command)
+    msg_page = get_message_page(title, message, full_reload=False)
     return msg_page
+
+
+def _start_db_integrity_checks(quick):
+    for database in [file_locations.sensor_database, file_locations.sensor_checkin_database,
+                     file_locations.mqtt_subscriber_database]:
+        system_thread = Thread(target=run_database_integrity_check, args=[database, quick])
+        system_thread.daemon = True
+        system_thread.start()
