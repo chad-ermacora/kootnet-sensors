@@ -34,8 +34,8 @@ def get_html_atpro_index(run_script="SelectNav('sensor-dashboard');", main_page_
 
 def get_message_page(title, message="", page_url="sensor-dashboard", full_reload=True, skip_menu_select=False):
     """
-    Possible page URL's include:
-    sensor-dashboard, sensor-readings, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
+    Possible page URLs include:
+    sensor-dashboard, sensor-readings-base, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
     """
 
     skip_option = "false"

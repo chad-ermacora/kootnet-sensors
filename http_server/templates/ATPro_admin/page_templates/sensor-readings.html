@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
 <style>
     .readings {
         font-size: large;
@@ -17,14 +18,71 @@
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2 style="text-align: center;"><i class="fas fa-temperature-low"></i> Current Sensor Readings</h2>
+                <h2 id="sensor-readings-title" style="text-align: center;">
+                    <i class="fas fa-temperature-low"></i> Current Sensor Readings
+                </h2>
+
+                <div>
+                    <div class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item sensor-readings">
+                                <a href="#" class="pure-menu-link" onclick="SelectReadingsNav('sensor-readings')">
+                                    <i class="fas fa-temperature-low"></i> Current Readings
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item sensor-latency">
+                                <a href="#" class="pure-menu-link" onclick="SelectReadingsNav('sensor-latency')">
+                                    <i class="fas fa-hourglass-half"></i> Sensor Latencies
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item sensor-insights">
+                                <a href="#" class="pure-menu-link" onclick="SelectReadingsNav('sensor-insights')">
+                                    <i class="fas fa-eye"></i> Sensor Insights
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    {{ HTMLReplacementCode | safe }}
+    <div class="row" id="readings-page-content"></div>
 </div>
 
 <script>
+    function SelectReadingsNav(nav_location) {
+        const title_readings_msg = '<i class="fas fa-temperature-low"></i> Current Sensor Readings'
+        const title_latency_msg = '<i class="fas fa-hourglass-half"></i> Current Sensor Latencies'
+        const title_insights_msg = '<i class="fas fa-eye"></i> Recorded Sensor Insights'
+
+        document.getElementById("readings-page-content").innerHTML = html_loading;
+
+        document.getElementsByClassName("sensor-readings")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("sensor-latency")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("sensor-insights")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        if (nav_location === "sensor-readings") {
+            document.getElementById("sensor-readings-title").innerHTML = title_readings_msg;
+        } else if  (nav_location === "sensor-latency") {
+            document.getElementById("sensor-readings-title").innerHTML = title_latency_msg;
+        } else if  (nav_location === "sensor-insights") {
+            document.getElementById("sensor-readings-title").innerHTML = title_insights_msg;
+        }
+
+        jQuery("#readings-page-content").load("/atpro/" + nav_location);
+    }
+    SelectReadingsNav('sensor-readings');
     CheckNotificationsAsync();
 </script>

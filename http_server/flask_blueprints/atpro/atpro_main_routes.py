@@ -93,6 +93,11 @@ def html_atpro_dashboard():
     )
 
 
+@html_atpro_main_routes.route("/atpro/sensor-readings-base")
+def html_atpro_sensor_readings_base():
+    return render_template("ATPro_admin/page_templates/sensor-readings.html")
+
+
 @html_atpro_main_routes.route("/atpro/sensor-readings")
 def html_atpro_sensor_readings():
     all_readings = sensor_access.get_all_available_sensor_readings()
@@ -102,7 +107,7 @@ def html_atpro_sensor_readings():
         new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index.replace("_", " "))
         new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + reading_unit)
         html_final_code += new_reading + "\n"
-    return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_final_code)
+    return html_final_code
 
 
 @html_atpro_main_routes.route("/atpro/sensor-latency")
@@ -113,7 +118,21 @@ def html_atpro_sensors_latency():
         new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index)
         new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + " Seconds")
         html_final_code += new_reading + "\n"
-    return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_final_code)
+    return html_final_code
+
+
+@html_atpro_main_routes.route("/atpro/sensor-insights")
+def html_atpro_sensors_insights():
+    # ToDo: Add html generator for db sensor insights
+    special_names = ["Something"]
+    special_readings = [21]
+    special_reading_units = [" Seconds"]
+    html_final_code = ""
+    for s_name, s_reading, s_unit in zip(special_names, special_readings, special_reading_units):
+        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", s_name)
+        new_reading = new_reading.replace("{{ SensorReading }}", str(s_reading) + s_unit)
+        html_final_code += new_reading + "\n"
+    return '<div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content">WIP</div></div></div>'
 
 
 @html_atpro_main_routes.route("/atpro/sensor-help")
