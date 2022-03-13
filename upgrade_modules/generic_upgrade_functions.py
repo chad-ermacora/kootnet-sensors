@@ -46,6 +46,7 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
+from configuration_modules.config_sensor_insights import CreateSensorInsightsConfiguration
 from operations_modules.initialization_python_modules import running_on_pi
 
 
@@ -217,6 +218,13 @@ def reset_sensor_control_config(log_reset=True):
     CreateSensorControlConfiguration(load_from_file=False).save_config_to_file()
 
 
+def reset_sensor_insights_config(log_reset=True):
+    """ Writes a default Sensor Insights configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Sensor Insights Configuration Reset ****")
+    CreateSensorInsightsConfiguration(load_from_file=False).save_config_to_file()
+
+
 def reset_all_configurations(log_reset=True):
     """
     Resets all configuration files to Default settings.
@@ -244,6 +252,7 @@ def reset_all_configurations(log_reset=True):
     reset_luftdaten_config(log_reset=log_reset)
     reset_open_sense_map_config(log_reset=log_reset)
     reset_sensor_control_config(log_reset=log_reset)
+    reset_sensor_insights_config(log_reset=log_reset)
 
 
 def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True, new_location=None):

@@ -95,7 +95,19 @@ def html_atpro_dashboard():
 
 @html_atpro_main_routes.route("/atpro/sensor-readings-base")
 def html_atpro_sensor_readings_base():
-    return render_template("ATPro_admin/page_templates/sensor-readings.html")
+    use_all_rec_data = ""
+    hide_date_range = ""
+    if app_config_access.sensor_insights.use_all_recorded_data:
+        use_all_rec_data = "checked"
+        hide_date_range = "hidden"
+    start_date_range = app_config_access.sensor_insights.start_date_range
+    end_date_range = app_config_access.sensor_insights.end_date_range
+    return render_template("ATPro_admin/page_templates/sensor-readings.html",
+                           UseAllRecordedData=use_all_rec_data,
+                           DateRangeHidden=hide_date_range,
+                           DateTimeStart=start_date_range,
+                           DateTimeEnd=end_date_range,
+                           NumberOfInsightsPerSensor=app_config_access.sensor_insights.insights_per_sensor)
 
 
 @html_atpro_main_routes.route("/atpro/sensor-readings")
@@ -119,20 +131,6 @@ def html_atpro_sensors_latency():
         new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + " Seconds")
         html_final_code += new_reading + "\n"
     return html_final_code
-
-
-@html_atpro_main_routes.route("/atpro/sensor-insights")
-def html_atpro_sensors_insights():
-    # ToDo: Add html generator for db sensor insights
-    special_names = ["Something"]
-    special_readings = [21]
-    special_reading_units = [" Seconds"]
-    html_final_code = ""
-    for s_name, s_reading, s_unit in zip(special_names, special_readings, special_reading_units):
-        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", s_name)
-        new_reading = new_reading.replace("{{ SensorReading }}", str(s_reading) + s_unit)
-        html_final_code += new_reading + "\n"
-    return '<div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content">WIP</div></div></div>'
 
 
 @html_atpro_main_routes.route("/atpro/sensor-help")

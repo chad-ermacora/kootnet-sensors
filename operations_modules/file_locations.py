@@ -146,6 +146,7 @@ mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
 weather_underground_config = sensor_config_dir + "/online_services_weather_underground.conf"
 luftdaten_config = sensor_config_dir + "/online_services_luftdaten.conf"
 osm_config = sensor_config_dir + "/online_services_open_sense_map.conf"
+sensor_insights_config = sensor_config_dir + "/sensor_insights.conf"
 
 live_graphs_config = sensor_config_dir + "/live_graphs.conf"
 db_graphs_config = sensor_config_dir + "/database_graphs.conf"
