@@ -40,6 +40,11 @@ def html_atpro_sensor_settings_mqtt_publisher():
     mqtt_publisher_config = app_config_access.mqtt_publisher_config
 
     if request.method == "POST":
+        base_topic = str(request.form.get("topic_mqtt_base_topic")).strip().replace("/", "")
+        if base_topic == "":
+            msg = "The MQTT Publisher Base topic cannot be only slash(s) or blank. " + \
+                  "A valid entry would look something like 'home' or 'home/kitchen' or 'home/kitchen/cupboard'"
+            return get_message_page("Invalid Base Topic", msg)
         app_config_access.mqtt_publisher_config.update_with_html_request(request)
         app_config_access.mqtt_publisher_config.save_config_to_file()
         app_cached_variables.restart_mqtt_publisher_thread = True

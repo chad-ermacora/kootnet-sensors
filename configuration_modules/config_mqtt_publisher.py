@@ -256,13 +256,12 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         elif config_type == "Advanced":
             self.selected_mqtt_send_format = str(html_request.form.get("mqtt_send_type"))
 
-            base_topic = str(html_request.form.get("topic_mqtt_base_topic"))
-            if base_topic != "":
-                if base_topic[0] == "/":
-                    base_topic = base_topic[1:]
-                if base_topic[-1] == "/":
-                    base_topic = base_topic[:-1]
-                self.mqtt_base_topic = base_topic + "/"
+            base_topic = str(html_request.form.get("topic_mqtt_base_topic")).strip()
+            if base_topic[0] == "/":
+                base_topic = base_topic[1:]
+            if base_topic[-1] == "/":
+                base_topic = base_topic[:-1]
+            self.mqtt_base_topic = base_topic + "/"
 
             mqtt_custom_data_string = html_request.form.get("mqtt_custom_data")
             if mqtt_custom_data_string is not None:
