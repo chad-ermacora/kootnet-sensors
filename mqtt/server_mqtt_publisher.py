@@ -56,6 +56,8 @@ def _mqtt_publisher_server():
         sleep_fraction_interval = 3
         sleep_total = 0
         seconds_to_wait = app_config_access.mqtt_publisher_config.seconds_to_wait
+        if 0 < seconds_to_wait < 3:
+            sleep_fraction_interval = seconds_to_wait
         while sleep_total < seconds_to_wait and not app_cached_variables.restart_mqtt_publisher_thread:
             sleep(sleep_fraction_interval)
             sleep_total += sleep_fraction_interval
@@ -166,12 +168,17 @@ def _get_mqtt_publisher_auth():
 
 def _get_database_variable_to_mqtt_publisher_topic():
     mqtt_publisher_config = app_config_access.mqtt_publisher_config
+    sensor_date_time_topic = app_config_access.mqtt_publisher_config.sensor_date_time_topic
     return {
+        sensor_date_time_topic: sensor_date_time_topic,
+        db_v.sensor_name: mqtt_publisher_config.sensor_host_name_topic,
+        db_v.ip: mqtt_publisher_config.sensor_ip_topic,
         db_v.latitude: mqtt_publisher_config.gps_latitude_topic,
         db_v.longitude: mqtt_publisher_config.gps_longitude_topic,
         db_v.sensor_uptime: mqtt_publisher_config.sensor_uptime_topic,
         db_v.system_temperature: mqtt_publisher_config.system_temperature_topic,
         db_v.env_temperature: mqtt_publisher_config.env_temperature_topic,
+        db_v.dew_point: mqtt_publisher_config.dew_point_topic,
         db_v.pressure: mqtt_publisher_config.pressure_topic,
         db_v.altitude: mqtt_publisher_config.altitude_topic,
         db_v.humidity: mqtt_publisher_config.humidity_topic,
