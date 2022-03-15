@@ -111,7 +111,7 @@ def _write_mqtt_message_to_sql_database(mqtt_message):
                         data_list.append(str(column_data))
                     else:
                         log_msg = "MQTT Subscriber SQL Recording: Incorrect sensor ID or Type - "
-                        logger.network_logger.warning(log_msg + "Must be Alphanumeric")
+                        logger.network_logger.debug(log_msg + "Must be Alphanumeric")
 
                 if len(columns_sql_str) > 0:
                     columns_sql_str = columns_sql_str[:-1]
