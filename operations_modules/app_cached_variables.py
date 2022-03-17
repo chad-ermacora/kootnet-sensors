@@ -21,6 +21,7 @@ from os import geteuid, path
 from operations_modules.app_generic_classes import CreateDatabaseVariables, CreateNetworkSystemCommands, \
     CreateNetworkGetCommands, CreateLatencyVariables, CreateEmptyThreadClass
 
+sql_db_locked = False
 database_variables = CreateDatabaseVariables()
 network_system_commands = CreateNetworkSystemCommands()
 network_get_commands = CreateNetworkGetCommands()

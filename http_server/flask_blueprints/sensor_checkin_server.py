@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
+from time import sleep
 from datetime import datetime
 from flask import Blueprint, request
 from operations_modules import logger
@@ -72,6 +73,8 @@ def remote_sensor_check_ins():
 
 
 def check_sensor_checkin_columns(checkin_id):
+    while app_cached_variables.sql_db_locked:
+        sleep(1)
     db_connection = sqlite3.connect(sc_database_location, isolation_level=None)
     db_cursor = db_connection.cursor()
 

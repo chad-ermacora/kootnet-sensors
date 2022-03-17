@@ -18,6 +18,7 @@
 """
 import os
 import sqlite3
+from time import sleep
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request
 from operations_modules import logger
@@ -525,6 +526,8 @@ def _delete_sensor_id(sensor_id):
 def _check_sensor_id_exists(sensor_id):
     sql_query = "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + sensor_id + "'"
     try:
+        while app_cached_variables.sql_db_locked:
+            sleep(1)
         database_connection = sqlite3.connect(db_loc, isolation_level=None)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)

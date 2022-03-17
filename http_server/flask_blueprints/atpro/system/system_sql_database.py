@@ -204,6 +204,7 @@ def html_atpro_sensor_settings_database_uploads():
                 save_db_to = file_locations.sensor_checkin_database
 
             if uploaded_file is not None:
+                app_cached_variables.sql_db_locked = True
                 if uploaded_file.filename.split(".")[-1] == "zip":
                     uploaded_file.save(zip_location)
                     system_thread = Thread(target=_unzip_and_replace_database,
@@ -218,6 +219,7 @@ def html_atpro_sensor_settings_database_uploads():
                     system_thread.start()
                 else:
                     logger.network_logger.error("Upload Database: Invalid extension on uploaded file")
+                    app_cached_variables.sql_db_locked = False
             else:
                 logger.network_logger.error("Database Upload: No File Uploaded")
         return_msg = "Database(s) Uploaded"
@@ -310,6 +312,7 @@ def _unzip_and_replace_database(zip_location, db_location, backup_file_name):
         return_database_locations_list = []
     if os.path.isfile(zip_location):
         os.remove(zip_location)
+    app_cached_variables.sql_db_locked = False
     app_cached_variables.uploaded_databases_list = get_list_of_filenames_in_dir(uploaded_databases_folder)
     logger.network_logger.info("Database Replacement Complete")
     return return_database_locations_list
@@ -317,39 +320,46 @@ def _unzip_and_replace_database(zip_location, db_location, backup_file_name):
 
 def _check_uploaded_db_raw_worker(sqlite_file_location):
     logger.network_logger.info("Database Upload Processing ...")
-    if universal_database_structure_check(sqlite_file_location):
-        uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
-        app_cached_variables.uploaded_databases_list = uploaded_db_filenames
-        _set_file_permissions(sqlite_file_location)
-        logger.network_logger.info("Database Upload " + sqlite_file_location + " Okay")
-    else:
-        os.remove(sqlite_file_location)
-        logger.network_logger.error("Database Upload: Invalid SQLite3 Database File")
-    logger.network_logger.info("Database Upload Complete")
+    try:
+        if universal_database_structure_check(sqlite_file_location):
+            uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
+            app_cached_variables.uploaded_databases_list = uploaded_db_filenames
+            _set_file_permissions(sqlite_file_location)
+            logger.network_logger.info("Database Upload " + sqlite_file_location + " Okay")
+        else:
+            os.remove(sqlite_file_location)
+            logger.network_logger.error("Database Upload: Invalid SQLite3 Database File")
+        logger.network_logger.info("Database Upload Complete")
+    except Exception as error:
+        logger.network_logger.error("Uploaded Database Check Error:  " + str(error))
 
 
 def _db_replacement_raw_worker(temp_db_location, save_db_to, backup_file_name):
     logger.network_logger.info("Database Replacement Processing ...")
-    expected_database_type = None
-    if save_db_to == file_locations.sensor_database:
-        expected_database_type = app_cached_variables.database_variables.db_info_database_type_main
-    elif save_db_to == file_locations.sensor_checkin_database:
-        expected_database_type = app_cached_variables.database_variables.db_info_database_type_sensor_checkins
-    elif save_db_to == file_locations.mqtt_subscriber_database:
-        expected_database_type = app_cached_variables.database_variables.db_info_database_type_mqtt
+    try:
+        expected_database_type = None
+        if save_db_to == file_locations.sensor_database:
+            expected_database_type = app_cached_variables.database_variables.db_info_database_type_main
+        elif save_db_to == file_locations.sensor_checkin_database:
+            expected_database_type = app_cached_variables.database_variables.db_info_database_type_sensor_checkins
+        elif save_db_to == file_locations.mqtt_subscriber_database:
+            expected_database_type = app_cached_variables.database_variables.db_info_database_type_mqtt
 
-    if universal_database_structure_check(temp_db_location, expected_database_type):
-        if _zip_and_delete_database(save_db_to, backup_file_name):
-            os.rename(temp_db_location, save_db_to)
-            _set_file_permissions(save_db_to)
-            logger.network_logger.info("Database Replaced " + save_db_to)
+        if universal_database_structure_check(temp_db_location, expected_database_type):
+            if _zip_and_delete_database(save_db_to, backup_file_name):
+                os.rename(temp_db_location, save_db_to)
+                _set_file_permissions(save_db_to)
+                logger.network_logger.info("Database Replaced " + save_db_to)
+            else:
+                logger.network_logger.error("Database Backup Failed: Database Replacement Cancelled")
+                os.remove(temp_db_location)
         else:
-            logger.network_logger.error("Database Backup Failed: Database Replacement Cancelled")
+            logger.network_logger.error("Database Upload: Invalid Database")
             os.remove(temp_db_location)
-    else:
-        logger.network_logger.error("Database Upload: Invalid Database")
-        os.remove(temp_db_location)
-    logger.network_logger.info("Database Replacement Complete")
+        logger.network_logger.info("Database Replacement Complete")
+    except Exception as error:
+        logger.network_logger.error("Database Replacement Error:  " + str(error))
+    app_cached_variables.sql_db_locked = False
 
 
 def _set_file_permissions(file_location, file_permissions=0o666):
