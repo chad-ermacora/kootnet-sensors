@@ -59,11 +59,11 @@ def download_sensors_sql_database_zipped():
         time.sleep(1)
     return _button_functions("download-main-db-zip")
 
-
-@html_local_download_routes.route("/DownloadSQLDatabaseRAW")
-@auth.login_required
-def download_sensors_sql_database_raw():
-    return _button_functions("download-main-db-raw")
+# Removed due to DB corruption on downloaded file
+# @html_local_download_routes.route("/DownloadSQLDatabaseRAW")
+# @auth.login_required
+# def download_sensors_sql_database_raw():
+#     return _button_functions("download-main-db-raw")
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseMQTT")
@@ -74,11 +74,11 @@ def download_mqtt_sql_database_zipped():
         time.sleep(1)
     return _button_functions("download-mqtt-sub-db-zip")
 
-
-@html_local_download_routes.route("/DownloadSQLDatabaseRAWMQTT")
-@auth.login_required
-def download_mqtt_sql_database_raw():
-    return _button_functions("download-mqtt-sub-db-raw")
+# Removed due to DB corruption on downloaded file
+# @html_local_download_routes.route("/DownloadSQLDatabaseRAWMQTT")
+# @auth.login_required
+# def download_mqtt_sql_database_raw():
+#     return _button_functions("download-mqtt-sub-db-raw")
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseCheckin")
@@ -89,11 +89,11 @@ def download_checkin_sql_database_zipped():
         time.sleep(1)
     return _button_functions("download-checkin-db-zip")
 
-
-@html_local_download_routes.route("/DownloadSQLDatabaseRAWCheckin")
-@auth.login_required
-def download_checkin_sql_database_raw():
-    return _button_functions("download-checkin-db-raw")
+# Removed due to DB corruption on downloaded file
+# @html_local_download_routes.route("/DownloadSQLDatabaseRAWCheckin")
+# @auth.login_required
+# def download_checkin_sql_database_raw():
+#     return _button_functions("download-checkin-db-raw")
 
 
 @html_local_download_routes.route("/DatabaseDownloads", methods=["GET", "POST"])
@@ -108,31 +108,32 @@ def html_atpro_db_downloads():
 
 def _button_functions(button_pressed, request_ip="N/A"):
     try:
-        if button_pressed == "download-main-db-raw":
-            logger.network_logger.debug("* Download RAW Main SQL Database Accessed by " + request_ip)
-            sensor_database = file_locations.sensor_database
-            if os.path.isfile(sensor_database):
-                sql_filename = _add_host_and_ip_to_filename("Sensor_Database", "sqlite")
-                return send_file(sensor_database, as_attachment=True, attachment_filename=sql_filename)
-            return "Kootnet Sensors main database not found"
+        # Removed due to DB corruption on downloaded file
+        # if button_pressed == "download-main-db-raw":
+        #     logger.network_logger.debug("* Download RAW Main SQL Database Accessed by " + request_ip)
+        #     sensor_database = file_locations.sensor_database
+        #     if os.path.isfile(sensor_database):
+        #         sql_filename = _add_host_and_ip_to_filename("Sensor_Database", "sqlite")
+        #         return send_file(sensor_database, as_attachment=True, attachment_filename=sql_filename)
+        #     return "Kootnet Sensors main database not found"
+        #
+        # elif button_pressed == "download-mqtt-sub-db-raw":
+        #     logger.network_logger.debug("* Download RAW MQTT SQL Database Accessed by " + str(request.remote_addr))
+        #     mqtt_subscriber_database = file_locations.mqtt_subscriber_database
+        #     if os.path.isfile(mqtt_subscriber_database):
+        #         sql_filename = _add_host_and_ip_to_filename("MQTT_Database", "sqlite")
+        #         return send_file(mqtt_subscriber_database, as_attachment=True, attachment_filename=sql_filename)
+        #     return "Kootnet Sensors MQTT Subscriber database not found"
+        #
+        # elif button_pressed == "download-checkin-db-raw":
+        #     logger.network_logger.debug("* Download RAW Checkin SQL Database Accessed by " + str(request_ip))
+        #     sensor_checkin_database = file_locations.sensor_checkin_database
+        #     if os.path.isfile(sensor_checkin_database):
+        #         sql_filename = _add_host_and_ip_to_filename("Sensors_Checkin_Database", "sqlite")
+        #         return send_file(sensor_checkin_database, as_attachment=True, attachment_filename=sql_filename)
+        #     return "Kootnet Sensors Checkin database not found"
 
-        elif button_pressed == "download-mqtt-sub-db-raw":
-            logger.network_logger.debug("* Download RAW MQTT SQL Database Accessed by " + str(request.remote_addr))
-            mqtt_subscriber_database = file_locations.mqtt_subscriber_database
-            if os.path.isfile(mqtt_subscriber_database):
-                sql_filename = _add_host_and_ip_to_filename("MQTT_Database", "sqlite")
-                return send_file(mqtt_subscriber_database, as_attachment=True, attachment_filename=sql_filename)
-            return "Kootnet Sensors MQTT Subscriber database not found"
-
-        elif button_pressed == "download-checkin-db-raw":
-            logger.network_logger.debug("* Download RAW Checkin SQL Database Accessed by " + str(request_ip))
-            sensor_checkin_database = file_locations.sensor_checkin_database
-            if os.path.isfile(sensor_checkin_database):
-                sql_filename = _add_host_and_ip_to_filename("Sensors_Checkin_Database", "sqlite")
-                return send_file(sensor_checkin_database, as_attachment=True, attachment_filename=sql_filename)
-            return "Kootnet Sensors Checkin database not found"
-
-        elif button_pressed == "download-main-db-zip":
+        if button_pressed == "download-main-db-zip":
             if not app_cached_variables.creating_zip_main_db:
                 database_zipped = file_locations.database_zipped
                 if os.path.isfile(database_zipped):
