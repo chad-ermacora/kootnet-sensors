@@ -70,35 +70,50 @@
 
                     <label class="toggle-switch">
                         <input type="checkbox" id="enable-mqtt-p-auth-toggle-switch" class="toggle-switch-input"
-                               name="enable_broker_auth" {{ MQTTPublisherAuthChecked }}>
+                               name="enable_broker_auth" onclick="auth_hidden()" {{ MQTTPublisherAuthChecked }}>
                         <label class="toggle-switch-label" for="enable-mqtt-p-auth-toggle-switch"></label>
                         MQTT Topic Authentication
                     </label>
 
                     <br><br>
 
-                    <label>Username<br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
-                                           value="{{ MQTTPublisherUsername }}">
+                    <div id="authorization_credentials">
+                        <label>Username<br><br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
+                                               value="{{ MQTTPublisherUsername }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </label>
+                        </label>
 
-                    <br>
+                        <br>
 
-                    <label>Password (Optional)<br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="mqtt-password-toggle-switch" class="toggle-switch-input"
+                                   name="enable_broker_auth_pass" onclick="auth_pass_hidden()">
+                            <label class="toggle-switch-label" for="enable-mqtt-p-auth-toggle-switch"></label>
+                            Add/Update Password
+                        </label>
+
+                        <br><br>
+
+                        <div id="mqtt_password_entry">
+                            <label>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input style="width: 200px;" type="password" maxlength="250"
+                                                   autocomplete="new-password" name="broker_password">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </label>
+                            <br>
                         </div>
-                    </label>
+                    </div>
 
                     <br><hr>
 
@@ -849,6 +864,24 @@
 </div>
 
 <script>
+    function auth_hidden() {
+        if (document.getElementById("enable-mqtt-p-auth-toggle-switch").checked) {
+            document.getElementById("authorization_credentials").style.display = "inline-block";
+        } else {
+            document.getElementById("authorization_credentials").style.display = "none";
+            document.getElementById("mqtt-password-toggle-switch").checked = false;
+            auth_pass_hidden();
+        }
+    }
+
+    function auth_pass_hidden() {
+        if (document.getElementById("mqtt-password-toggle-switch").checked) {
+            document.getElementById("mqtt_password_entry").style.display = "inline-block";
+        } else {
+            document.getElementById("mqtt_password_entry").style.display = "none";
+        }
+    }
+
     function topics_hidden() {
         if (document.getElementById("SendAsKootnet").checked) {
             document.getElementById("float_boxes_topics").style.display = "none";
@@ -869,6 +902,8 @@
         }
     }
     topics_hidden();
+    auth_hidden();
+    auth_pass_hidden();
 
     if (window.innerWidth < 500) {
             document.getElementById('mqtt_custom_data').style.width = '350px';

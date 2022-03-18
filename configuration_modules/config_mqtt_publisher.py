@@ -201,10 +201,9 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
             if html_request.form.get("enable_broker_auth") is not None:
                 self.enable_broker_auth = 1
-                self.broker_user = str(html_request.form.get("broker_username"))
-                broker_pass = str(html_request.form.get("broker_password"))
-                if broker_pass != "":
-                    self.broker_password = broker_pass
+                self.broker_user = str(html_request.form.get("broker_username")).strip()
+                if html_request.form.get("enable_broker_auth_pass") is not None:
+                    self.broker_password = str(html_request.form.get("broker_password")).strip()
             else:
                 self.broker_user = ""
                 self.broker_password = ""

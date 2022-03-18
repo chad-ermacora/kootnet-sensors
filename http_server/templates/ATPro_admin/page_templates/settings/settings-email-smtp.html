@@ -55,18 +55,27 @@
                         </div>
                     </label>
 
-                    <br><br>
+                    <br>
 
-                    <label>Password<br><br>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="smtp-password-toggle-switch" class="toggle-switch-input"
+                               name="enable_smtp_auth_pass" onclick="auth_pass_hidden()">
+                        <label class="toggle-switch-label" for="smtp-password-toggle-switch"></label>
+                        Add/Update Password
+                    </label>
+
+                    <div id="smtp_password_entry">
+                        <br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
                                     <input style="width: 200px;" type="password" maxlength="250"
-                                           name="server_smtp_password">
+                                           autocomplete="new-password" name="server_smtp_password">
                                 </div>
                             </div>
                         </div>
-                    </label>
+                        <br>
+                    </div>
 
                     <br><br>
 
@@ -97,6 +106,14 @@
 </div>
 
 <script>
+    function auth_pass_hidden() {
+        if (document.getElementById("smtp-password-toggle-switch").checked) {
+            document.getElementById("smtp_password_entry").style.display = "inline-block";
+        } else {
+            document.getElementById("smtp_password_entry").style.display = "none";
+        }
+    }
+
     function EmailSecuritySelection() {
         if (document.getElementById("email_security").value === 'email_security_none') {
             document.getElementById("smtp_port").value = '25';
@@ -106,4 +123,6 @@
             document.getElementById("smtp_port").value = '587';
         }
     }
+
+    auth_pass_hidden();
 </script>

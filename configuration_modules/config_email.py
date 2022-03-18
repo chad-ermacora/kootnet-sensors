@@ -127,9 +127,9 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("server_smtp_port") is not None:
             self.server_smtp_port = int(html_request.form.get("server_smtp_port"))
         if html_request.form.get("server_smtp_user") is not None:
-            self.server_smtp_user = html_request.form.get("server_smtp_user")
-        if html_request.form.get("server_smtp_password") != "":
-            self.server_smtp_password = html_request.form.get("server_smtp_password")
+            self.server_smtp_user = str(html_request.form.get("server_smtp_user")).strip()
+        if html_request.form.get("enable_smtp_auth_pass") is not None:
+            self.server_smtp_password = str(html_request.form.get("server_smtp_password")).strip()
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
