@@ -37,6 +37,15 @@
                     <br>
 
                     <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-s-log-toggle-switch" class="toggle-switch-input"
+                               name="enable_mqtt_subscriber_logging" {{ MQTTSubscriberLoggingChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-s-log-toggle-switch"></label>
+                        Enable MQTT Subscriber Logging
+                    </label>
+
+                    <br>
+
+                    <label class="toggle-switch">
                         <input type="checkbox" id="enable-mqtt-s-rec-toggle-switch" class="toggle-switch-input"
                                name="enable_mqtt_sql_recording" {{ MQTTSQLRecordingChecked }}>
                         <label class="toggle-switch-label" for="enable-mqtt-s-rec-toggle-switch"></label>

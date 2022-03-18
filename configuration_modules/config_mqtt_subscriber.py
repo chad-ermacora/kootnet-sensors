@@ -27,15 +27,16 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_subscriber_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Subscriber Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 10
+        self.valid_setting_count = 11
         self.config_settings_names = [
             "Enable MQTT Subscriber", "Broker Server Address", "Broker Port #", "Enable Authentication",
             "User Name (Optional)", "Password (Optional)", "MQTT Quality of Service Level (0-2)",
             "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#", "Enable MQTT write to SQL DB",
-            "Maximum Sensor posts to show on the main MQTT Subscriber page"
+            "Maximum Sensor posts to show on the main MQTT Subscriber page", "Enable MQTT Subscriber Logging"
         ]
 
         self.enable_mqtt_subscriber = 0
+        self.enable_mqtt_subscriber_logging = 1
         self.enable_mqtt_sql_recording = 0
 
         self.broker_address = ""
@@ -63,6 +64,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML MQTT Subscriber Configuration Update Check")
 
         self.enable_mqtt_subscriber = 0
+        self.enable_mqtt_subscriber_logging = 0
         self.enable_mqtt_sql_recording = 0
         self.enable_broker_auth = 0
 
@@ -71,6 +73,8 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("enable_mqtt_subscriber") is not None:
             self.enable_mqtt_subscriber = 1
+        if html_request.form.get("enable_mqtt_subscriber_logging") is not None:
+            self.enable_mqtt_subscriber_logging = 1
         if html_request.form.get("enable_mqtt_sql_recording") is not None:
             self.enable_mqtt_sql_recording = 1
 
@@ -115,7 +119,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
             str(self.enable_mqtt_subscriber), str(self.broker_address), str(self.broker_server_port),
             str(self.enable_broker_auth), str(self.broker_user), str(self.broker_password),
             str(self.mqtt_subscriber_qos), topics_text, str(self.enable_mqtt_sql_recording),
-            str(self.mqtt_page_view_max_entries)
+            str(self.mqtt_page_view_max_entries), str(self.enable_mqtt_subscriber_logging)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -134,6 +138,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
                     self.subscribed_topics_list.append(topic.strip())
             self.enable_mqtt_sql_recording = int(self.config_settings[8])
             self.mqtt_page_view_max_entries = int(self.config_settings[9].strip())
+            self.enable_mqtt_subscriber_logging = int(self.config_settings[10].strip())
         except Exception as error:
             logger.primary_logger.debug("MQTT Subscriber Config: " + str(error))
             self.update_configuration_settings_list()

@@ -60,7 +60,8 @@ def _subscriber_on_connect(client, userdata, flags, rc):
 
 
 def _on_mqtt_message(client, userdata, message):
-    logger.mqtt_subscriber_logger.info(str(message.topic) + " = " + str(message.payload.decode("UTF-8")))
+    if app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber_logging:
+        logger.mqtt_subscriber_logger.info(str(message.topic) + " = " + str(message.payload.decode("UTF-8")))
     if app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording:
         _write_mqtt_message_to_sql_database(message)
 
