@@ -132,10 +132,22 @@ def get_uptime_str():
     return str_day_hour_min
 
 
-def get_text_check_enabled(setting):
+def get_html_enabled_disabled_text(setting):
     if setting:
         return "Enabled"
     return "Disabled"
+
+
+def get_html_checked_text(setting):
+    if setting:
+        return "checked"
+    return ""
+
+
+def get_html_hidden_text(setting):
+    if setting:
+        return "hidden"
+    return ""
 
 
 def get_file_creation_date(file_location):

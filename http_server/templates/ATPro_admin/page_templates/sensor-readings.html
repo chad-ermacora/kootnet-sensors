@@ -68,14 +68,24 @@
 
                             <label class="toggle-switch">
                                 <input type="checkbox" id="use-all-data" class="toggle-switch-input"
-                                       name="use_all_recorded_data" onclick="DateRangeHidden()" {{ UseAllRecordedData }}>
+                                       name="use_all_recorded_data" onclick="DateRangeHidden()"
+                                        {{ UseAllRecordedData }}>
                                 <label class="toggle-switch-label" for="use-all-data"></label>
                                 Use ALL Recorded Data
                             </label>
 
                             <br>
 
-                            <div id="date-range-selection" {{ DateRangeHidden }}>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="ignore-null" class="toggle-switch-input"
+                                       name="ignore_null_values" {{ IgnoreNullValues }}>
+                                <label class="toggle-switch-label" for="ignore-null"></label>
+                                Ignore Other Null Type Values ('0', '0.0', '')
+                            </label>
+
+                            <br>
+
+                            <div id="date-range-selection">
                                 <br>
                                 <label>Start DateTime MM/DD/YYYY hh:mm<br>
                                     <div style="display: table; margin-left: auto; margin-right: auto;">
@@ -181,6 +191,7 @@
         } else if  (nav_location === "sensor-insights") {
             document.getElementById("sensor-readings-title").innerHTML = title_insights_msg;
             document.getElementById("sensor-insight-settings").hidden = false;
+            DateRangeHidden();
         }
 
         jQuery("#readings-page-content").load("/atpro/" + nav_location);
