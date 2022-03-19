@@ -74,11 +74,9 @@ def run_configuration_upgrade_checks():
                     if previous_version.minor_version < 56:
                         no_changes = False
                         generic_upgrade_functions.reset_email_reports_config(log_reset=False)
-                        generic_upgrade_functions.reset_email_db_graphs_config(log_reset=False)
                     if previous_version.minor_version < 53:
                         no_changes = False
                         generic_upgrade_functions.reset_live_graph_config(log_reset=False)
-                        generic_upgrade_functions.reset_database_graph_config(log_reset=False)
                     if previous_version.minor_version < 51:
                         no_changes = False
                         generic_upgrade_functions.reset_email_config()
