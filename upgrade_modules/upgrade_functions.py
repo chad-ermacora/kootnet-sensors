@@ -254,12 +254,15 @@ class CreateUpgradeScriptInterface:
         download_url = self._get_http_download_url()
         try:
             with open(self.local_upgrade_file_location, "wb") as upgrade_file:
-                upgrade_file_content = get_http_regular_file(download_url, get_text=False, verify_ssl=self.verify_ssl)
+                upgrade_file_content = get_http_regular_file(download_url, get_text=False,
+                                                             timeout=30, verify_ssl=self.verify_ssl)
                 if type(upgrade_file_content) is str:
                     logger.network_logger.error("Update File is str: " + upgrade_file_content)
                 upgrade_file.write(upgrade_file_content)
         except Exception as error:
             logger.network_logger.error("HTTP(S) Upgrade Download " + download_url + ": " + str(error))
+        if os.path.isfile(self.local_upgrade_file_location):
+            os.chmod(self.local_upgrade_file_location, 0o777)
 
     def _save_smb_to_file(self):
         """
@@ -272,6 +275,8 @@ class CreateUpgradeScriptInterface:
         if self.dev_upgrade:
             smb_deb_installer = "dev/" + smb_deb_installer
         get_smb_file(smb_deb_installer, new_location=self.local_upgrade_file_location)
+        if os.path.isfile(self.local_upgrade_file_location):
+            os.chmod(self.local_upgrade_file_location, 0o777)
 
     def _verify_upgrade_file(self):
         """
