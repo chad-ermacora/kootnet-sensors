@@ -219,7 +219,7 @@ def _get_min_max_sql_entries(column_name, order="DESC", return_limit=None):
     where_query_text = " WHERE NOT " + column_name + " IS NULL AND NOT " + db_v.all_tables_datetime + " IS NULL"
     if app_config_access.sensor_insights.ignore_null_types:
         where_query_text += " AND NOT " + column_name + " IS 0 AND NOT " + column_name + " IS 0.0"
-        where_query_text += " AND NOT " + column_name + " IS ''"
+        where_query_text += " AND NOT " + column_name + " IS '' AND NOT " + column_name + " IS 'None'"
     if not app_config_access.sensor_insights.use_all_recorded_data:
         where_query_text += " AND " + db_v.all_tables_datetime + " BETWEEN date('" + \
                             app_config_access.sensor_insights.start_date_range + "') AND date('" + \
