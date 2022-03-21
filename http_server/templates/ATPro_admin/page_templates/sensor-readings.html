@@ -115,8 +115,14 @@
                             <br>
 
                             <label>Number Of Insights Per Sensor<br>
-                                <input style="width: 125px;" type="number" min="1" name="number_of_insights"
-                                       value="{{ NumberOfInsightsPerSensor }}">
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                        <div style="display: table-row;">
+                                            <div style="display: table-cell;">
+                                                <input style="width: 125px;" type="number" min="1" name="number_of_insights"
+                                                       value="{{ NumberOfInsightsPerSensor }}">
+                                            </div>
+                                        </div>
+                                </div>
                             </label>
 
                             <br><br>
@@ -163,7 +169,7 @@
 
     function RefreshingInsights() {
         document.getElementById("insights-refresh-btn").disabled = true;
-        fetch("/atpro/generate-Sensor-Insights");
+        fetch("/atpro/Generate-Sensor-Insights");
         SelectReadingsNav("sensor-insights");
     }
 

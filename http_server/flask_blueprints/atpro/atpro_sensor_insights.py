@@ -105,9 +105,15 @@ def html_atpro_sensors_insights():
     return html_sensor_insights
 
 
-@html_atpro_sensor_insights_routes.route("/atpro/generate-Sensor-Insights")
+@html_atpro_sensor_insights_routes.route("/atpro/Generate-Sensor-Insights")
 def html_atpro_generate_sensor_insights():
-    thread_function(_generate_sensor_insights)
+    global generating_insights
+    global html_sensor_insights
+
+    if not generating_insights:
+        generating_insights = True
+        html_sensor_insights = html_sensor_insights_updating
+        thread_function(_generate_sensor_insights)
     return "Generating"
 
 
@@ -115,54 +121,50 @@ def _generate_sensor_insights():
     global html_sensor_insights
     global generating_insights
 
-    if not generating_insights:
-        generating_insights = True
+    try:
+        db_columns = [
+            db_v.sensor_uptime, db_v.system_temperature, db_v.env_temperature, db_v.pressure, db_v.altitude,
+            db_v.humidity,
+            db_v.dew_point, db_v.distance, db_v.gas_resistance_index, db_v.gas_reducing, db_v.gas_oxidising,
+            db_v.gas_nh3,
+            db_v.particulate_matter_1, db_v.particulate_matter_2_5, db_v.particulate_matter_4,
+            db_v.particulate_matter_10,
+            db_v.lumen, db_v.red, db_v.orange, db_v.yellow, db_v.green, db_v.blue, db_v.violet,
+            db_v.ultra_violet_index,
+            db_v.ultra_violet_a, db_v.ultra_violet_b, db_v.acc_x, db_v.acc_y, db_v.acc_z, db_v.mag_x, db_v.mag_y,
+            db_v.mag_z, db_v.gyro_x, db_v.gyro_y, db_v.gyro_z, db_v.latitude, db_v.longitude,
+            db_v.gps_num_satellites,
+            db_v.gps_speed_over_ground
 
-        html_sensor_insights = html_sensor_insights_updating
-        try:
-            db_columns = [
-                db_v.sensor_uptime, db_v.system_temperature, db_v.env_temperature, db_v.pressure, db_v.altitude,
-                db_v.humidity,
-                db_v.dew_point, db_v.distance, db_v.gas_resistance_index, db_v.gas_reducing, db_v.gas_oxidising,
-                db_v.gas_nh3,
-                db_v.particulate_matter_1, db_v.particulate_matter_2_5, db_v.particulate_matter_4,
-                db_v.particulate_matter_10,
-                db_v.lumen, db_v.red, db_v.orange, db_v.yellow, db_v.green, db_v.blue, db_v.violet,
-                db_v.ultra_violet_index,
-                db_v.ultra_violet_a, db_v.ultra_violet_b, db_v.acc_x, db_v.acc_y, db_v.acc_z, db_v.mag_x, db_v.mag_y,
-                db_v.mag_z, db_v.gyro_x, db_v.gyro_y, db_v.gyro_z, db_v.latitude, db_v.longitude,
-                db_v.gps_num_satellites,
-                db_v.gps_speed_over_ground
+        ]
+        special_reading_units = [
+            " Minutes", " °C", " °C", " hPa", " Meters", " %RH", " °C", " ???", " kΩ", " kΩ", " kΩ", " kΩ",
+            " µg/m³", " µg/m³", " µg/m³", " µg/m³", " lm", " lm", " lm", " lm", " lm", " lm", " lm", " lm?", " lm?",
+            " lm?",
+            " g", " g", " g", " μT", " μT", " μT", " °/s", " °/s", " °/s", " Latitude", " Longitude",
+            " # of Satellites",
+            " km/hr?"
 
-            ]
-            special_reading_units = [
-                " Minutes", " °C", " °C", " hPa", " Meters", " %RH", " °C", " ???", " kΩ", " kΩ", " kΩ", " kΩ",
-                " µg/m³", " µg/m³", " µg/m³", " µg/m³", " lm", " lm", " lm", " lm", " lm", " lm", " lm", " lm?", " lm?",
-                " lm?",
-                " g", " g", " g", " μT", " μT", " μT", " °/s", " °/s", " °/s", " Latitude", " Longitude",
-                " # of Satellites",
-                " km/hr?"
-
-            ]
-            sensor_count = 0
-            html_final_code = "<script>document.getElementById('insights-refresh-btn').disabled = false;</script>"
-            for column_name, s_unit in zip(db_columns, special_reading_units):
-                new_sensor_html_code = _create_sensor_insights_html(column_name, s_unit)
-                html_final_code += new_sensor_html_code + "\n"
-                if new_sensor_html_code.strip() != "":
-                    sensor_count += 1
-            if sensor_count < 4:
-                new_code = "<div class='col-" + str(int(12 / sensor_count)) + " col-m-" + str(
-                    sensor_count * 2) + " col-sm-12'>"
-                html_final_code = html_final_code.replace("<div class='col-3 col-m-6 col-sm-12'>", new_code)
-            html_final_code += "<script>SetInsightGenDateTime('" + \
-                               datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + \
-                               " UTC0');</script>"
-            html_sensor_insights = html_final_code
-        except Exception as error:
-            logger.network_logger.error("Sensor Insights Generation: " + str(error))
-            html_sensor_insights = html_sensor_insights_error
-        generating_insights = False
+        ]
+        sensor_count = 0
+        html_final_code = "<script>document.getElementById('insights-refresh-btn').disabled = false;</script>"
+        for column_name, s_unit in zip(db_columns, special_reading_units):
+            new_sensor_html_code = _create_sensor_insights_html(column_name, s_unit)
+            html_final_code += new_sensor_html_code + "\n"
+            if new_sensor_html_code.strip() != "":
+                sensor_count += 1
+        if sensor_count < 4:
+            new_code = "<div class='col-" + str(int(12 / sensor_count)) + " col-m-" + str(
+                sensor_count * 2) + " col-sm-12'>"
+            html_final_code = html_final_code.replace("<div class='col-3 col-m-6 col-sm-12'>", new_code)
+        html_final_code += "<script>SetInsightGenDateTime('" + \
+                           datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + \
+                           " UTC0');</script>"
+        html_sensor_insights = html_final_code
+    except Exception as error:
+        logger.network_logger.error("Sensor Insights Generation: " + str(error))
+        html_sensor_insights = html_sensor_insights_error
+    generating_insights = False
 
 
 def _create_sensor_insights_html(column_name, unit_name):
