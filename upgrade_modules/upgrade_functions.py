@@ -118,6 +118,9 @@ class CreateUpdateChecksInterface:
 
 class CreateUpgradeScriptInterface:
     def __init__(self):
+        global download_type_http
+        global download_type_smb
+
         self.start_upgrade_script_command = "systemctl start KootnetSensorsUpgrade.service"
 
         self.download_type = download_type_http
