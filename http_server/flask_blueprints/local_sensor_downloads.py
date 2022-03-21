@@ -169,14 +169,17 @@ def _button_functions(button_pressed, request_ip="N/A"):
 
         elif button_pressed == "create-main-db-zip":
             if not app_cached_variables.creating_zip_main_db:
+                app_cached_variables.creating_zip_main_db = True
                 thread_function(_zip_main_db_worker)
 
         elif button_pressed == "create-mqtt-sub-db-zip":
             if not app_cached_variables.creating_zip_mqtt_sub_db:
+                app_cached_variables.creating_zip_mqtt_sub_db = True
                 thread_function(_zip_mqtt_sub_db_worker)
 
         elif button_pressed == "create-checkin-db-zip":
             if not app_cached_variables.creating_zip_checkin_db:
+                app_cached_variables.creating_zip_checkin_db = True
                 thread_function(_zip_checkin_db_worker)
     except Exception as error:
         log_msg = "HTML Database Request Error from " + request_ip + " using command " + button_pressed + ": "
@@ -191,7 +194,6 @@ def _add_host_and_ip_to_filename(filename, file_extension):
 
 
 def _zip_main_db_worker():
-    app_cached_variables.creating_zip_main_db = True
     sql_filename = _add_host_and_ip_to_filename("Main_Database", "sqlite")
     zip_content = get_file_content(file_locations.sensor_database, open_type="rb")
     _zip_db(file_locations.database_zipped, sql_filename, zip_content)
@@ -199,7 +201,6 @@ def _zip_main_db_worker():
 
 
 def _zip_mqtt_sub_db_worker():
-    app_cached_variables.creating_zip_mqtt_sub_db = True
     sql_filename = _add_host_and_ip_to_filename("MQTT_Subscriber_Database", "sqlite")
     zip_content = get_file_content(file_locations.mqtt_subscriber_database, open_type="rb")
     _zip_db(file_locations.mqtt_database_zipped, sql_filename, zip_content)
@@ -207,7 +208,6 @@ def _zip_mqtt_sub_db_worker():
 
 
 def _zip_checkin_db_worker():
-    app_cached_variables.creating_zip_checkin_db = True
     sql_filename = _add_host_and_ip_to_filename("Checkin_Database", "sqlite")
     zip_content = get_file_content(file_locations.sensor_checkin_database, open_type="rb")
     _zip_db(file_locations.checkin_database_zipped, sql_filename, zip_content)

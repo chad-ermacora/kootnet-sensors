@@ -247,6 +247,7 @@ def html_atpro_sensor_checkins_generate_sensors_html_list():
     global checkins_sensors_html_table_list
 
     if checkins_sensors_html_table_list != updating_checkin_info_html_msg:
+        checkins_sensors_html_table_list = updating_checkin_info_html_msg
         thread_function(_generate_sensors_checkins_html_list)
     # This just initiates generation and does not return a page to "View"
     return "OK"
@@ -258,7 +259,6 @@ def _generate_sensors_checkins_html_list():
     global checkins_db_sensors_count_from_past_days
     global checkins_sensors_html_table_list
 
-    checkins_sensors_html_table_list = updating_checkin_info_html_msg
     try:
         sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
         checkins_db_sensors_count = len(sensor_ids_and_date_list)
