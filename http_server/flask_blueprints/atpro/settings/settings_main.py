@@ -145,6 +145,7 @@ def html_atpro_sensor_settings_installed_sensors():
         PimoroniBMP280=get_html_checkbox_state(installed_sensors.pimoroni_bmp280),
         PimoroniBME280=get_html_checkbox_state(installed_sensors.pimoroni_bme280),
         PimoroniBME680=get_html_checkbox_state(installed_sensors.pimoroni_bme680),
+        PimoroniWeatherHAT=get_html_checkbox_state(installed_sensors.pimoroni_weather_hat),
         PimoroniEnviroPHAT=get_html_checkbox_state(installed_sensors.pimoroni_enviro),
         PimoroniEnviro2=get_html_checkbox_state(installed_sensors.pimoroni_enviro2),
         PimoroniEnviroPlus=get_html_checkbox_state(installed_sensors.pimoroni_enviroplus),
