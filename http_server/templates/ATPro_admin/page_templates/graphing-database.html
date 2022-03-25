@@ -242,13 +242,6 @@
 
                     <br><br>
 
-                    <button type="button" id="save-settings-button" class="pure-button"
-                            onclick="UpdateHiddenInputButtonPress('save')">
-                        Save Settings
-                    </button>
-
-                    &nbsp;&nbsp;&nbsp;
-
                     <button type="button" id="create-graph-button" class="pure-button"
                             onclick="UpdateHiddenInputButtonPress('create')">
                         Create Graph
@@ -258,6 +251,14 @@
         </div>
 
         <div class="col-6 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <button type="button" class="pure-button" id="dga-button" onclick="ShowHideDGA_Adv()">
+                        Show Advanced Settings
+                    </button>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-content">
                     <h2><i class="fas fa-file-code"></i> View Generated Graphs</h2>
@@ -282,15 +283,12 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <button type="button" class="pure-button" id="dga-button" onclick="ShowHideDGA_Adv()">
-                        Show Advanced Settings
-                    </button>
+            <div id="dga-settings-content" style="width: 100%;">
+                <div class="card">
+                    <div class="card-content">
+                        <h2>Advanced Settings</h2>
 
-                    <br>
 
-                    <div id="dga-settings-content" style="display: table; margin-left: auto; margin-right: auto;"><br>
                         <label class="toggle-switch">
                             <input type="checkbox" id="manual-date-range-toggle" class="toggle-switch-input"
                                    name="manual_date_range" onclick="ManualDateRange()" {{ CheckedManualDateRange }}>
@@ -313,29 +311,30 @@
                         </label>
 
                         <br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-cell;">
+                                <h3>SQL Recording Type</h3>
+                                <label for="rec-type-interval" class="pure-radio">
+                                    <input type="radio" id="rec-type-interval" name="sql_recording_type" value="IntervalData" {{ CheckedInterval }}/>
+                                    Interval
+                                </label>
+                                <label for="rec-type-trigger" class="pure-radio">
+                                    <input type="radio" id="rec-type-trigger" name="sql_recording_type" value="TriggerData" {{ CheckedTrigger }}/>
+                                    Trigger
+                                </label>
+                            </div>
 
-                        <div style="display: table-cell;">
-                            <h3>SQL Recording Type</h3>
-                            <label for="rec-type-interval" class="pure-radio">
-                                <input type="radio" id="rec-type-interval" name="sql_recording_type" value="IntervalData" {{ CheckedInterval }}/>
-                                Interval
-                            </label>
-                            <label for="rec-type-trigger" class="pure-radio">
-                                <input type="radio" id="rec-type-trigger" name="sql_recording_type" value="TriggerData" {{ CheckedTrigger }}/>
-                                Trigger
-                            </label>
-                        </div>
-
-                        <div style="display: table-cell;">
-                            <h3>Render Engine</h3>
-                            <label for="render-type-ogl" class="pure-radio">
-                                <input type="radio" id="render-type-ogl" name="plotly_render_engine" value="OpenGL" {{ CheckedOpenGL }}/>
-                                WebGL (Recommended)
-                            </label>
-                            <label for="render-type-cpu" class="pure-radio">
-                                <input type="radio" id="render-type-cpu" name="plotly_render_engine" value="CPU" {{ CheckedCPU }}/>
-                                CPU
-                            </label>
+                            <div style="display: table-cell;">
+                                <h3>Render Engine</h3>
+                                <label for="render-type-ogl" class="pure-radio">
+                                    <input type="radio" id="render-type-ogl" name="plotly_render_engine" value="OpenGL" {{ CheckedOpenGL }}/>
+                                    WebGL (Recommended)
+                                </label>
+                                <label for="render-type-cpu" class="pure-radio">
+                                    <input type="radio" id="render-type-cpu" name="plotly_render_engine" value="CPU" {{ CheckedCPU }}/>
+                                    CPU
+                                </label>
+                            </div>
                         </div>
 
                         <br><br>
@@ -365,10 +364,18 @@
                                 </div>
                             </div>
                         </div>
-                        <br>
                     </div>
+                </div>
+            </div>
 
-                    <br>
+            <div class="card">
+                <div class="card-content">
+                    <button type="button" id="save-settings-button" class="pure-button"
+                            onclick="UpdateHiddenInputButtonPress('save')">
+                        Save Settings
+                    </button>
+
+                    &nbsp;&nbsp;&nbsp;
 
                     <button type="button" class="pure-button" onclick="UpdateHiddenInputButtonPress('email')">
                         Save Settings for Graph Emails
