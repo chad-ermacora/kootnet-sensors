@@ -4,7 +4,7 @@
             <div class="card-content">
                 <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
                     <input type="text" name="ConfigSection" value="Main" hidden>
-                    <h2><i class="fas fa-broadcast-tower"></i> MQTT Publisher</h2>
+                    <h2><i class="fas fa-paper-plane"></i> MQTT Publisher</h2>
 
                     <label class="toggle-switch">
                         <input type="checkbox" id="enable-mqtt-p-toggle-switch" class="toggle-switch-input"
@@ -310,7 +310,7 @@
                     <label for="SendAsCustom">
                         <input type="radio" id="SendAsCustom" name="mqtt_send_type" onchange="topics_hidden()"
                                value="CustomString" {{ SASCustomChecked }} />
-                        Custom Single String
+                        Custom String
                     </label>
 
                     <br><br>
