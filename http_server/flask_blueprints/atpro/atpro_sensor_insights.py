@@ -124,26 +124,19 @@ def _generate_sensor_insights():
     try:
         db_columns = [
             db_v.sensor_uptime, db_v.system_temperature, db_v.env_temperature, db_v.pressure, db_v.altitude,
-            db_v.humidity,
-            db_v.dew_point, db_v.distance, db_v.gas_resistance_index, db_v.gas_reducing, db_v.gas_oxidising,
-            db_v.gas_nh3,
-            db_v.particulate_matter_1, db_v.particulate_matter_2_5, db_v.particulate_matter_4,
-            db_v.particulate_matter_10,
-            db_v.lumen, db_v.red, db_v.orange, db_v.yellow, db_v.green, db_v.blue, db_v.violet,
-            db_v.ultra_violet_index,
-            db_v.ultra_violet_a, db_v.ultra_violet_b, db_v.acc_x, db_v.acc_y, db_v.acc_z, db_v.mag_x, db_v.mag_y,
-            db_v.mag_z, db_v.gyro_x, db_v.gyro_y, db_v.gyro_z, db_v.latitude, db_v.longitude,
-            db_v.gps_num_satellites,
-            db_v.gps_speed_over_ground
+            db_v.humidity, db_v.dew_point, db_v.distance, db_v.gas_resistance_index, db_v.gas_reducing,
+            db_v.gas_oxidising, db_v.gas_nh3, db_v.particulate_matter_1, db_v.particulate_matter_2_5,
+            db_v.particulate_matter_4, db_v.particulate_matter_10, db_v.lumen, db_v.red, db_v.orange, db_v.yellow,
+            db_v.green, db_v.blue, db_v.violet, db_v.ultra_violet_index, db_v.ultra_violet_a, db_v.ultra_violet_b,
+            db_v.acc_x, db_v.acc_y, db_v.acc_z, db_v.mag_x, db_v.mag_y, db_v.mag_z, db_v.gyro_x, db_v.gyro_y,
+            db_v.gyro_z, db_v.latitude, db_v.longitude, db_v.gps_num_satellites, db_v.gps_speed_over_ground
 
         ]
         special_reading_units = [
             " Minutes", " °C", " °C", " hPa", " Meters", " %RH", " °C", " ???", " kΩ", " kΩ", " kΩ", " kΩ",
             " µg/m³", " µg/m³", " µg/m³", " µg/m³", " lm", " lm", " lm", " lm", " lm", " lm", " lm", " lm?", " lm?",
-            " lm?",
-            " g", " g", " g", " μT", " μT", " μT", " °/s", " °/s", " °/s", " Latitude", " Longitude",
-            " # of Satellites",
-            " km/hr?"
+            " lm?", " g", " g", " g", " μT", " μT", " μT", " °/s", " °/s", " °/s", " Latitude", " Longitude",
+            " # of Satellites", " km/hr?"
 
         ]
         sensor_count = 0
