@@ -3,12 +3,18 @@
         <div class="col-12 col-m-12 col-sm-12">
             <div class="card">
                 <div class="card-content">
-                    <h2><i class="fas fa-comment"></i> MQTT Subscriber View Options</h2>
-                    <p>
-                        Maximum number of Sensor Posts to show on the main MQTT Subscriber page
-                    </p>
+                    <h2><i class="far fa-comment-dots"></i> MQTT Subscriber View Options</h2>
 
-                    <label>Max Sensor Posts<br><br>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-s-log-toggle-switch" class="toggle-switch-input"
+                               name="enable_mqtt_subscriber_logging" {{ MQTTSubscriberLoggingChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-s-log-toggle-switch"></label>
+                        Enable MQTT Subscriber Web View
+                    </label>
+
+                    <br><br>
+
+                    <label>Maximum number of MQTT Sensor Posts to show on the MQTT Subscriber Web View<br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
@@ -25,22 +31,13 @@
         <div class="col-6 col-m-12 col-sm-12">
             <div class="card">
                 <div class="card-content">
-                    <h2><i class="fas fa-broadcast-tower"></i> MQTT Subscriber</h2>
+                    <h2><i class="fas fa-comment"></i> MQTT Subscriber</h2>
 
                     <label class="toggle-switch">
                         <input type="checkbox" id="enable-mqtt-s-toggle-switch" class="toggle-switch-input"
                                name="enable_mqtt_subscriber" {{ MQTTSubscriberChecked }}>
                         <label class="toggle-switch-label" for="enable-mqtt-s-toggle-switch"></label>
                         Enable MQTT Subscriber
-                    </label>
-
-                    <br>
-
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="enable-mqtt-s-log-toggle-switch" class="toggle-switch-input"
-                               name="enable_mqtt_subscriber_logging" {{ MQTTSubscriberLoggingChecked }}>
-                        <label class="toggle-switch-label" for="enable-mqtt-s-log-toggle-switch"></label>
-                        Enable MQTT Subscriber Logging
                     </label>
 
                     <br>
