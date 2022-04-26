@@ -16,10 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
+import re
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_classes import CreateGeneralConfiguration
 from operations_modules import app_cached_variables
+from operations_modules.app_validation_checks import hostname_is_valid
 
 
 class CreatePrimaryConfiguration(CreateGeneralConfiguration):
@@ -64,6 +67,12 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             logger.debug_enabled = 1
         logger.set_logging_level()
 
+        hostname = sanitize_text(html_request.form.get("ip_hostname"))
+        if hostname_is_valid(hostname) and hostname != app_cached_variables.hostname:
+            if app_cached_variables.running_with_root:
+                app_cached_variables.hostname = hostname
+                os.system("hostnamectl set-hostname " + hostname)
+
         if html_request.form.get("program_hour_offset") is not None:
             self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
         if html_request.form.get("ip_web_port") is not None:
@@ -91,3 +100,16 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             if self.load_from_file:
                 logger.primary_logger.info("Saving Primary Configuration.")
                 self.save_config_to_file()
+
+
+def sanitize_text(text_variable):
+    text_variable = str(text_variable)
+    final_db_name = ""
+    for letter in text_variable:
+        if re.match("^[A-Za-z0-9_.-]*$", letter):
+            final_db_name += letter
+    while ".." in final_db_name:
+        final_db_name = final_db_name.replace("..", ".")
+    if final_db_name == "":
+        final_db_name = "No_Name"
+    return final_db_name

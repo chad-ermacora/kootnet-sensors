@@ -62,6 +62,7 @@ def html_atpro_sensor_settings_main():
         "ATPro_admin/page_templates/settings/settings-main.html",
         IPWebPort=app_config_access.primary_config.web_portal_port,
         CheckedDebug=debug_logging,
+        IPHostname=app_cached_variables.hostname,
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
         SelectedUpgradeType=app_config_access.upgrades_config.selected_upgrade_type.upper(),
         CheckinAddress=app_config_access.urls_config.url_checkin_server,

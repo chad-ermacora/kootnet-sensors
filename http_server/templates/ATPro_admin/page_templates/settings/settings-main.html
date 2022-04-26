@@ -1,5 +1,144 @@
 <div class='row'>
     <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-main">
+                    <h2><i class="fas fa-clipboard-check"></i> Main</h2>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="debug-toggle-switch" class="toggle-switch-input"
+                               name="debug_logging" {{ CheckedDebug }}>
+                        <label class="toggle-switch-label" for="debug-toggle-switch"></label>
+                        Debug Logging
+                    </label>
+
+                    <br><br>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>HostName<br>
+                                    <input style="width: 250px;" type="text" id="ip_hostname" name="ip_hostname"
+                                           placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
+                                           value="{{ IPHostname }}" required>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <div style="display: inline-block; width: 250px;">
+                            <label>HTTPS Port Number<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="number" style="width: 100px;" id="ip_web_port"
+                                                   name="ip_web_port" placeholder="10065" min="1024" max="65535"
+                                                   value="{{ IPWebPort }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <div style="display: inline-block;">
+                            <label>Date & Time Offset in hours<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="number" style="width: 75px;" min="-23.5" max="23.5" step="0.25"
+                                                   name="program_hour_offset" value="{{ HourOffset }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <br>
+                        <p><strong>Note</strong>:
+                            <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i>
+                        </p>
+                    </div>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card" id="adv-urls-content" style="width: 100%;">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-urls">
+                    <h2><i class="fas fa-link"></i> Kootnet Sensor Program URLs</h2>
+
+                    <button type="button" class="pure-button"
+                            onclick="NotificationConfirmAction('Reset all URLs to default?', '/atpro/reset-urls-config')">
+                        Reset URLs to Default
+                    </button>
+
+                    <br><br>
+
+                    <h2>Update server Addresses</h2>
+
+                    <label>HTTP Update Server Address<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="text" style="width: 450px;" maxlength="250"
+                                           id="update_server_address" name="update_server_address"
+                                           placeholder="https://updates.some-server.com/installer_folder/"
+                                           value="{{ UpdateServerAddress }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label>SMB Update Server Address (Include Share Name)<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="text" style="width: 450px;" maxlength="250"
+                                           id="update_server_address_smb" name="update_server_address_smb"
+                                           placeholder="//smbServer21/KShare/"
+                                           value="{{ UpdateServerAddressSMB }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <h2>Checkin Server Address & Port</h2>
+                    <label>Eg. MySensor.sensors.org or 192.168.1.16:10065<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="text" style="width: 450px;" maxlength="250"
+                                           id="checkin_address" name="checkin_address"
+                                           placeholder="server.dragonwarz.net:10065"
+                                           value="{{ CheckinAddress }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
+                    Show Advanced Options
+                </button>
+            </div>
+        </div>
+
         <div class="card" id="update-server-requirements-content" style="text-align: center; width: 100%;">
             <h2><i class="fas fa-check-circle"></i> Update Server File Checks</h2>
 
@@ -160,131 +299,6 @@
                         </i></p>
                     </div>
                     <br>
-                    <button type="submit" class="pure-button">Update</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-6 col-m-6 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
-                    Show Advanced Options
-                </button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/settings-main">
-                    <h2><i class="fas fa-clipboard-check"></i> Main</h2>
-
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="debug-toggle-switch" class="toggle-switch-input"
-                               name="debug_logging" {{ CheckedDebug }}>
-                        <label class="toggle-switch-label" for="debug-toggle-switch"></label>
-                        Debug Logging
-                    </label>
-
-                    <br><br>
-
-                    <div>
-                        <div style="display: inline-block; width: 250px;">
-                            <label>HTTPS Port Number<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="number" style="width: 100px;" id="ip_web_port"
-                                                   name="ip_web_port" placeholder="10065" min="1024" max="65535"
-                                                   value="{{ IPWebPort }}" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        <div style="display: inline-block;">
-                            <label>Date & Time Offset in hours<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="number" style="width: 75px;" min="-23.5" max="23.5" step="0.25"
-                                                   name="program_hour_offset" value="{{ HourOffset }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        <br>
-                        <p><strong>Note</strong>:
-                            <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i>
-                        </p>
-                    </div>
-                    <button type="submit" class="pure-button">Update</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="card" id="adv-urls-content" style="width: 100%;">
-            <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/settings-urls">
-                    <h2><i class="fas fa-link"></i> Kootnet Sensor Program URLs</h2>
-
-                    <button type="button" class="pure-button"
-                            onclick="NotificationConfirmAction('Reset all URLs to default?', '/atpro/reset-urls-config')">
-                        Reset URLs to Default
-                    </button>
-
-                    <br><br>
-
-                    <h2>Update server Addresses</h2>
-
-                    <label>HTTP Update Server Address<br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input type="text" style="width: 450px;" maxlength="250"
-                                           id="update_server_address" name="update_server_address"
-                                           placeholder="https://updates.some-server.com/installer_folder/"
-                                           value="{{ UpdateServerAddress }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-
-                    <br>
-
-                    <label>SMB Update Server Address (Include Share Name)<br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input type="text" style="width: 450px;" maxlength="250"
-                                           id="update_server_address_smb" name="update_server_address_smb"
-                                           placeholder="//smbServer21/KShare/"
-                                           value="{{ UpdateServerAddressSMB }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-
-                    <br>
-
-                    <h2>Checkin Server Address & Port</h2>
-                    <label>Eg. MySensor.sensors.org or 192.168.1.16:10065<br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input type="text" style="width: 450px;" maxlength="250"
-                                           id="checkin_address" name="checkin_address"
-                                           placeholder="server.dragonwarz.net:10065"
-                                           value="{{ CheckinAddress }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-
-                    <br><br>
-
                     <button type="submit" class="pure-button">Update</button>
                 </form>
             </div>
