@@ -92,7 +92,7 @@ wifi_security_type = ""
 wifi_psk = ""
 
 # Flask App Login Variables (Web Portal Login)
-http_flask_user = "Kootnet"
+http_flask_user = "kootnet"
 http_flask_password_hash = b''
 http_flask_password_salt = b''
 # Place holder for logged in http users {user_id: datetime.utcnow()}
