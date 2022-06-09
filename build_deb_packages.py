@@ -316,7 +316,7 @@ def _edit_default_configs():
 
 def _copy_to_smb():
     print("Transferring Upgrade Files to Dev's SMB Share ...")
-    new_location = "/home/oo-dragon/chad.ermacora@gmail.com/Technology/python/Sensor Installers/"
+    new_location = debian_installer_dir + "KootNetSMB/"
     md5_versions_file = debian_installer_dir + upgrade_filename_md5
     upgrade_installer_files = [
         debian_installer_dir + upgrade_filename_version,
