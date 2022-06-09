@@ -52,7 +52,7 @@ def sensor_address_is_valid(ip_or_dns_address):
 def subnet_mask_is_valid(subnet_mask):
     """ Checks if a subnet mask if valid.  Returns True for valid and False for Invalid. """
     try:
-        if 0 <= int(subnet_mask[1:]) <= 32:
+        if 0 <= int(subnet_mask[1:]) < 32:
             return True
     except Exception as error:
         logger.network_logger.debug("Subnet Mask Failed Validation Check: " + str(error))
