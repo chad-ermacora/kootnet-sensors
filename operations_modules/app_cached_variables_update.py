@@ -62,20 +62,20 @@ def update_cached_variables():
         if default_http_flask_user == app_cached_variables.http_flask_user and not demo_mode:
             if verify_password_to_hash(default_http_flask_password):
                 atpro_notifications.manage_default_login_detected()
+        if app_cached_variables.current_platform == "Linux":
+            try:
+                os_release_content_lines = get_file_content("/etc/os-release").split("\n")
+                os_release_name = ""
+                for line in os_release_content_lines:
+                    name_and_value = line.split("=")
+                    if name_and_value[0].strip() == "PRETTY_NAME":
+                        os_release_name = name_and_value[1].strip()[1:-1]
+                app_cached_variables.operating_system_name = str(os_release_name)
+            except Exception as error:
+                logger.sensors_logger.error("Error caching OS Name: " + str(error))
+                app_cached_variables.operating_system_name = "NA"
 
     if app_cached_variables.current_platform == "Linux":
-        try:
-            os_release_content_lines = get_file_content("/etc/os-release").split("\n")
-            os_release_name = ""
-            for line in os_release_content_lines:
-                name_and_value = line.split("=")
-                if name_and_value[0].strip() == "PRETTY_NAME":
-                    os_release_name = name_and_value[1].strip()[1:-1]
-            app_cached_variables.operating_system_name = str(os_release_name)
-        except Exception as error:
-            logger.sensors_logger.error("Error caching OS Name: " + str(error))
-            app_cached_variables.operating_system_name = "NA"
-
         if app_cached_variables.operating_system_name[:8] == "Raspbian":
             try:
                 if app_cached_variables.running_with_root:
@@ -88,17 +88,6 @@ def update_cached_variables():
                 app_cached_variables.wifi_psk = network_wifi.get_wifi_psk(wifi_config_lines)
             except Exception as error:
                 logger.primary_logger.warning("Error checking WiFi configuration: " + str(error))
-
-            try:
-                dhcpcd_config_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
-                if not network_ip.check_for_dhcp(dhcpcd_config_lines):
-                    app_cached_variables.ip = network_ip.get_dhcpcd_ip(dhcpcd_config_lines)
-                    app_cached_variables.ip_subnet = network_ip.get_subnet(dhcpcd_config_lines)
-                    app_cached_variables.gateway = network_ip.get_gateway(dhcpcd_config_lines)
-                    app_cached_variables.dns1 = network_ip.get_dns(dhcpcd_config_lines)
-                    app_cached_variables.dns2 = network_ip.get_dns(dhcpcd_config_lines, dns_server=1)
-            except Exception as error:
-                logger.primary_logger.warning("Error checking dhcpcd.conf: " + str(error))
 
     try:
         app_cached_variables.total_ram_memory = round(psutil.virtual_memory().total / 1024 / 1024 / 1024, 3)
@@ -335,14 +324,17 @@ def _remove_stale_http_logins():
 
 
 def _update_cached_ip():
-    ip_address = "127.0.0.1"
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-            sock.connect(("8.8.8.8", 80))
-            ip_address = str(sock.getsockname()[0])
+        default_active_net_device_name_list = network_ip.get_network_devices_list(online_devices_only=True)
+        if len(default_active_net_device_name_list) > 0:
+            first_online_network_device = network_ip.CreateIPAddressData(default_active_net_device_name_list[0])
+            app_cached_variables.ip = first_online_network_device.ip_address
+            app_cached_variables.ip_subnet = first_online_network_device.ip_subnet
+            app_cached_variables.gateway = first_online_network_device.ip_gateway
+            app_cached_variables.dns1 = first_online_network_device.ip_dns1
+            app_cached_variables.dns2 = first_online_network_device.ip_dns2
     except Exception as error:
         logger.sensors_logger.debug("Error caching IP Address: " + str(error))
-    app_cached_variables.ip = ip_address
 
 
 def _update_cached_hostname():
