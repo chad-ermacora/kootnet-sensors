@@ -43,6 +43,7 @@ from configuration_modules.config_sensor_control import CreateIPList
 from sensor_modules.system_access import get_ram_space, get_disk_space
 from sensor_modules.sensor_access import get_cpu_temperature, get_reading_unit, get_sensors_latency, \
     get_all_available_sensor_readings
+from operations_modules import network_wifi
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_clean_ip_list_name, get_uptime_str, sanitize_text
@@ -181,7 +182,7 @@ def get_config_report_entry():
                            SensorCheckin=sensor_checkin,
                            SensorCheckinServer=sensor_checkin_server,
                            Display=display,
-                           WifiNetwork=app_cached_variables.wifi_ssid,
+                           WifiNetwork=str(network_wifi.wifi_networks_interface.get_network_ssid_list()),
                            EmailReports=email_reports,
                            EmailGraphs=email_graphs,
                            IntervalRecording=interval_recording,

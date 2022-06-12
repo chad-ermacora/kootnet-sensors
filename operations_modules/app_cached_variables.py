@@ -85,12 +85,6 @@ gateway = ""
 dns1 = ""
 dns2 = ""
 
-# Wifi Variables
-wifi_country_code = ""
-wifi_ssid = ""
-wifi_security_type = ""
-wifi_psk = ""
-
 # Flask App Login Variables (Web Portal Login)
 http_flask_user = "kootnet"
 http_flask_password_hash = b''

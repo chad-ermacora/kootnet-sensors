@@ -29,7 +29,6 @@ from operations_modules.app_generic_functions import thread_function, zip_files,
     verify_password_to_hash, get_list_of_filenames_in_dir as get_names_list_from_dir
 from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
 from operations_modules import network_ip
-from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
     check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
@@ -74,20 +73,6 @@ def update_cached_variables():
             except Exception as error:
                 logger.sensors_logger.error("Error caching OS Name: " + str(error))
                 app_cached_variables.operating_system_name = "NA"
-
-    if app_cached_variables.current_platform == "Linux":
-        if app_cached_variables.operating_system_name[:8] == "Raspbian":
-            try:
-                if app_cached_variables.running_with_root:
-                    wifi_config_lines = get_file_content(file_locations.wifi_config_file).split("\n")
-                else:
-                    wifi_config_lines = ""
-                app_cached_variables.wifi_country_code = network_wifi.get_wifi_country_code(wifi_config_lines)
-                app_cached_variables.wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
-                app_cached_variables.wifi_security_type = network_wifi.get_wifi_security_type(wifi_config_lines)
-                app_cached_variables.wifi_psk = network_wifi.get_wifi_psk(wifi_config_lines)
-            except Exception as error:
-                logger.primary_logger.warning("Error checking WiFi configuration: " + str(error))
 
     try:
         app_cached_variables.total_ram_memory = round(psutil.virtual_memory().total / 1024 / 1024 / 1024, 3)
@@ -327,7 +312,7 @@ def _update_cached_ip():
     try:
         default_active_net_device_name_list = network_ip.get_network_devices_list(online_devices_only=True)
         if len(default_active_net_device_name_list) > 0:
-            first_online_network_device = network_ip.CreateIPAddressData(default_active_net_device_name_list[0])
+            first_online_network_device = network_ip.CreateNetDeviceInterface(default_active_net_device_name_list[0])
             app_cached_variables.ip = first_online_network_device.ip_address
             app_cached_variables.ip_subnet = first_online_network_device.ip_subnet
             app_cached_variables.gateway = first_online_network_device.ip_gateway
