@@ -48,7 +48,7 @@ class CreateATProMenuNotificationClass:
 
     def manage_default_login_detected(self, enable=True):
         if enable and self._default_login_enabled is None:
-            click_msg = "Default login of Kootnet/sensors has been detected. "
+            click_msg = "Default login of kootnet/sensors has been detected. "
             click_msg += "Please goto System -> Change Login and update the login"
             notification_short_msg = "Warning: Default Login Detected<br>Click Here for more information"
             self._default_login_enabled = self._add_notification_entry(
