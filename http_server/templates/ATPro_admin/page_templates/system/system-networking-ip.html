@@ -2,100 +2,9 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/system-ip">
-                    <h1><i class="fas fa-network-wired"></i> Wireless IP & Hostname Settings</h1>
-
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <label>HostName<br>
-                                    <input style="width: 250px;" type="text" id="ip_hostname" name="ip_hostname" required
-                                           placeholder="eg. KootenayLake09" minlength="2" maxlength="62" value="{{ IPHostname }}">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br>
-
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="system-dhcp" class="toggle-switch-input" onclick="CheckedDHCP()"
-                               name="ip_dhcp" {{ CheckedDHCP }}>
-                        <label class="toggle-switch-label" for="system-dhcp"></label>
-                        DHCP
-                    </label>
-
-                    <br><br>
-
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <label>IPv4 Address<br>
-                                    <input style="width: 150px;" type="text" name="ip_address"
-                                           placeholder="eg. 192.168.10.11" minlength="7" value="{{ IPv4Address }}">
-                                </label>
-                            </div>
-
-                            <div style="display: table-cell;">
-                                <label>
-                                    <a target="_blank" href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
-                                        Subnet mask<br>
-                                    </a>
-                                    <input style="width: 75px;" type="text" name="ip_subnet" placeholder="eg. /24"
-                                           minlength="2" maxlength="3" value="{{ IPv4Subnet }}">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br>
-
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <label>Gateway<br>
-                                    <input style="width: 150px;" type="text" name="ip_gateway" placeholder="eg. 192.168.10.1"
-                                           minlength="7" maxlength="15" value="{{ IPGateway }}">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br>
-
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <label>Primary DNS<br>
-                                    <input style="width: 150px;" type="text" name="ip_dns1" placeholder="eg. 8.8.8.8"
-                                           minlength="7" maxlength="15" value="{{ IPDNS1 }}">
-                                </label>
-                            </div>
-
-                            &nbsp; &nbsp;
-
-                            <div style="display: table-cell;">
-                                <label>Secondary DNS<br>
-                                    <input style="width: 150px;" type="text" name="ip_dns2" placeholder="eg. 8.8.4.4" minlength="7"
-                                           maxlength="15" value="{{ IPDNS2 }}">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <button type="submit" class="pure-button">Update</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/system-wifi">
-                    <h1><i class="fas fa-wifi"></i> Wireless Connection Settings</h1>
+                <form class="pure-form" id="button_function_form" method="POST" action="/atpro/system-wifi">
+                    <input type="hidden" id="button_function" name="button_function">
+                    <h2><i class="fas fa-wifi"></i> Wireless Connections</h2>
 
                     <label>
                         <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
@@ -116,22 +25,29 @@
 
                     <br>
 
-                    <label class="pure-radio">Secured (WPA/WPA2/WPA3)
-                        <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                    <label for="databases">Choose Wireless Network:<br>
+                        <select id="net_wifi_selection" name="net_wifi_selection" onchange="ChangeWifiSSID()">
+                            {{ NetWifiOptionNames | safe }}
+                        </select>
                     </label>
 
-                    <label class="pure-radio">Open (None)
-                        <input type="radio" name="wifi_security1" value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                    <br><br>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="wifi-secured" class="toggle-switch-input"
+                               onclick="CheckedWifiSecured()" name="wifi_secured">
+                        <label class="toggle-switch-label" for="wifi-secured"></label>
+                        <div id="wifi-secured-label">ChangeMe</div>
                     </label>
 
-                    <br>
+                    <br><br>
 
                     <div style="display: table; margin-left: auto; margin-right: auto;">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">
                                 <label>Wireless Network Name (SSID)<br>
-                                    <input style="width: 300px;" type="text" name="ssid1" maxlength="32"
-                                           placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
+                                    <input style="width: 300px;" type="text" name="ssid1" id="ssid1" maxlength="32"
+                                           placeholder="eg. MyWirelessNetwork">
                                 </label>
                             </div>
                         </div>
@@ -139,18 +55,112 @@
 
                     <br>
 
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table; margin-left: auto; margin-right: auto;" id="wifi_key_label">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">
                                 <label>Wireless Key<br>
-                                    <input style="width: 300px;" type="password" name="wifi_key1"
-                                           placeholder="Leave blank to use previous Key" minlength="8" maxlength="63">
+                                    <input style="width: 300px;" type="password" name="wifi_key1" id="wifi_key1"
+                                           minlength="8" maxlength="63">
+                                </label>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+
+                    <br>
+
+                    <button type="button" onclick="UpdateHiddenInputButtonPress('remove')" class="pure-button">
+                        Remove
+                    </button>
+                    <button type="button" onclick="UpdateHiddenInputButtonPress('update')" class="pure-button">
+                        Add/Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/system-ip">
+                    <h2><i class="fas fa-network-wired"></i> IP Addresses</h2>
+
+                    <label for="databases">Choose Network Device:<br>
+                        <select id="net_device_selection" name="net_device_selection" onchange="ChangeNetDevice()">
+                            {{ NetDeviceOptionNames | safe }}
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="system-dhcp" class="toggle-switch-input" onclick="CheckedDHCP()"
+                               name="ip_dhcp">
+                        <label class="toggle-switch-label" for="system-dhcp"></label>
+                        DHCP
+                    </label>
+
+                    <br><br>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>IPv4 Address<br>
+                                    <input style="width: 150px;" type="text" name="ip_address" id="ip_address"
+                                           placeholder="eg. 192.168.10.11" minlength="7">
+                                </label>
+                            </div>
+
+                            <div style="display: table-cell;">
+                                <label>
+                                    <a target="_blank" href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
+                                        Subnet mask<br>
+                                    </a>
+                                    <input style="width: 75px;" type="text" name="ip_subnet" id="ip_subnet"
+                                           placeholder="eg. /24" minlength="2" maxlength="3">
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <br><br>
+                    <br>
+
+                    <div id="hidden_ip_values">
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <label>Gateway<br>
+                                        <input style="width: 150px;" type="text" name="ip_gateway" id="ip_gateway"
+                                               placeholder="eg. 192.168.10.1" minlength="7" maxlength="15">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br>
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <label>Primary DNS<br>
+                                        <input style="width: 150px;" type="text" name="ip_dns1" id="ip_dns1"
+                                               placeholder="eg. 8.8.8.8" minlength="7" maxlength="15">
+                                    </label>
+                                </div>
+
+                                &nbsp; &nbsp;
+
+                                <div style="display: table-cell;">
+                                    <label>Secondary DNS<br>
+                                        <input style="width: 150px;" type="text" name="ip_dns2" id="ip_dns2"
+                                               placeholder="eg. 8.8.4.4" minlength="7" maxlength="15">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <br><br>
+                    </div>
 
                     <button type="submit" class="pure-button">Update</button>
                 </form>
@@ -160,20 +170,54 @@
 </div>
 
 <script>
-    function CheckedDHCP() {
-        if (document.getElementById('system-dhcp').checked) {
-            document.getElementsByName("ip_address")[0].disabled = true;
-            document.getElementsByName("ip_subnet")[0].disabled = true;
-            document.getElementsByName("ip_gateway")[0].disabled = true;
-            document.getElementsByName("ip_dns1")[0].disabled = true;
-            document.getElementsByName("ip_dns2")[0].disabled = true;
+    {{ AdapterIPData | safe }}
+
+    {{ WifiSSIDData | safe }}
+
+    function ChangeNetDevice() {
+        let device_name = document.getElementById("net_device_selection").value
+
+        document.getElementById("ip_address").value = DeviceData[device_name + "ip_address"];
+        document.getElementById("ip_subnet").value = DeviceData[device_name + "ip_subnet"];
+        document.getElementById("ip_gateway").value = DeviceData[device_name + "ip_gateway"];
+        document.getElementById("ip_dns1").value = DeviceData[device_name + "ip_dns1"];
+        document.getElementById("ip_dns2").value = DeviceData[device_name + "ip_dns2"];
+
+        document.getElementById('system-dhcp').checked = DeviceData[device_name + "dhcp_set"] === "True";
+        CheckedDHCP();
+    }
+
+    function ChangeWifiSSID() {
+        let ssid_name = document.getElementById("net_wifi_selection").value
+
+        document.getElementById("ssid1").value = ssid_name;
+        document.getElementById('wifi-secured').checked = WifiData["psk_" + ssid_name] !== "False";
+        CheckedWifiSecured();
+    }
+
+    function CheckedWifiSecured() {
+        if (document.getElementById('wifi-secured').checked) {
+            document.getElementById('wifi-secured-label').innerText = "Secured Wi-Fi (WPA)";
+            document.getElementById("wifi_key_label").hidden = false;
+            document.getElementById("wifi_key1").hidden = false;
         } else {
-            document.getElementsByName("ip_address")[0].disabled = false;
-            document.getElementsByName("ip_subnet")[0].disabled = false;
-            document.getElementsByName("ip_gateway")[0].disabled = false;
-            document.getElementsByName("ip_dns1")[0].disabled = false;
-            document.getElementsByName("ip_dns2")[0].disabled = false;
+            document.getElementById('wifi-secured-label').innerText = "Open Wi-Fi";
+            document.getElementById("wifi_key_label").hidden = true;
+            document.getElementById("wifi_key1").hidden = true;
         }
     }
-    CheckedDHCP();
+
+    function CheckedDHCP() {
+        if (document.getElementById('system-dhcp').checked) {
+            document.getElementById("hidden_ip_values").hidden = true;
+            document.getElementById("ip_address").disabled = true;
+            document.getElementById("ip_subnet").disabled = true;
+        } else {
+            document.getElementById("hidden_ip_values").hidden = false;
+            document.getElementById("ip_address").disabled = false;
+            document.getElementById("ip_subnet").disabled = false;
+        }
+    }
+    ChangeNetDevice();
+    ChangeWifiSSID();
 </script>
