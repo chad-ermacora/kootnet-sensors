@@ -64,7 +64,7 @@ def wireless_ssid_is_valid(text_ssid):
     Checks if a wireless SSID is valid. Returns True for valid and False for Invalid.
     Checks that text only uses Alphanumeric characters, spaces, underscores and dashes.
     """
-    if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', text_ssid):
+    if re.match(r'^[a-zA-Z0-9][A-Za-z0-9_-]*$', text_ssid):
         return True
     return False
 
