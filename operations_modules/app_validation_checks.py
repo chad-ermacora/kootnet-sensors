@@ -69,19 +69,6 @@ def wireless_ssid_is_valid(text_ssid):
     return False
 
 
-def text_has_no_double_quotes(text_string):
-    """
-    Checks if the provided string has double quotes or not.
-    Returns True if no quotes are found and False if they are.
-    """
-    try:
-        if '"' not in text_string:
-            return True
-    except Exception as error:
-        logger.network_logger.debug("Text Check for Double Quotes Failed: " + str(error))
-    return False
-
-
 def hostname_is_valid(text_hostname):
     """
     Checks for valid Linux Hostname and returns True, else, False
