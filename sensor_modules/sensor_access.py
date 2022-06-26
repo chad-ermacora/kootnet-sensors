@@ -589,7 +589,7 @@ def get_reading_unit(reading_type):
 
 def display_message(text_msg, check_test=False):
     """ If a Supported Display is installed, shows provided text message on it. """
-    logger.sensors_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
+    logger.sensors_logger.debug("Displaying Text on LED Screen: " + str(text_msg)[:50] + " ...")
 
     text_msg = str(text_msg)
     if app_config_access.display_config.enable_display:
