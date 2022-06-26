@@ -213,7 +213,7 @@ class _SingleTriggerThread:
                         if self.high_trigger > sensor_reading > self.low_trigger:
                             if self.current_state != "Normal":
                                 self.current_state = "Normal"
-                            self._write_readings_to_sql(reading_taken_at, sensor_reading, self.current_state)
+                                self._write_readings_to_sql(reading_taken_at, sensor_reading, self.current_state)
                         elif sensor_reading < self.low_trigger:
                             if self.current_state != "Low":
                                 self.current_state = "Low"
@@ -236,7 +236,7 @@ class _SingleTriggerThread:
                         sleep_total += sleep_fraction_interval
             else:
                 log_msg = "High/Low Triggers: " + str(custom_trigger_variables["database_column"])
-                logger.primary_logger.warning(log_msg + ": Sensor Missing")
+                logger.primary_logger.info(log_msg + ": Sensor Missing")
                 self.current_state = "Sensor Missing"
                 while not app_cached_variables.restart_all_trigger_threads:
                     sleep(10)
@@ -314,7 +314,7 @@ class _MultiTriggerThread:
                         sleep_total += sleep_fraction_interval
             else:
                 log_msg = "High/Low Triggers: " + str(custom_trigger_variables["database_column"])
-                logger.primary_logger.warning(log_msg + ": Sensor Missing")
+                logger.primary_logger.info(log_msg + ": Sensor Missing")
                 self.current_state = "Sensor Missing"
                 while not app_cached_variables.restart_all_trigger_threads:
                     sleep(10)
