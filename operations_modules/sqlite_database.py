@@ -57,7 +57,8 @@ def write_to_sql_database(sql_query, data_entries, sql_database_location=file_lo
         db_connection.commit()
         db_connection.execute("PRAGMA optimize;")
         db_connection.close()
-        logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
+        # Only enable this when needed during troubleshooting
+        # logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
     except Exception as error:
         logger.primary_logger.error("SQL Write to DataBase Failed - " + str(error))
         logger.primary_logger.debug("Bad SQL Write String: " + str(sql_query))
@@ -72,7 +73,6 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
-        database_connection.execute("PRAGMA optimize;")
         database_connection.close()
     except Exception as error:
         if str(error)[:13] == "no such table":
