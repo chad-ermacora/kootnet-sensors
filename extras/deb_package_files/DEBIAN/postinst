@@ -16,8 +16,8 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
     # If found, it installs the local python modules, if not, it means a 'online' installer or upgrade is running
     # If it's an 'online' installer or upgrade, it just installs using python requirements files later on
     if [[ -f ${PYTHON_MODULES_DIR}/spidev-3.5-cp39-cp39-linux_armv6l.whl ]]; then
-      PI_zero_MODEL=$(head -n 1 /proc/device-tree/model)
-      PI_1_MODEL=$(head -n 1 /proc/device-tree/model | cut -c1-14)
+      PI_zero_MODEL=$(tr -d '\0' </proc/device-tree/model)
+      PI_1_MODEL=$(tr -d '\0' </proc/device-tree/model | cut -c1-14)
       if [ "${PI_zero_MODEL}" == "Raspberry Pi Zero W Rev 1.1" ] || [ "${PI_1_MODEL}" == "Raspberry Pi 1" ]; then
         ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/MarkupSafe-2.0.1-cp39-cp39-linux_armv6l.whl \
         ${PYTHON_MODULES_DIR}/spidev-3.5-cp39-cp39-linux_armv6l.whl \
@@ -80,7 +80,7 @@ systemctl enable KootnetSensors
 systemctl start KootnetSensors
 printf "\n\nInitialization starting...\nIt may take up to 5 minutes before the Web Interface becomes responsive\n\n"
 printf 'Open https://127.0.0.1:10065 in a web browser on the local sensor to configure\n'
-printf 'Default Username & Password\nUsername: Kootnet\nPassword: sensors\n\n'
+printf 'Default Username & Password\nUsername: kootnet\nPassword: sensors\n\n'
 printf 'You can access the sensor from another device on the same network\n'
 printf 'Replace the "127.0.0.1" in the link above with an IP listed below\n\n'
 ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
