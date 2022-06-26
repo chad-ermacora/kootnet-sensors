@@ -49,6 +49,8 @@ def html_atpro_system_change_login():
                 new_password = str(request.form.get("new_login_password"))
                 if len(new_username) >= min_length_username and len(new_password) >= min_length_password:
                     save_http_auth_to_file(new_username, new_password)
+                    app_cached_variables.http_flask_login_session_ids = {}
+                    app_cached_variables.failed_flask_logins_dic = {}
                     if default_http_flask_user == new_username and verify_password_to_hash(default_http_flask_password):
                         atpro_notifications.manage_default_login_detected()
                     else:
