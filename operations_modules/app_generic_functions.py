@@ -157,7 +157,7 @@ def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
             logger.primary_logger.warning("Date Adjustment Error: " + str(error))
             return var_datetime
     else:
-        logger.primary_logger.debug("DateTime Adjustment input is invalid")
+        logger.primary_logger.debug("DateTime Adjustment input is invalid: " + str(var_datetime))
         return var_datetime
 
 
