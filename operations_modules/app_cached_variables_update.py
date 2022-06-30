@@ -28,7 +28,6 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, zip_files, get_md5_hash_of_file, \
     verify_password_to_hash, get_list_of_filenames_in_dir as get_names_list_from_dir
 from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
-from operations_modules import network_ip
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
     check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
@@ -309,17 +308,14 @@ def _remove_stale_http_logins():
 
 
 def _update_cached_ip():
+    ip_address = "127.0.0.1"
     try:
-        default_active_net_device_name_list = network_ip.get_network_devices_list(online_devices_only=True)
-        if len(default_active_net_device_name_list) > 0:
-            first_online_network_device = network_ip.CreateNetDeviceInterface(default_active_net_device_name_list[0])
-            app_cached_variables.ip = first_online_network_device.ip_address
-            app_cached_variables.ip_subnet = first_online_network_device.ip_subnet
-            app_cached_variables.gateway = first_online_network_device.ip_gateway
-            app_cached_variables.dns1 = first_online_network_device.ip_dns1
-            app_cached_variables.dns2 = first_online_network_device.ip_dns2
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            ip_address = str(sock.getsockname()[0])
     except Exception as error:
         logger.sensors_logger.debug("Error caching IP Address: " + str(error))
+    app_cached_variables.ip = ip_address
 
 
 def _update_cached_hostname():
