@@ -18,6 +18,7 @@
 """
 from os import urandom
 from hashlib import sha256
+import logging
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_classes import CreateMonitoredThread
@@ -30,6 +31,7 @@ from http_server.flask_blueprints.html_functional import html_functional_routes
 from http_server.flask_blueprints.basic_html_pages import html_basic_routes
 
 from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
+from http_server.flask_blueprints.atpro.atpro_sensor_insights import html_atpro_sensor_insights_routes
 from http_server.flask_blueprints.atpro.atpro_notes import html_atpro_notes_routes
 from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphing_routes
 from http_server.flask_blueprints.atpro.atpro_live_graphing_wrappers import html_live_graph_sensor_wrappers_routes
@@ -73,6 +75,7 @@ class CreateSensorHTTP:
 
     def __init__(self):
         app = Flask(__name__)
+        app.logger.setLevel(logging.WARNING)
         app.secret_key = sha256(urandom(32)).hexdigest()
         Compress(app)
 
@@ -80,6 +83,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_basic_routes)
 
         app.register_blueprint(html_atpro_main_routes)
+        app.register_blueprint(html_atpro_sensor_insights_routes)
         app.register_blueprint(html_atpro_notes_routes)
         app.register_blueprint(html_atpro_graphing_routes)
         app.register_blueprint(html_live_graph_sensor_wrappers_routes)
@@ -110,7 +114,7 @@ class CreateSensorHTTP:
         thread_function(update_cached_variables)
 
         try:
-            # Removes excessive "SSL Error" messages to console when using a self signed certificate
+            # Removes excessive "SSL Error" messages to console when using a self-signed certificate
             hub.Hub.NOT_ERROR = (Exception,)
         except Exception as error:
             logger.primary_logger.warning("Error lowering HTTP Server Logging: " + str(error))
@@ -119,6 +123,7 @@ class CreateSensorHTTP:
             flask_http_ip = app_config_access.primary_config.flask_http_ip
             flask_port_number = app_config_access.primary_config.web_portal_port
             http_server = pywsgi.WSGIServer((flask_http_ip, flask_port_number), app,
+                                            log=app.logger,
                                             keyfile=file_locations.http_ssl_key,
                                             certfile=file_locations.http_ssl_crt)
             logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_port_number))

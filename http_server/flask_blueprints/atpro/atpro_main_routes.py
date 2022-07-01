@@ -28,8 +28,8 @@ from configuration_modules import app_config_access
 from sensor_modules import system_access
 from sensor_modules import sensor_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_text_check_enabled, \
-    get_uptime_str
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_html_enabled_disabled_text, \
+    get_uptime_str, get_html_checked_text
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 
@@ -52,7 +52,7 @@ def html_atpro_index():
 
 @html_atpro_main_routes.route("/atpro/sensor-dashboard")
 def html_atpro_dashboard():
-    g_t_c_e = get_text_check_enabled
+    g_t_c_e = get_html_enabled_disabled_text
 
     cpu_temp = sensor_access.get_cpu_temperature()
     if cpu_temp is not None:
@@ -93,6 +93,20 @@ def html_atpro_dashboard():
     )
 
 
+@html_atpro_main_routes.route("/atpro/sensor-readings-base")
+def html_atpro_sensor_readings_base():
+    start_date_range = app_config_access.sensor_insights.start_date_range
+    end_date_range = app_config_access.sensor_insights.end_date_range
+    return render_template(
+        "ATPro_admin/page_templates/sensor-readings.html",
+        UseAllRecordedData=get_html_checked_text(app_config_access.sensor_insights.use_all_recorded_data),
+        IgnoreNullValues=get_html_checked_text(app_config_access.sensor_insights.ignore_null_types),
+        DateTimeStart=start_date_range,
+        DateTimeEnd=end_date_range,
+        NumberOfInsightsPerSensor=app_config_access.sensor_insights.insights_per_sensor
+    )
+
+
 @html_atpro_main_routes.route("/atpro/sensor-readings")
 def html_atpro_sensor_readings():
     all_readings = sensor_access.get_all_available_sensor_readings()
@@ -102,7 +116,7 @@ def html_atpro_sensor_readings():
         new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index.replace("_", " "))
         new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + reading_unit)
         html_final_code += new_reading + "\n"
-    return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_final_code)
+    return html_final_code
 
 
 @html_atpro_main_routes.route("/atpro/sensor-latency")
@@ -113,7 +127,7 @@ def html_atpro_sensors_latency():
         new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index)
         new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + " Seconds")
         html_final_code += new_reading + "\n"
-    return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_final_code)
+    return html_final_code
 
 
 @html_atpro_main_routes.route("/atpro/sensor-help")

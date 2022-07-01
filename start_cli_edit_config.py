@@ -25,6 +25,7 @@ from configuration_modules.config_primary import CreatePrimaryConfiguration
 from upgrade_modules.upgrade_functions import CreateUpgradeScriptInterface, CreateUpdateChecksInterface, \
     download_type_smb
 from operations_modules.software_version import version
+from operations_modules.sqlite_database import run_database_integrity_check
 from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_generic_functions import save_http_auth_to_file
@@ -39,7 +40,7 @@ options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 1. View/Edit Primary & Installed Sensors Configurations
 2. Change Web Login Credentials
 3. Update Python Modules
-4. Upgrade Operating System
+4. Run Database Integrity Checks
 5. Upgrade Kootnet Sensors (Standard HTTP)
 6. Re-Install Kootnet Sensors (Latest Standard HTTP)
 7. Create New Self Signed SSL Certificate
@@ -51,6 +52,7 @@ options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 """.replace("{{ Version }}", version)
 
 extra_options_menu = """Advanced Menu\n
+20. Upgrade Operating System
 21. Upgrade Kootnet Sensors (Development HTTP)
 22. Re-Install Kootnet Sensors (Latest Development HTTP)
 23. Enable & Start KootnetSensors
@@ -61,6 +63,7 @@ extra_options_menu = """Advanced Menu\n
 28. Re-Install Kootnet Sensors (Latest Standard SMB)
 29. Re-Install Kootnet Sensors (Latest Developmental SMB)
 31. Build Kootnet Sensors Debian Installers
+32. Manually start Kootnet Sensors Here (Press Ctrl + C to exit)
 """
 remote_get_commands = app_cached_variables.network_get_commands
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
@@ -92,10 +95,13 @@ def start_script():
                     print(msg_service_not_installed)
             elif selection == 4:
                 if app_cached_variables.running_with_root:
-                    print("Starting Operating System Upgrade\n")
-                    upgrade_linux_os(thread_the_function=False)
+                    print("Starting Database Integrity Checks, Please Wait ...\n")
+                    run_database_integrity_check(file_locations.sensor_database, quick=False)
+                    run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
+                    run_database_integrity_check(file_locations.mqtt_subscriber_database, quick=False)
+                    print("\nDatabase Integrity Checks Complete")
                 else:
-                    print("OS Upgrade Cancelled - Not Running as root")
+                    print("Database Integrity Checks Cancelled - Not Running as root")
             elif selection == 5:
                 if app_cached_variables.running_as_service:
                     update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
@@ -150,6 +156,12 @@ def start_script():
                 print(extra_options_menu)
             elif selection == 12:
                 running = False
+            elif selection == 20:
+                if app_cached_variables.running_with_root:
+                    print("Starting Operating System Upgrade\n")
+                    upgrade_linux_os(thread_the_function=False)
+                else:
+                    print("OS Upgrade Cancelled - Not Running as root")
             elif selection == 21:
                 if app_cached_variables.running_as_service:
                     update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
@@ -239,6 +251,12 @@ def start_script():
                 print(msg_upgrade_started)
             elif selection == 31:
                 start_deb_build_cli_menu()
+            elif selection == 32:
+                run_ks_command = "/home/kootnet_data/env/bin/python3 /opt/kootnet-sensors/start_sensor_services.py"
+                if app_cached_variables.running_with_root:
+                    os.system(run_ks_command)
+                else:
+                    os.system("sudo " + run_ks_command)
             else:
                 os.system("clear")
                 print("Invalid Selection: " + str(selection))

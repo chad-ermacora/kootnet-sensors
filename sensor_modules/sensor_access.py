@@ -135,6 +135,8 @@ def get_environment_temperature(temperature_correction=True, get_latency=False):
         temperature = sensors_direct.rp_sense_hat_a.temperature()
     elif app_config_access.installed_sensors.w1_therm_sensor:
         temperature = sensors_direct.w1_therm_sensor_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_weather_hat:
+        temperature = sensors_direct.pimoroni_weather_hat_a.temperature()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         temperature = sensors_direct.dummy_sensors.temperature()
     else:
@@ -189,6 +191,8 @@ def get_pressure(get_latency=False):
         pressure = sensors_direct.pimoroni_bmp280_a.pressure()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         pressure = sensors_direct.rp_sense_hat_a.pressure()
+    elif app_config_access.installed_sensors.pimoroni_weather_hat:
+        pressure = sensors_direct.pimoroni_weather_hat_a.pressure()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pressure = sensors_direct.dummy_sensors.pressure()
     else:
@@ -249,6 +253,8 @@ def get_humidity(get_latency=False):
         humidity = sensors_direct.pimoroni_enviroplus_a.humidity()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         humidity = sensors_direct.rp_sense_hat_a.humidity()
+    elif app_config_access.installed_sensors.pimoroni_weather_hat:
+        humidity = sensors_direct.pimoroni_weather_hat_a.humidity()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         humidity = sensors_direct.dummy_sensors.humidity()
     else:
@@ -291,6 +297,8 @@ def get_distance(get_latency=False):
         distance = sensors_direct.pimoroni_vl53l1x_a.distance()
     elif app_config_access.installed_sensors.pimoroni_ltr_559:
         distance = sensors_direct.pimoroni_ltr_559_a.distance()
+    elif app_config_access.installed_sensors.pimoroni_weather_hat:
+        distance = sensors_direct.pimoroni_weather_hat_a.distance()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         distance = sensors_direct.dummy_sensors.distance()
     else:
@@ -381,6 +389,8 @@ def get_lumen(get_latency=False):
         lumen = sensors_direct.pimoroni_bh1745_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_ltr_559:
         lumen = sensors_direct.pimoroni_ltr_559_a.lumen()
+    elif app_config_access.installed_sensors.pimoroni_weather_hat:
+        lumen = sensors_direct.pimoroni_weather_hat_a.lumen()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         lumen = sensors_direct.dummy_sensors.lumen()
     else:
@@ -579,7 +589,7 @@ def get_reading_unit(reading_type):
 
 def display_message(text_msg, check_test=False):
     """ If a Supported Display is installed, shows provided text message on it. """
-    logger.sensors_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
+    logger.sensors_logger.debug("Displaying Text on LED Screen: " + str(text_msg)[:50] + " ...")
 
     text_msg = str(text_msg)
     if app_config_access.display_config.enable_display:

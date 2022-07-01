@@ -56,7 +56,7 @@ def send_report_emails(email_address_list):
 
     message = get_new_email_message("Kootnet Sensor Report - " + app_cached_variables.hostname)
     message.attach(MIMEText(_get_default_email_body_text("HTML Report"), "plain"))
-    date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
+    date_time = datetime.utcnow().strftime("Y%Y-M%m-D%d-h%H-m%M")
     filename = app_cached_variables.hostname + "_" + date_time + "_KS_Report"
     zipped_report = zip_files([filename + ".html"], [rm_cached_variables.html_combo_report])
     payload = MIMEBase("application", "zip")
@@ -75,7 +75,7 @@ def send_db_graph_emails(email_address_list):
     while server_plotly_graph_variables.graph_creation_in_progress:
         sleep(5)
 
-    date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
+    date_time = datetime.utcnow().strftime("Y%Y-M%m-D%d-h%H-m%M")
     filename = app_cached_variables.hostname + "_" + date_time + "_KS_Graph"
     message = get_new_email_message("Kootnet Sensor Graph - " + app_cached_variables.hostname)
     message.attach(MIMEText(_get_default_email_body_text("Plotly Graph"), "plain"))

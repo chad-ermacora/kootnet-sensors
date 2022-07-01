@@ -43,6 +43,7 @@ from sensor_modules.pimoroni import pimoroni_mics6814 as _pimoroni_mics6814
 from sensor_modules.pimoroni import pimoroni_ltr_559 as _pimoroni_ltr_559
 from sensor_modules.pimoroni import pimoroni_rv3028 as _pimoroni_rv3028
 from sensor_modules.pimoroni import pimoroni_pa1010d as _pimoroni_pa1010d
+from sensor_modules.pimoroni import pimoroni_weather_hat as _pimoroni_weather_hat
 from sensor_modules import raspberry_pi_sensehat as _raspberry_pi_sense_hat
 from sensor_modules import sensirion_sps30 as _sensirion_sps30
 from sensor_modules import maxim_dallas_1_wire_multi as _maxim_dallas_1_wire_multi
@@ -81,6 +82,7 @@ class CreateSensorAccess:
             self.pimoroni_matrix_11x7_a = CreateNoSensorsDummySensor()
             self.pimoroni_st7735_a = CreateNoSensorsDummySensor()
             self.pimoroni_mono_oled_luma_a = CreateNoSensorsDummySensor()
+            self.pimoroni_weather_hat_a = CreateNoSensorsDummySensor()
             self.sensirion_sps30_a = CreateNoSensorsDummySensor()
             self.w1_therm_sensor_a = CreateNoSensorsDummySensor()
         else:
@@ -174,7 +176,9 @@ class CreateSensorAccess:
                 if installed_sensors.w1_therm_sensor and not self.w1_therm_sensor_a.initialized_sensor:
                     self.w1_therm_sensor_a = _maxim_dallas_1_wire_multi.CreateW1ThermSenor()
                     self.w1_therm_sensor_a.initialized_sensor = True
-
+                if installed_sensors.pimoroni_weather_hat and not self.pimoroni_weather_hat_a.initialized_sensor:
+                    self.pimoroni_weather_hat_a = _pimoroni_weather_hat.CreateWeatherHAT()
+                    self.pimoroni_weather_hat_a.initialized_sensor = True
                 if not first_start:
                     app_cached_variables.restart_interval_recording_thread = True
                     app_cached_variables.restart_all_trigger_threads = True

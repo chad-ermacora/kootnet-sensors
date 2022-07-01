@@ -158,10 +158,10 @@ def login():
             return_msg = "Too many failed login attempts, your IP address has been banned for 15 Min"
             return get_message_page("IP Banned from Logins", message=return_msg)
         else:
-            username = request.form['login_username']
+            username = str(request.form['login_username']).lower().strip()
             password = request.form['login_password']
 
-            if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
+            if username == app_cached_variables.http_flask_user.lower() and verify_password_to_hash(password):
                 new_session_id = sha256(urandom(12)).hexdigest()
                 session['user_id'] = new_session_id
                 app_cached_variables.http_flask_login_session_ids[new_session_id] = datetime.utcnow()

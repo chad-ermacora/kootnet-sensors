@@ -21,16 +21,16 @@ from operations_modules.initialization_python_modules import check_and_install_r
 check_and_install_required_python_modules()
 
 import os
+from datetime import datetime
 import random
 import string
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function
 from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
-    run_database_integrity_check, check_mqtt_subscriber_database_structure
+    check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
 
 
@@ -46,19 +46,20 @@ def run_program_start_checks():
     _add_tct_terminal_alias()
     run_configuration_upgrade_checks()
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
-
-    if software_version.old_version != software_version.version:
-        run_database_integrity_check(file_locations.sensor_database, quick=False)
-        run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
-        run_database_integrity_check(file_locations.mqtt_subscriber_database, quick=False)
-        thread_function(check_main_database_structure)
-        thread_function(check_checkin_database_structure)
-        thread_function(check_mqtt_subscriber_database_structure)
-    else:
-        run_database_integrity_check(file_locations.sensor_database)
-        run_database_integrity_check(file_locations.sensor_checkin_database)
-        run_database_integrity_check(file_locations.mqtt_subscriber_database)
+    _run_db_structure_checks()
     thread_function(_create_secondary_python_venv)
+
+
+def _run_db_structure_checks():
+    start_datetime = datetime.utcnow()
+
+    check_main_database_structure()
+    check_checkin_database_structure()
+    check_mqtt_subscriber_database_structure()
+
+    end_datetime = datetime.utcnow()
+    total_seconds = round((end_datetime - start_datetime).total_seconds(), 3)
+    logger.primary_logger.info(" - DB Structure Checks took " + str(total_seconds) + " Seconds")
 
 
 def _check_sensor_id():

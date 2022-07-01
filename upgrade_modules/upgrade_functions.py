@@ -48,22 +48,23 @@ class CreateUpdateChecksInterface:
         self.update_server_file_present_full_installer = False
         self.update_server_file_present_upgrade_installer = False
         if start_auto_checks:
-            thread_function(self.update_versions_info_variables)
             thread_function(self._thread_worker_update_variables)
         else:
             self._update_new_release_versions()
 
     def update_versions_info_variables(self):
-        self._update_new_release_versions()
-        self._check_upgrade_files_present()
+        try:
+            self._update_new_release_versions()
+            self._check_upgrade_files_present()
+        except Exception as error:
+            logger.network_logger.warning("Failed to check for new versions: " + str(error))
 
     def _thread_worker_update_variables(self):
+        # Wait a bit to ensure network connectivity
+        time.sleep(10)
         while True:
-            try:
-                time.sleep(upgrades_config.automatic_upgrade_delay_hours * 60 * 60)
-                self.update_versions_info_variables()
-            except Exception as error:
-                logger.network_logger.warning("Failed to check for new versions: " + str(error))
+            self.update_versions_info_variables()
+            time.sleep(upgrades_config.automatic_upgrade_delay_hours * 60 * 60)
 
     def _update_new_release_versions(self):
         standard_url = urls_config.url_update_server + "kootnet_version.txt"
@@ -118,6 +119,9 @@ class CreateUpdateChecksInterface:
 
 class CreateUpgradeScriptInterface:
     def __init__(self):
+        global download_type_http
+        global download_type_smb
+
         self.start_upgrade_script_command = "systemctl start KootnetSensorsUpgrade.service"
 
         self.download_type = download_type_http
@@ -254,12 +258,15 @@ class CreateUpgradeScriptInterface:
         download_url = self._get_http_download_url()
         try:
             with open(self.local_upgrade_file_location, "wb") as upgrade_file:
-                upgrade_file_content = get_http_regular_file(download_url, get_text=False, verify_ssl=self.verify_ssl)
+                upgrade_file_content = get_http_regular_file(download_url, get_text=False,
+                                                             timeout=30, verify_ssl=self.verify_ssl)
                 if type(upgrade_file_content) is str:
                     logger.network_logger.error("Update File is str: " + upgrade_file_content)
                 upgrade_file.write(upgrade_file_content)
         except Exception as error:
             logger.network_logger.error("HTTP(S) Upgrade Download " + download_url + ": " + str(error))
+        if os.path.isfile(self.local_upgrade_file_location):
+            os.chmod(self.local_upgrade_file_location, 0o777)
 
     def _save_smb_to_file(self):
         """
@@ -272,6 +279,8 @@ class CreateUpgradeScriptInterface:
         if self.dev_upgrade:
             smb_deb_installer = "dev/" + smb_deb_installer
         get_smb_file(smb_deb_installer, new_location=self.local_upgrade_file_location)
+        if os.path.isfile(self.local_upgrade_file_location):
+            os.chmod(self.local_upgrade_file_location, 0o777)
 
     def _verify_upgrade_file(self):
         """

@@ -34,8 +34,8 @@ def get_html_atpro_index(run_script="SelectNav('sensor-dashboard');", main_page_
 
 def get_message_page(title, message="", page_url="sensor-dashboard", full_reload=True, skip_menu_select=False):
     """
-    Possible page URL's include:
-    sensor-dashboard, sensor-readings, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
+    Possible page URLs include:
+    sensor-dashboard, sensor-readings-base, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
     """
 
     skip_option = "false"
@@ -132,10 +132,22 @@ def get_uptime_str():
     return str_day_hour_min
 
 
-def get_text_check_enabled(setting):
+def get_html_enabled_disabled_text(setting):
     if setting:
         return "Enabled"
     return "Disabled"
+
+
+def get_html_checked_text(setting):
+    if setting:
+        return "checked"
+    return ""
+
+
+def get_html_hidden_text(setting):
+    if setting:
+        return "hidden"
+    return ""
 
 
 def get_file_creation_date(file_location):

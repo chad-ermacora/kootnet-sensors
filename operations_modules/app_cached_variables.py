@@ -21,6 +21,7 @@ from os import geteuid, path
 from operations_modules.app_generic_classes import CreateDatabaseVariables, CreateNetworkSystemCommands, \
     CreateNetworkGetCommands, CreateLatencyVariables, CreateEmptyThreadClass
 
+sql_db_locked = False
 database_variables = CreateDatabaseVariables()
 network_system_commands = CreateNetworkSystemCommands()
 network_get_commands = CreateNetworkGetCommands()
@@ -84,33 +85,14 @@ gateway = ""
 dns1 = ""
 dns2 = ""
 
-# Wifi Variables
-wifi_country_code = ""
-wifi_ssid = ""
-wifi_security_type = ""
-wifi_psk = ""
-
 # Flask App Login Variables (Web Portal Login)
-http_flask_user = "Kootnet"
+http_flask_user = "kootnet"
 http_flask_password_hash = b''
 http_flask_password_salt = b''
 # Place holder for logged in http users {user_id: datetime.utcnow()}
 http_flask_login_session_ids = {}
 # Failed login IPs are stored here, {IP: [last_failed_login_date, number_of_failed_login_attempts]}
 failed_flask_logins_dic = {}
-
-# Sensor Check-in View Variables
-checkin_search_sensor_id = ""
-checkin_search_sensor_installed_sensors = ""
-checkin_sensor_info = ""
-checkin_search_primary_log = ""
-checkin_search_network_log = ""
-checkin_search_sensors_log = ""
-# Checkin Cached Table Variables
-checkins_sensors_html_list_last_updated = "Please Refresh Information || Datetime is displayed in "
-checkins_db_sensors_count = 0
-checkins_db_sensors_count_from_past_days = 0
-checkins_sensors_html_table_list = ""
 
 # MQTT Subscriber Variables
 mqtt_subscriber_sensors_html_list_last_updated = "Please Refresh Table Content || Datetime is displayed in "

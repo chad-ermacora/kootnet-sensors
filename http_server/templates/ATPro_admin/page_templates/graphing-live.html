@@ -5,13 +5,6 @@
                 <form class="pure-form" method="POST" action="/atpro/sensor-graphing-live">
                     <h2><i class="fas fa-chart-line"></i> Live Graphing</h2>
 
-                    <button class="pure-button" onclick="window.open('/LiveGraphView', '_blank',
-                    'location=yes,scrollbars=yes,status=yes')">
-                        Open Graph Window
-                    </button>
-
-                    <br><br>
-
                     <button type="button" class="pure-button" id="lga-button" onclick="ShowHideLGA_Adv()">
                         Show Advanced Settings
                     </button>
@@ -228,7 +221,14 @@
 
                     <br><br>
 
-                    <button type="submit" class="pure-button">Update Settings</button>
+                    <button type="submit" class="pure-button">Save Settings</button>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                    <button class="pure-button" onclick="window.open('/LiveGraphView', '_blank',
+                    'location=yes,scrollbars=yes,status=yes')">
+                        Open Graph Window
+                    </button>
                 </form>
             </div>
         </div>

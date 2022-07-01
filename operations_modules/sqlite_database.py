@@ -17,11 +17,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
+from time import sleep
 from datetime import datetime
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules.app_cached_variables import database_variables as db_v
+from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import adjust_datetime
+
+db_v = app_cached_variables.database_variables
 
 
 class CreateOtherDataEntry:
@@ -43,15 +46,19 @@ class CreateOtherDataEntry:
 def write_to_sql_database(sql_query, data_entries, sql_database_location=file_locations.sensor_database):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     try:
-        db_connection = sqlite3.connect(sql_database_location)
+        while app_cached_variables.sql_db_locked:
+            sleep(1)
+        db_connection = sqlite3.connect(sql_database_location, isolation_level=None)
         db_cursor = db_connection.cursor()
         if data_entries is None:
             db_cursor.execute(sql_query)
         else:
             db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
-        logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
+        # Only enable this when needed during troubleshooting
+        # logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
     except Exception as error:
         logger.primary_logger.error("SQL Write to DataBase Failed - " + str(error))
         logger.primary_logger.debug("Bad SQL Write String: " + str(sql_query))
@@ -60,7 +67,9 @@ def write_to_sql_database(sql_query, data_entries, sql_database_location=file_lo
 def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_database):
     """ Returns SQL data based on provided sql_query. """
     try:
-        database_connection = sqlite3.connect(sql_database_location)
+        while app_cached_variables.sql_db_locked:
+            sleep(1)
+        database_connection = sqlite3.connect(sql_database_location, isolation_level=None)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
@@ -86,7 +95,13 @@ def universal_database_structure_check(database_location, expected_database_type
     try:
         sql_query = "SELECT " + db_v.db_info_database_type_column + " FROM '" + db_v.table_db_info + "' WHERE " \
                     + db_v.db_info_database_type_column + " != ''"
-        database_type = get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database_location))
+
+        database_connection = sqlite3.connect(database_location, isolation_level=None)
+        sqlite_database = database_connection.cursor()
+        sqlite_database.execute(sql_query)
+        database_type = get_sql_element(sqlite_database.fetchall())
+        database_connection.close()
+
         if expected_database_type is None:
             expected_database_type = database_type
 
@@ -118,7 +133,8 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
     columns_created = 0
     columns_already_made = 0
     try:
-        db_connection = sqlite3.connect(database_location)
+        db_connection = sqlite3.connect(database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_main, db_cursor)
@@ -159,12 +175,14 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
     try:
-        db_connection = sqlite3.connect(database_location)
+        db_connection = sqlite3.connect(database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_sensor_checkins, db_cursor)
         get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
-        sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
+        db_cursor.execute(get_sensor_checkin_ids_sql)
+        sensor_ids = db_cursor.fetchall()
 
         columns = [db_v.kootnet_sensors_version,
                    db_v.sensor_uptime,
@@ -193,12 +211,14 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
 def check_mqtt_subscriber_database_structure(database_location=file_locations.mqtt_subscriber_database):
     logger.primary_logger.debug("Running Check on 'MQTT Subscriber' Database")
     try:
-        db_connection = sqlite3.connect(database_location)
+        db_connection = sqlite3.connect(database_location, isolation_level=None)
+        db_connection.execute('pragma journal_mode=wal')
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_mqtt, db_cursor)
         get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
-        mqtt_sensor_strings = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
+        db_cursor.execute(get_sensor_checkin_ids_sql)
+        mqtt_sensor_strings = db_cursor.fetchall()
 
         for sensor_string in mqtt_sensor_strings:
             cleaned_id = str(sensor_string[0]).strip()
@@ -263,14 +283,20 @@ def validate_sqlite_database(database_location, check_for_table=None):
     Optional: Add a specific table to look for as a string with check_for_table.
     """
     get_sql_tables = "SELECT name FROM sqlite_master WHERE type='table';"
+    try:
+        if check_for_table is not None:
+            get_sql_tables = get_sql_tables[:-1] + " AND name='" + check_for_table + "';"
 
-    if check_for_table is not None:
-        get_sql_tables = get_sql_tables[:-1] + " AND name='" + check_for_table + "';"
+        database_connection = sqlite3.connect(database_location, isolation_level=None)
+        sqlite_database = database_connection.cursor()
+        sqlite_database.execute(get_sql_tables)
+        sql_db_tables = sqlite_database.fetchall()
+        database_connection.close()
 
-    sql_db_tables = sql_execute_get_data(get_sql_tables, sql_database_location=database_location)
-
-    if len(sql_db_tables) > 0:
-        return True
+        if len(sql_db_tables) > 0:
+            return True
+    except Exception as error:
+        logger.primary_logger.warning("SQL Database Validation Error - " + str(database_location) + ": " + str(error))
     return False
 
 
@@ -278,7 +304,7 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
     try:
         start_time = datetime.utcnow()
 
-        db_connection = sqlite3.connect(sqlite_database_location)
+        db_connection = sqlite3.connect(sqlite_database_location, isolation_level=None)
         db_cursor = db_connection.cursor()
         if quick:
             integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()

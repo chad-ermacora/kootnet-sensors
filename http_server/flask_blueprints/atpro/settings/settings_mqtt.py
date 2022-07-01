@@ -40,6 +40,11 @@ def html_atpro_sensor_settings_mqtt_publisher():
     mqtt_publisher_config = app_config_access.mqtt_publisher_config
 
     if request.method == "POST":
+        base_topic = str(request.form.get("topic_mqtt_base_topic")).strip().replace("/", "")
+        if base_topic == "":
+            msg = "The MQTT Publisher Base topic cannot be only slash(s) or blank. " + \
+                  "A valid entry would look something like 'home' or 'home/kitchen' or 'home/kitchen/cupboard'"
+            return get_message_page("Invalid Base Topic", msg)
         app_config_access.mqtt_publisher_config.update_with_html_request(request)
         app_config_access.mqtt_publisher_config.save_config_to_file()
         app_cached_variables.restart_mqtt_publisher_thread = True
@@ -223,12 +228,14 @@ def html_atpro_sensor_settings_mqtt_subscriber():
 
     mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos
     enable_mqtt_subscriber = app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber
+    enable_mqtt_subscriber_logging = app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber_logging
     enable_mqtt_sql_recording = app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording
     enable_broker_auth = app_config_access.mqtt_subscriber_config.enable_broker_auth
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-subscriber.html",
         MaxSensorPosts=app_config_access.mqtt_subscriber_config.mqtt_page_view_max_entries,
         MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
+        MQTTSubscriberLoggingChecked=get_html_checkbox_state(enable_mqtt_subscriber_logging),
         MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
         MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
         MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),

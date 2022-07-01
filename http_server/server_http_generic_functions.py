@@ -22,7 +22,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import create_password_hash
 
-default_http_flask_user = "Kootnet"
+default_http_flask_user = "kootnet"
 default_http_flask_password = "sensors"
 
 min_length_username = 4
@@ -59,7 +59,7 @@ def set_http_auth_from_file():
             logger.primary_logger.error("Problem loading Web Login Credentials - Using Defaults: " + str(error))
             save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
     else:
-        log_msg = "Web Login Credentials not found, using and saving default of Kootnet/sensors"
+        log_msg = "Web Login Credentials not found, using and saving default of kootnet/sensors"
         logger.primary_logger.warning(log_msg)
         logger.primary_logger.warning("It is Recommended to change default Login Credentials")
         save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)

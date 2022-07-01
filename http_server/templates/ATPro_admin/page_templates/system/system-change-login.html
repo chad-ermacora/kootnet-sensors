@@ -2,15 +2,20 @@
     <div class="col-4 col-m-6 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/system-change-login">
+                <form class="pure-form" id="change-login-form" method="POST" action="/atpro/system-change-login">
                     <h1><i class="fas fa-key"></i> Change Login</h1>
+
+                    <h4 style="color: red;" id="different-passwords" hidden>
+
+                    </h4>
 
                     <div style="display: table; margin-left: auto; margin-right: auto;">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">
-                                <label>Username<br>
-                                    <input type="text" class="system-text-input" id="login_username" name="login_username"
-                                           minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
+                                <label>Current Username<br>
+                                    <input type="text" class="system-text-input" id="login_username"
+                                           name="login_username" minlength="4" maxlength="62"
+                                           value="{{ LoginUserName }}" required>
                                 </label>
                             </div>
                         </div>
@@ -21,9 +26,10 @@
                     <div style="display: table; margin-left: auto; margin-right: auto;">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">
-                                <label>Password<br>
-                                    <input type="password" class="system-text-input" id="login_password" name="login_password"
-                                           minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
+                                <label>Current Password<br>
+                                    <input type="password" class="system-text-input" id="login_password"
+                                           name="login_password" autocomplete="current-password"
+                                           minlength="4" maxlength="62" required>
                                 </label>
                             </div>
                         </div>
@@ -31,9 +37,77 @@
 
                     <br><br>
 
-                    <button type="submit" class="pure-button">Update</button>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>New Username<br>
+                                    <input type="text" class="system-text-input" id="new_login_username"
+                                           name="new_login_username" autocomplete="username" minlength="4"
+                                           maxlength="62" placeholder="eg. Sensor33"
+                                           value="{{ LoginUserName }}" required>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>New Password<br>
+                                    <input type="password" class="system-text-input" id="new_login_password"
+                                           name="new_login_password" minlength="4" maxlength="62"
+                                           placeholder="eg. S3n50rP@s5" required>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>Retype New Password<br>
+                                    <input type="password" class="system-text-input" id="new_login_password2"
+                                           name="new_login_password2" autocomplete="new-password" minlength="4"
+                                           maxlength="62" placeholder="eg. S3n50rP@s5" required>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <button type="button" class="pure-button" onclick="SubmitUpdate()">Update</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    const passwords_dont_match = '<i class="fas fa-exclamation-triangle"></i> ' +
+        'New password fields are different<br>Please try again'
+    const missing_fields = '<i class="fas fa-exclamation-triangle"></i> All fields must be filled'
+
+    function SubmitUpdate() {
+        let username = document.getElementById("login_username").value
+        let password = document.getElementById("login_password").value
+        let new_username = document.getElementById("new_login_username").value
+        let new_password = document.getElementById("new_login_password").value
+        let new_password2 = document.getElementById("new_login_password2").value
+        if (new_password === new_password2) {
+            if (username === "" || password === "" || new_username === "" || new_password === "") {
+                document.getElementById("different-passwords").hidden = false;
+                document.getElementById("different-passwords").innerHTML = missing_fields;
+            } else {
+                document.getElementById("change-login-form").submit();
+            }
+        } else {
+            document.getElementById("different-passwords").innerHTML = passwords_dont_match;
+            document.getElementById("different-passwords").hidden = false;
+        }
+    }
+</script>

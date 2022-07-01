@@ -32,7 +32,7 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
             "HTTP Update Server URL", "Checkin Server", "SMB Update Server URL"
         ]
 
-        self.url_update_server = "https://kootenay-networks.com/installers/"
+        self.url_update_server = "http://kootenay-networks.com/installers/"
         self.url_checkin_server = "server.dragonwarz.net"
         self.url_update_server_smb = "//smbServer21/installers/"
 
@@ -91,7 +91,7 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
     def ensure_http_in_url(url_address):
         url_address = url_address.strip()
         if "http" not in url_address.lower():
-            url_address = "https://" + url_address
+            url_address = "http://" + url_address
         return url_address
 
     def reset_urls_to_default(self):

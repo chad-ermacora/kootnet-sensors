@@ -38,6 +38,7 @@ from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfig
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration
 from configuration_modules.config_database_graphs import CreateDatabaseGraphsConfiguration
+from configuration_modules.config_sensor_insights import CreateSensorInsightsConfiguration
 
 logger.primary_logger.info(" -- Loading Configurations")
 # Make sure all hardware based sensors are marked as not installed if lacking root permissions
@@ -63,4 +64,5 @@ open_sense_map_config = CreateOpenSenseMapConfiguration()
 checkin_config = CreateCheckinConfiguration()
 live_graphs_config = CreateLiveGraphsConfiguration()
 db_graphs_config = CreateDatabaseGraphsConfiguration()
+sensor_insights = CreateSensorInsightsConfiguration()
 logger.primary_logger.info(" -- Configurations Loaded")

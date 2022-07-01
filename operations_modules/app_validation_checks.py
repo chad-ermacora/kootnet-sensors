@@ -52,7 +52,7 @@ def sensor_address_is_valid(ip_or_dns_address):
 def subnet_mask_is_valid(subnet_mask):
     """ Checks if a subnet mask if valid.  Returns True for valid and False for Invalid. """
     try:
-        if 0 <= int(subnet_mask[1:]) <= 32:
+        if 0 <= int(subnet_mask[1:]) < 32:
             return True
     except Exception as error:
         logger.network_logger.debug("Subnet Mask Failed Validation Check: " + str(error))
@@ -64,21 +64,8 @@ def wireless_ssid_is_valid(text_ssid):
     Checks if a wireless SSID is valid. Returns True for valid and False for Invalid.
     Checks that text only uses Alphanumeric characters, spaces, underscores and dashes.
     """
-    if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', text_ssid):
+    if re.match(r'^[a-zA-Z0-9][A-Za-z0-9_-]*$', text_ssid):
         return True
-    return False
-
-
-def text_has_no_double_quotes(text_string):
-    """
-    Checks if the provided string has double quotes or not.
-    Returns True if no quotes are found and False if they are.
-    """
-    try:
-        if '"' not in text_string:
-            return True
-    except Exception as error:
-        logger.network_logger.debug("Text Check for Double Quotes Failed: " + str(error))
     return False
 
 

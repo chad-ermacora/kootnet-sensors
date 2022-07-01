@@ -201,10 +201,9 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
             if html_request.form.get("enable_broker_auth") is not None:
                 self.enable_broker_auth = 1
-                self.broker_user = str(html_request.form.get("broker_username"))
-                broker_pass = str(html_request.form.get("broker_password"))
-                if broker_pass != "":
-                    self.broker_password = broker_pass
+                self.broker_user = str(html_request.form.get("broker_username")).strip()
+                if html_request.form.get("enable_broker_auth_pass") is not None:
+                    self.broker_password = str(html_request.form.get("broker_password")).strip()
             else:
                 self.broker_user = ""
                 self.broker_password = ""
@@ -256,13 +255,12 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         elif config_type == "Advanced":
             self.selected_mqtt_send_format = str(html_request.form.get("mqtt_send_type"))
 
-            base_topic = str(html_request.form.get("topic_mqtt_base_topic"))
-            if base_topic != "":
-                if base_topic[0] == "/":
-                    base_topic = base_topic[1:]
-                if base_topic[-1] == "/":
-                    base_topic = base_topic[:-1]
-                self.mqtt_base_topic = base_topic + "/"
+            base_topic = str(html_request.form.get("topic_mqtt_base_topic")).strip()
+            if base_topic[0] == "/":
+                base_topic = base_topic[1:]
+            if base_topic[-1] == "/":
+                base_topic = base_topic[:-1]
+            self.mqtt_base_topic = base_topic + "/"
 
             mqtt_custom_data_string = html_request.form.get("mqtt_custom_data")
             if mqtt_custom_data_string is not None:

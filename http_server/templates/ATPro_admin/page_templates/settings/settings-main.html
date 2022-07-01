@@ -14,6 +14,20 @@
 
                     <br><br>
 
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>HostName<br>
+                                    <input style="width: 250px;" type="text" id="ip_hostname" name="ip_hostname"
+                                           placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
+                                           value="{{ IPHostname }}" required>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
                     <div>
                         <div style="display: inline-block; width: 250px;">
                             <label>HTTPS Port Number<br><br>
@@ -50,131 +64,119 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card" id="adv-urls-content" style="width: 100%;">
             <div class="card-content">
                 <form class="pure-form" method="POST" action="/atpro/settings-urls">
                     <h2><i class="fas fa-link"></i> Kootnet Sensor Program URLs</h2>
 
-                    <h3>For custom setups only</h3>
-
-                    <button type="button" id="adv-urls-button" class="pure-button" onclick="ShowHideURLs()">
-                        Show URLs
+                    <button type="button" class="pure-button"
+                            onclick="NotificationConfirmAction('Reset all URLs to default?', '/atpro/reset-urls-config')">
+                        Reset URLs to Default
                     </button>
+
+                    <br><br>
+
+                    <h2>Update server Addresses</h2>
+
+                    <label>HTTP Update Server Address<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="text" style="width: 450px;" maxlength="250"
+                                           id="update_server_address" name="update_server_address"
+                                           placeholder="https://updates.some-server.com/installer_folder/"
+                                           value="{{ UpdateServerAddress }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
 
                     <br>
 
-                    <div id="adv-urls-content">
-                        <br><br>
-                        <button type="button" class="pure-button"
-                                onclick="NotificationConfirmAction('Reset all URLs to default?', '/atpro/reset-urls-config')">
-                            Reset URLs to Default
-                        </button>
-
-                        <br><br>
-
-                        <div>
-                            <h2>Checkin Server Address & Port</h2>
-                            <label>Eg. MySensor.sensors.org or 192.168.1.16:10065<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="text" style="width: 450px;" maxlength="250"
-                                                   id="checkin_address" name="checkin_address"
-                                                   placeholder="server.dragonwarz.net:10065"
-                                                   value="{{ CheckinAddress }}">
-                                        </div>
-                                    </div>
+                    <label>SMB Update Server Address (Include Share Name)<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="text" style="width: 450px;" maxlength="250"
+                                           id="update_server_address_smb" name="update_server_address_smb"
+                                           placeholder="//smbServer21/KShare/"
+                                           value="{{ UpdateServerAddressSMB }}">
                                 </div>
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div>
-                            <h2>Update server Addresses</h2>
-                            <button type="button" class="pure-button" id="update-server-requirements"
-                                    onclick="ShowHideUpdateRequirements()">
-                                Update Server Requirements
-                            </button>
-
-                            <br>
-
-                            <div id="update-server-requirements-content">
-                                <h3>The update server should contain the following files</h3>
-
-                                <p><i>This uses the selected method under 'Kootnet Sensors Upgrades'</i></p>
-
-                                <p>
-                                    <a id="ks-up-md5-text" style="color: {{ USMD5 }};" target="_blank"
-                                       href="https://kootenay-networks.com/installers/KootnetSensors-deb-MD5.txt">
-                                        KootnetSensors-deb-MD5.txt <i id="ks-up-md5" class="fas"></i>
-                                    </a><br>
-                                    MD5 checksums of available versions<br><br>
-
-                                    <a id="ks-up-version-text" style="color: {{ USVersion }};" target="_blank"
-                                       href="https://kootenay-networks.com/installers/kootnet_version.txt">
-                                        kootnet_version.txt <i id="ks-up-version" class="fas"></i>
-                                    </a><br>
-                                    Current version of Kootnet Sensors on the server<br><br>
-
-                                    <a id="ks-up-f-installer-text" style="color: {{ USFullInstaller }}" target="_blank"
-                                       href="https://kootenay-networks.com/installers/KootnetSensors.deb">
-                                        KootnetSensors.deb <i id="ks-up-f-installer" class="fas"></i>
-                                    </a><br>
-                                    Full installer of Kootnet Sensors (Used in Re-Installs)<br><br>
-
-                                    <a id="ks-up-u-installer-text" style="color: {{ USUpgradeInstaller }}" target="_blank"
-                                       href="https://kootenay-networks.com/installers/KootnetSensors_online.deb">
-                                        KootnetSensors_online.deb <i id="ks-up-u-installer" class="fas"></i>
-                                    </a><br>
-                                    Upgrade installer for Kootnet Sensors<br><br>
-                                    Optional<br>
-                                    dev/ - Folder for developmental upgrade and version<br>
-                                    Contains all the same files as above, minus the MD5 checksum file
-                                </p>
                             </div>
-
-                            <br>
-
-                            <label>HTTP Update Server Address<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="text" style="width: 450px;" maxlength="250"
-                                                   id="update_server_address" name="update_server_address"
-                                                   placeholder="https://updates.some-server.com/installer_folder/"
-                                                   value="{{ UpdateServerAddress }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <br>
-
-                            <label>SMB Update Server Address (Include Share Name)<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="text" style="width: 450px;" maxlength="250"
-                                                   id="update_server_address_smb" name="update_server_address_smb"
-                                                   placeholder="//smbServer21/KShare/"
-                                                   value="{{ UpdateServerAddressSMB }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
                         </div>
+                    </label>
 
-                        <br><br>
+                    <br>
 
-                        <button type="submit" class="pure-button">Update</button>
-                    </div>
+                    <h2>Checkin Server Address & Port</h2>
+                    <label>Eg. MySensor.sensors.org or 192.168.1.16:10065<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="text" style="width: 450px;" maxlength="250"
+                                           id="checkin_address" name="checkin_address"
+                                           placeholder="server.dragonwarz.net:10065"
+                                           value="{{ CheckinAddress }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-6 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
+                    Show Advanced Options
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="update-server-requirements-content" style="text-align: center; width: 100%;">
+            <h2><i class="fas fa-check-circle"></i> Update Server File Checks</h2>
+
+            <p><i>
+                This checks for the presence of required update files using
+                the selected method under 'Kootnet Sensors Upgrades'
+            </i></p>
+
+            <p>
+                <a id="ks-up-md5-text" style="color: {{ USMD5 }};" target="_blank"
+                   href="https://kootenay-networks.com/installers/KootnetSensors-deb-MD5.txt">
+                    KootnetSensors-deb-MD5.txt <i id="ks-up-md5" class="fas"></i>
+                </a><br>
+                MD5 checksums of available versions<br><br>
+
+                <a id="ks-up-version-text" style="color: {{ USVersion }};" target="_blank"
+                   href="https://kootenay-networks.com/installers/kootnet_version.txt">
+                    kootnet_version.txt <i id="ks-up-version" class="fas"></i>
+                </a><br>
+                Current version of Kootnet Sensors on the server<br><br>
+
+                <a id="ks-up-f-installer-text" style="color: {{ USFullInstaller }}" target="_blank"
+                   href="https://kootenay-networks.com/installers/KootnetSensors.deb">
+                    KootnetSensors.deb <i id="ks-up-f-installer" class="fas"></i>
+                </a><br>
+                Full installer of Kootnet Sensors (Used in Re-Installs)<br><br>
+
+                <a id="ks-up-u-installer-text" style="color: {{ USUpgradeInstaller }}" target="_blank"
+                   href="https://kootenay-networks.com/installers/KootnetSensors_online.deb">
+                    KootnetSensors_online.deb <i id="ks-up-u-installer" class="fas"></i>
+                </a><br>
+                Upgrade installer for Kootnet Sensors<br><br>
+                Optional<br>
+                dev/ - Folder for developmental upgrade and version<br>
+                Contains all the same files as above, minus the MD5 checksum file
+            </p>
+        </div>
+
         <div class="card">
             <div class="card-content">
                 <form class="pure-form" method="POST" action="/atpro/settings-upgrades">
@@ -191,82 +193,10 @@
                         Enable Automatic Upgrades
                     </label>
 
-                    <br><br>
-
-                    <div style="display: inline-block; width: 250px;">
-                        <label>Check for updates every<br>(Hours)<br><br>
-                            <div style="display: table; margin-left: auto; margin-right: auto;">
-                                <div style="display: table-row;">
-                                    <div style="display: table-cell;">
-                                        <input type="number" style="width: 100px;" name="auto_upgrade_delay_hours" step="0.25"
-                                               min="0.25" max="8760" value="{{ AutoUpDelayHours }}" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <br><br>
-
-                    <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
-                        Show Advanced Upgrade Options
-                    </button>
-
                     <br>
 
                     <div id="adv-upgrade-content">
                         <br>
-
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="enable-md5-toggle-switch" class="toggle-switch-input"
-                                   name="enable_md5_validation" {{ EnableMD5Validation }}>
-                            <label class="toggle-switch-label" for="enable-md5-toggle-switch"></label>
-                            Enable MD5 Upgrade File Validation
-                        </label>
-
-                        <p style="font-size: large;"><b>
-                            See "Kootnet Sensor Program URLs" for Update Server Addresses
-                        </b></p>
-
-                        <h3>SMB Upgrade Options</h3>
-
-                        <div style="display: inline-block; width: 250px;">
-                            <label>SMB Username<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="text" style="width: 175px;" name="smb_username"
-                                                   value="{{ SMBUsername }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div style="display: inline-block; width: 250px;">
-                            <label>SMB Password<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="password" style="width: 175px;" name="smb_password">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <br><br>
-
-                        <h3>Automatic Upgrades Options</h3>
-
-                        <label>Method<br><br>
-                            <select name="upgrade_method">
-                                <option value="http" {{ HTTPSelected }}>HTTP(S)</option>
-                                <option value="smb" {{ SMBSelected }}>SMB</option>
-                            </select>
-                        </label>
-
-                        <br><br>
 
                         <label class="toggle-switch">
                             <input type="checkbox" id="sau-minor-toggle-switch" class="toggle-switch-input"
@@ -292,15 +222,80 @@
                             <span style="color: orangered;">Developmental</span>
                         </label>
 
+                        <p><span style="color: red;">Warning</span>: Developmental versions often contain bugs</p>
+
                         <br>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enable-md5-toggle-switch" class="toggle-switch-input"
+                                   name="enable_md5_validation" {{ EnableMD5Validation }}>
+                            <label class="toggle-switch-label" for="enable-md5-toggle-switch"></label>
+                            Enable MD5 Upgrade File Validation
+                        </label>
+
+                        <br><br>
+
+                        <div style="display: inline-block; width: 250px;">
+                            <label>Method of Automatic<br>Upgrade<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <select name="upgrade_method">
+                                                <option value="http" {{ HTTPSelected }}>HTTP(S)</option>
+                                                <option value="smb" {{ SMBSelected }}>SMB</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div style="display: inline-block; width: 250px;">
+                            <label>Check for updates every<br>(Hours)<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="number" style="width: 100px;" name="auto_upgrade_delay_hours" step="0.25"
+                                                   min="0.25" max="8760" value="{{ AutoUpDelayHours }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <br><br>
+
+                        <div style="display: inline-block; width: 250px;">
+                            <label>SMB Username<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 175px;" name="smb_username"
+                                                   autocomplete="username" value="{{ SMBUsername }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div style="display: inline-block; width: 250px;">
+                            <label>SMB Password<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="password" style="width: 175px;" name="smb_password"
+                                                   autocomplete="current-password">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
 
                         <h4>Upgrade Examples</h4>
                         <p><i>
                             <b style="color: green;">Stable Minor</b>: Beta.33.10 to Beta.33.11<br>
                             <b style="color: orange;">Stable Feature</b>: Beta.33.11 to Beta.34.0<br>
                             <b style="color: orangered;">Developmental</b>: Updates to the current version under Development
-                            <br><br>
-                            * Developmental versions often contain bugs *
                         </i></p>
                     </div>
                     <br>
@@ -323,26 +318,6 @@
         if (document.getElementById("dau-toggle-switch").checked) {
             document.getElementById("sau-minor-toggle-switch").checked = false;
             document.getElementById("sau-feature-toggle-switch").checked = false;
-        }
-    }
-
-    function ShowHideURLs() {
-        if (document.getElementById("adv-urls-content").style.display === "none") {
-            document.getElementById("adv-urls-content").style.display = "inline-block";
-            document.getElementById("adv-urls-button").textContent = "Hide URLs";
-        } else {
-            document.getElementById("adv-urls-content").style.display = "none";
-            document.getElementById("adv-urls-button").textContent = "Show URLs";
-        }
-    }
-
-    function ShowHideUpdateRequirements() {
-        if (document.getElementById("update-server-requirements-content").style.display === "none") {
-            document.getElementById("update-server-requirements-content").style.display = "inline-block";
-            document.getElementById("update-server-requirements").textContent = "Hide {{ SelectedUpgradeType }} Update Server Requirements";
-        } else {
-            document.getElementById("update-server-requirements-content").style.display = "none";
-            document.getElementById("update-server-requirements").textContent = "Show {{ SelectedUpgradeType }} Update Server Requirements";
         }
     }
 
@@ -372,17 +347,19 @@
             document.getElementById('checkin_address').style.width = '325px';
             document.getElementById('update_server_address').style.width = '325px';
         }
-        ShowHideURLs()
-        ShowHideUpdateRequirements()
     }
 
     function ShowHideAdvUpgrades() {
         if (document.getElementById("adv-upgrade-content").style.display === "none") {
             document.getElementById("adv-upgrade-content").style.display = "inline-block";
-            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Upgrade Options";
+            document.getElementById("adv-urls-content").style.display = "inline-block";
+            document.getElementById("update-server-requirements-content").style.display = "inline-block";
+            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Options";
         } else {
             document.getElementById("adv-upgrade-content").style.display = "none";
-            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Upgrade Options";
+            document.getElementById("adv-urls-content").style.display = "none";
+            document.getElementById("update-server-requirements-content").style.display = "none";
+            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Options";
         }
     }
 

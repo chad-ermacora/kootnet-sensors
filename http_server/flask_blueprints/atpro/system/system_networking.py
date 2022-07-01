@@ -17,21 +17,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import shutil
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules import app_cached_variables_update
-from operations_modules.app_generic_functions import thread_function
-from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
-from operations_modules import app_validation_checks
+from operations_modules.app_generic_disk import write_file_to_disk
+from operations_modules.app_validation_checks import wireless_ssid_is_valid
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, sanitize_text
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 
 html_atpro_system_networking_routes = Blueprint("html_atpro_system_networking_routes", __name__)
 
@@ -39,30 +36,46 @@ html_atpro_system_networking_routes = Blueprint("html_atpro_system_networking_ro
 @html_atpro_system_networking_routes.route("/atpro/system-networking")
 @auth.login_required
 def html_atpro_system_networking():
-    dhcp_checkbox = ""
-    wifi_security_type_none1 = ""
-    wifi_security_type_wpa1 = ""
-    if app_config_access.installed_sensors.raspberry_pi:
-        dhcpcd_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
-        if network_ip.check_for_dhcp(dhcpcd_lines):
-            dhcp_checkbox = "checked"
-
-    if app_cached_variables.wifi_security_type == network_wifi.wifi_type_secured:
-        wifi_security_type_wpa1 = "checked"
-    else:
-        wifi_security_type_none1 = "checked"
+    net_device_list = network_ip.get_network_devices_list()
+    wifi_ssid_list = network_wifi.wifi_networks_interface.get_network_ssid_list()
     return render_template("ATPro_admin/page_templates/system/system-networking-ip.html",
-                           CheckedDHCP=dhcp_checkbox,
-                           IPHostname=app_cached_variables.hostname,
-                           IPv4Address=app_cached_variables.ip,
-                           IPv4Subnet=app_cached_variables.ip_subnet,
-                           IPGateway=app_cached_variables.gateway,
-                           IPDNS1=app_cached_variables.dns1,
-                           IPDNS2=app_cached_variables.dns2,
-                           WirelessCountryCode=app_cached_variables.wifi_country_code,
-                           SSID1=app_cached_variables.wifi_ssid,
-                           CheckedWiFiSecurityWPA1=wifi_security_type_wpa1,
-                           CheckedWiFiSecurityNone1=wifi_security_type_none1)
+                           NetDeviceOptionNames=_get_drop_down_net_items(net_device_list),
+                           AdapterIPData=_get_html_net_devices_data(net_device_list),
+                           WirelessCountryCode=network_wifi.wifi_networks_interface.country_code,
+                           NetWifiOptionNames=_get_drop_down_net_items(wifi_ssid_list),
+                           WifiSSIDData=_get_html_wifi_networks_data())
+
+
+def _get_html_net_devices_data(net_device_list):
+    html_return_text = "\ndelete DeviceData;\nDeviceData = {"
+    for device in net_device_list:
+        network_adapter_data = network_ip.CreateNetDeviceInterface(device)
+        html_return_text += f"{device}dhcp_set: '{str(network_adapter_data.dhcp_set)}', " \
+                            f"{device}ip_address: '{network_adapter_data.ip_address}', " \
+                            f"{device}ip_subnet: '{network_adapter_data.ip_subnet}', " \
+                            f"{device}ip_gateway: '{network_adapter_data.ip_gateway}', " \
+                            f"{device}ip_dns1: '{network_adapter_data.ip_dns1}', " \
+                            f"{device}ip_dns2: '{network_adapter_data.ip_dns2}',"
+    html_return_text = html_return_text[:-1] + "}\n"
+    return html_return_text
+
+
+def _get_html_wifi_networks_data():
+    html_return_text = "\ndelete WifiData;\nWifiData = {"
+    for ssid in network_wifi.wifi_networks_interface.get_network_ssid_list():
+        wifi_network_psk = network_wifi.wifi_networks_interface.current_wifi_networks_dic[ssid]
+        html_return_text += f"ssid_{ssid}: '{str(ssid)}', psk_{ssid}: '{wifi_network_psk}',"
+    if len(network_wifi.wifi_networks_interface.get_network_ssid_list()) > 0:
+        html_return_text = html_return_text[:-1]
+    return html_return_text + "}\n"
+
+
+def _get_drop_down_net_items(net_device_list):
+    custom_drop_downs_html_text = "<option value='{{ NameChangeMe }}'>{{ NameChangeMe }}</option>"
+    dropdown_selection = ""
+    for net_device_name in net_device_list:
+        dropdown_selection += custom_drop_downs_html_text.replace("{{ NameChangeMe }}", net_device_name) + "\n"
+    return dropdown_selection
 
 
 @html_atpro_system_networking_routes.route("/atpro/system-ssl")
@@ -132,74 +145,39 @@ def _is_valid_ssl_certificate(ssl_cert):
     return False
 
 
-# TODO: move checks to _set function below. Return check and message for html return
 @html_atpro_system_networking_routes.route("/atpro/system-ip", methods=["POST"])
 @auth.login_required
 def html_atpro_set_ipv4_config():
     logger.network_logger.debug("** HTML Apply - IPv4 Configuration - Source " + str(request.remote_addr))
     if app_config_access.primary_config.demo_mode:
-        title_message = "Function Disabled"
         message = "Function Disabled in Demo mode"
+        return get_message_page("Function Disabled", message, page_url="sensor-system", skip_menu_select=True)
+    if not app_cached_variables.running_with_root:
+        message = "Kootnet Sensors must be running as root"
+        return get_message_page("Unable to Apply", message, page_url="sensor-system", skip_menu_select=True)
+    if network_ip.adapter_resetting:
+        message = "A Network Adapter is still resetting, please try again"
+        return get_message_page("Unable to Apply", message, page_url="sensor-system", skip_menu_select=True)
+
+    net_device_name = request.form.get("net_device_selection")
+    ip_address_data = network_ip.CreateNetDeviceInterface(net_device_name, auto_fill_address_info=False)
+    if request.form.get("ip_dhcp") is not None:
+        ip_address_data.remove_device_enable_dhcp()
     else:
-        hostname = sanitize_text(request.form.get("ip_hostname"))
-        if app_validation_checks.hostname_is_valid(hostname):
-            if app_cached_variables.running_with_root:
-                app_cached_variables.hostname = hostname
-                os.system("hostnamectl set-hostname " + hostname)
+        ip_address_data.ip_address = request.form.get("ip_address")
+        ip_address_data.ip_subnet = request.form.get("ip_subnet")
+        ip_address_data.ip_gateway = request.form.get("ip_gateway")
+        ip_address_data.ip_dns1 = request.form.get("ip_dns1")
+        ip_address_data.ip_dns2 = request.form.get("ip_dns2")
 
-                ip_address = request.form.get("ip_address")
-                ip_subnet = request.form.get("ip_subnet")
-                ip_gateway = request.form.get("ip_gateway")
-                ip_dns1 = request.form.get("ip_dns1")
-                ip_dns2 = request.form.get("ip_dns2")
-
-                dhcpcd_template = str(get_file_content(file_locations.dhcpcd_config_file_template))
-                if request.form.get("ip_dhcp") is not None:
-                    dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
-                    write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
-                    app_cached_variables.ip = ""
-                    app_cached_variables.ip_subnet = ""
-                    app_cached_variables.gateway = ""
-                    app_cached_variables.dns1 = ""
-                    app_cached_variables.dns2 = ""
-                else:
-                    title_message = ""
-                    if not app_validation_checks.ip_address_is_valid(ip_address):
-                        title_message += "Invalid IP Address "
-                    if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
-                        title_message += "Invalid IP Subnet Mask "
-                    if not app_validation_checks.ip_address_is_valid(ip_gateway) and ip_gateway != "":
-                        title_message += "Invalid Gateway IP Address "
-                    if not app_validation_checks.ip_address_is_valid(ip_dns1) and ip_dns1 != "":
-                        title_message += "Invalid DNS Address "
-                    if not app_validation_checks.ip_address_is_valid(ip_dns2) and ip_dns2 != "":
-                        title_message += "Invalid DNS Address "
-                    if title_message != "":
-                        title_message = "Invalid IP Settings"
-                        return get_message_page(title_message, page_url="sensor-system", skip_menu_select=True)
-
-                    ip_network_text = "# Custom Static IP set by Kootnet Sensors" + \
-                                      "\ninterface wlan0" + \
-                                      "\nstatic ip_address=" + ip_address + ip_subnet + \
-                                      "\nstatic routers=" + ip_gateway + \
-                                      "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
-
-                    new_dhcpcd_config = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
-                    write_file_to_disk(file_locations.dhcpcd_config_file, new_dhcpcd_config)
-                    shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
-                    os.chmod(file_locations.dhcpcd_config_file, 0o664)
-
-                title_message = "IPv4 Configuration Updated"
-                message = "You must reboot for all settings to take effect."
-                thread_function(app_cached_variables_update.update_cached_variables)
-                atpro_notifications.manage_system_reboot()
-                return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
-            else:
-                msg2 = "Kootnet Sensors must be running as root"
-                return get_message_page("Unable to Apply", msg2, page_url="sensor-system", skip_menu_select=True)
+        if not ip_address_data.valid_net_addresses():
+            invalid_msg = ip_address_data.get_validation_msg()
+            return get_message_page(invalid_msg, page_url="sensor-system", skip_menu_select=True)
         else:
-            title_message = "Unable to Process IPv4 Configuration"
-            message = "Invalid or Missing Hostname.\n\nOnly Alphanumeric Characters, Dashes and Underscores may be used."
+            ip_address_data.save_static_network_config()
+
+    title_message = "IPv4 Configuration Updated"
+    message = "Resetting Network Adapter, this may take up to 2 minutes."
     return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
 
 
@@ -208,35 +186,49 @@ def html_atpro_set_ipv4_config():
 def html_atpro_set_wifi_config():
     logger.network_logger.debug("** HTML Apply - WiFi Configuration - Source " + str(request.remote_addr))
     if app_config_access.primary_config.demo_mode:
-        title_page_msg = "Function Disabled"
+        title_msg = "Function Disabled"
         page_msg = "Function Disabled in Demo mode"
     else:
-        title_page_msg = "Unable to Process WiFi Configuration"
-        page_msg = "Not a POST request or missing SSID in form"
-        if request.method == "POST" and "ssid1" in request.form:
-            page_msg = "Kootnet Sensors not running as root?"
-            if app_cached_variables.running_with_root:
-                if app_validation_checks.text_has_no_double_quotes(request.form.get("wifi_key1")):
-                    pass
-                else:
-                    message = "Do not use double quotes in the Wireless Key Sections."
-                    return get_message_page("Invalid Wireless Key", message, page_url="sensor-system", skip_menu_select=True)
-                if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
-                    new_wireless_config = network_wifi.html_request_to_config_wifi(request)
-                    if new_wireless_config is not "":
-                        title_message = "WiFi Configuration Updated"
-                        message = "You must reboot the sensor to take effect."
-                        try:
-                            write_file_to_disk(file_locations.wifi_config_file, new_wireless_config)
-                            thread_function(app_cached_variables_update.update_cached_variables)
-                            atpro_notifications.manage_system_reboot()
-                            return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
-                        except Exception as error:
-                            logger.network_logger.error("Write wpa_supplicant: " + str(error))
-                else:
-                    logger.network_logger.debug("HTML WiFi Configuration Update Failed")
-                    title_message = "Unable to Process Wireless Configuration"
-                    message = "Network Names cannot be blank and can only use " + \
-                              "Alphanumeric Characters, dashes, underscores and spaces."
-                    return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
-    return get_message_page(title_page_msg, message=page_msg, page_url="sensor-system", skip_menu_select=True)
+        title_msg = "root required"
+        page_msg = "Kootnet Sensors not running as root?"
+        if app_cached_variables.running_with_root:
+            wifi_country_code = "CA"
+            if len(request.form.get("country_code")) == 2:
+                wifi_country_code = request.form.get("country_code").upper()
+            network_wifi.wifi_networks_interface.country_code = wifi_country_code
+
+            wifi_ssid1 = request.form.get("ssid1")
+            wifi_security = request.form.get("wifi_secured")
+            wifi_psk1 = request.form.get("wifi_key1")
+            if wireless_ssid_is_valid(wifi_ssid1):
+                if request.form.get("button_function") == "remove":
+                    title_msg = "Wi-Fi Network Not Found"
+                    page_msg = f"The Wi-Fi network {wifi_ssid1} was not found in the WPA Supplicant file"
+                    if wifi_ssid1 in network_wifi.wifi_networks_interface.current_wifi_networks_dic:
+                        network_wifi.wifi_networks_interface.remove_wifi_network(wifi_ssid1)
+                        title_msg = "Wi-Fi Network Removed"
+                        page_msg = f"The Wi-Fi network {wifi_ssid1} has been removed"
+                    return get_message_page(title_msg, page_msg, page_url="sensor-system", skip_menu_select=True)
+                if wifi_security is not None:
+                    if request.form.get("wifi_key1") == "":
+                        title_msg = "Invalid Wi-Fi Key"
+                        page_msg = "The Wi-Fi key cannot be blank"
+                        return get_message_page(title_msg, page_msg, page_url="sensor-system", skip_menu_select=True)
+                    elif "'" in wifi_psk1 or '"' in wifi_psk1:
+                        title_msg = "Invalid Wi-Fi Key"
+                        page_msg = "Do not use single or double quotes in the Wi-Fi Key"
+                        return get_message_page(title_msg, page_msg, page_url="sensor-system", skip_menu_select=True)
+
+                if request.form.get("button_function") == "update":
+                    if wifi_security is not None:
+                        network_wifi.wifi_networks_interface.add_wifi_network(wifi_ssid1, wifi_psk1)
+                    else:
+                        network_wifi.wifi_networks_interface.add_wifi_network(wifi_ssid1)
+                title_msg = "Wi-Fi Networks Updated"
+                page_msg = f"Wi-Fi Network {wifi_ssid1} Added/Updated"
+            else:
+                logger.network_logger.debug("HTML WiFi Configuration Update Failed")
+                title_msg = "Unable to Process Wi-Fi Network"
+                page_msg = "Wi-Fi SSID Names cannot be blank and can only use " + \
+                           "Alphanumeric Characters, dashes, underscores"
+    return get_message_page(title_msg, message=page_msg, page_url="sensor-system", skip_menu_select=True)

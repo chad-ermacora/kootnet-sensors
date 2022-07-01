@@ -150,12 +150,12 @@ def html_atpro_mqtt_subscriber_sensors_list():
 @auth.login_required
 def html_atpro_mqtt_subscriber_generate_sensors_html_list():
     if app_cached_variables.mqtt_subscriber_sensors_html_list != generating_mqtt_table_html:
+        app_cached_variables.mqtt_subscriber_sensors_html_list = generating_mqtt_table_html
         thread_function(_generate_mqtt_subscriber_sensors_html_list)
     return html_atpro_mqtt_subscriber_sensors_list()
 
 
 def _generate_mqtt_subscriber_sensors_html_list():
-    app_cached_variables.mqtt_subscriber_sensors_html_list = generating_mqtt_table_html
     try:
         mqtt_subscriber_sensors = get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database)
         app_cached_variables.mqtt_subscriber_sensors_count = len(mqtt_subscriber_sensors)

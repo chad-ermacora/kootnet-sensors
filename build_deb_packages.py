@@ -234,10 +234,10 @@ def _build_package():
     if os.path.dirname(debian_installer_dir + "KootnetSensors_online/"):
         os.system("rm -f -r " + debian_installer_dir + "KootnetSensors_online/")
     if os.path.isdir(f"{debian_installer_dir}KootnetSensors"):
-        os.system(f"dpkg-deb --build {debian_installer_dir}KootnetSensors")
+        os.system(f"dpkg-deb -Z xz --build {debian_installer_dir}KootnetSensors")
         os.system(f" rm -rf {debian_build_dir}opt/kootnet-sensors/extras/python_modules/")
         os.system(f"mv '{debian_installer_dir}/KootnetSensors' '{debian_installer_dir}/KootnetSensors_online'")
-        os.system(f"dpkg-deb --build {debian_installer_dir}KootnetSensors_online")
+        os.system(f"dpkg-deb -Z xz --build {debian_installer_dir}KootnetSensors_online")
 
 
 def _change_program_version(new_version):
@@ -316,7 +316,7 @@ def _edit_default_configs():
 
 def _copy_to_smb():
     print("Transferring Upgrade Files to Dev's SMB Share ...")
-    new_location = "/home/oo-dragon/chad.ermacora@gmail.com/Technology/python/Sensor Installers/"
+    new_location = debian_installer_dir + "KootNetSMB/"
     md5_versions_file = debian_installer_dir + upgrade_filename_md5
     upgrade_installer_files = [
         debian_installer_dir + upgrade_filename_version,

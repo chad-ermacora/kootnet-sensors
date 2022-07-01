@@ -3,12 +3,11 @@
         display: inline-block;
     }
 </style>
-
-<div class="row">
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <form class="pure-form" id="button_function_form" method="POST" action="/atpro/graphing-create-plotly">
+<form class="pure-form" id="button_function_form" method="POST" action="/atpro/graphing-create-plotly">
+    <div class="row">
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
                     <input type="hidden" id="button_function" name="button_function">
                     <h2><i class="far fa-chart-bar"></i> Database Graphing</h2>
 
@@ -39,123 +38,82 @@
                     </a>
 
                     <br><br>
+                    <div id="MQTTSettings" hidden>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="MQTTDatabaseCheck" class="toggle-switch-input"
+                                   name="mqtt_database_checked" value="{{ CheckedMQTTDatabase }}">
+                            <label class="toggle-switch-label" for="MQTTDatabaseCheck"></label>
+                            MQTT Subscriber Database
+                        </label>
 
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="MQTTDatabaseCheck" class="toggle-switch-input"
-                               name="mqtt_database_checked" value="{{ CheckedMQTTDatabase }}" disabled>
-                        <label class="toggle-switch-label" for="MQTTDatabaseCheck"></label>
-                        MQTT Subscriber Database
-                    </label>
+                        <br><br>
 
-                    <br><br>
+                        <label>MQTT Topic (Remote Sensor ID)<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 375px;" type="text" id="MQTTBaseTopicInput" maxlength="128"
+                                               name="mqtt_database_topic" value="{{ MQTTSenorID }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
 
-                    <label>MQTT Topic (Remote Sensor ID)<br>
+                    <br><hr>
+
+                    <div id="PastHoursRange">
+                        <h3><i class="far fa-calendar"></i> Graph The Past</h3>
+
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
-                                    <input style="width: 375px;" type="text" id="MQTTBaseTopicInput" maxlength="128"
-                                           name="mqtt_database_topic" value="{{ MQTTSenorID }}" disabled>
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-
-                    <br>
-
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <h3>SQL Recording Type</h3>
-                                <label for="rec-type-interval" class="pure-radio">
-                                    <input type="radio" id="rec-type-interval" name="sql_recording_type" value="IntervalData" checked/>
-                                    Interval
-                                </label>
-                                <label for="rec-type-trigger" class="pure-radio">
-                                    <input type="radio" id="rec-type-trigger" name="sql_recording_type" value="TriggerData"/>
-                                    Trigger
-                                </label>
-                            </div>
-
-                            <div style="display: table-cell;">
-                                <h3>Render Engine</h3>
-                                <label for="render-type-ogl" class="pure-radio">
-                                    <input type="radio" id="render-type-ogl" name="plotly_render_engine" value="OpenGL" checked/>
-                                    WebGL (Recommended)
-                                </label>
-                                <label for="render-type-cpu" class="pure-radio">
-                                    <input type="radio" id="render-type-cpu" name="plotly_render_engine" value="CPU"/>
-                                    CPU
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <label>Max Plot Points<br>
-                                    <input style="width: 125px;" type="number" min="5" name="graph_max_data_points"
-                                           value="{{ MaxDataPoints }}">
-                                </label>
-                            </div>
-
-                            &nbsp;&nbsp;&nbsp;
-
-                            <div style="display: table-cell;">
-                                <label>Skip Data between plots (Interval Only)<br>
-                                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                                        <div style="display: table-row;">
-                                            <div style="display: table-cell;">
-                                                <input style="width: 75px;" type="number" min="0" max="9999"
-                                                       value="{{ SkipDataPoints }}" name="graph_skip_data_points">
-                                            </div>
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input style="width: 125px;" type="number" min="0.25" step="0.25"
+                                                   name="graph_past_hours" value="{{ GraphPastHours }}">
                                         </div>
                                     </div>
-                                </label>
+                                </div>
+
+                                &nbsp;&nbsp;&nbsp;
+
+                                <div style="display: table-cell;">
+                                    <select name="time_interval_selection">
+                                        <option value="Hours" {{ HoursSelected }}>Hours</option>
+                                        <option value="Days" {{ DaysSelected }}>Days</option>
+                                        <option value="Years" {{ YearsSelected }}>Years</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <br><hr><br>
+                    <div id="ManualDateRange" hidden>
+                        <h3><i class="far fa-calendar"></i> Graph Date Range</h3>
 
-                    <label>Start DateTime DD/MM/YYYY hh:mm<br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input type="datetime-local" name="graph_datetime_start" value="{{ DateTimeStart }}">
+                        <label>Start DateTime MM/DD/YYYY hh:mm<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="datetime-local" name="graph_datetime_start" value="{{ DateTimeStart }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </label>
+                        </label>
 
-                    <br><br>
+                        <br><br>
 
-                    <label>End DateTime DD/MM/YYYY hh:mm<br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input type="datetime-local" name="graph_datetime_end" value="{{ DateTimeEnd }}">
+                        <label>End DateTime MM/DD/YYYY hh:mm<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="datetime-local" name="graph_datetime_end" value="{{ DateTimeEnd }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </label>
-
-                    <br><br>
-
-
-                    <label>Hour Offset<br>
-                        (Database saves in UTC 0)<br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input style="width: 75px;" type="number" min="-12" max="14" step="0.25"
-                                           name="utc_hour_offset" value="{{ UTCOffset }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
+                        </label>
+                    </div>
 
                     <br><hr><br>
 
@@ -284,66 +242,168 @@
 
                     <br><br>
 
-                    <button type="button" class="pure-button" onclick="UpdateHiddenInputButtonPress('email')">
-                        Save Settings for Graph Emails
-                    </button>
-                    <br><br>
                     <button type="button" id="create-graph-button" class="pure-button"
                             onclick="UpdateHiddenInputButtonPress('create')">
                         Create Graph
                     </button>
-                </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <button type="button" class="pure-button" id="dga-button" onclick="ShowHideDGA_Adv()">
+                        Show Advanced Settings
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h2><i class="fas fa-file-code"></i> View Generated Graphs</h2>
+                    <p>To view generated graphs, click the links below.</p>
+
+                    <h3>
+                        <u><a href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u><br>
+                        Created: {{ IntervalPlotlyDate }}
+                    </h3>
+                    <h3>
+                        <u><a href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u><br>
+                        Created: {{ TriggerPlotlyDate }}
+                    </h3>
+                    <h3>
+                        <u><a href="/ViewMQTTPlotlyGraph" target="_blank">MQTT Plotly Graph</a></u><br>
+                        Created: {{ MQTTPlotlyDate }}
+                    </h3>
+                    <h3>
+                        <u><a href="/ViewCustomPlotlyGraph" target="_blank">Custom Database Plotly Graph</a></u><br>
+                        Created: {{ CustomPlotlyDate }}
+                    </h3>
+                </div>
+            </div>
+
+            <div id="dga-settings-content" style="width: 100%;">
+                <div class="card">
+                    <div class="card-content">
+                        <h2>Advanced Settings</h2>
+
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="manual-date-range-toggle" class="toggle-switch-input"
+                                   name="manual_date_range" onclick="ManualDateRange()" {{ CheckedManualDateRange }}>
+                            <label class="toggle-switch-label" for="manual-date-range-toggle"></label>
+                            Graph using date range
+                        </label>
+
+                        <br><br>
+
+                        <label>Hour Offset<br>
+                            (Database saves in UTC 0)<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 75px;" type="number" min="-12" max="14" step="0.25"
+                                               name="utc_hour_offset" value="{{ UTCOffset }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-cell;">
+                                <h3>SQL Recording Type</h3>
+                                <label for="rec-type-interval" class="pure-radio">
+                                    <input type="radio" id="rec-type-interval" name="sql_recording_type" value="IntervalData" {{ CheckedInterval }}/>
+                                    Interval
+                                </label>
+                                <label for="rec-type-trigger" class="pure-radio">
+                                    <input type="radio" id="rec-type-trigger" name="sql_recording_type" value="TriggerData" {{ CheckedTrigger }}/>
+                                    Trigger
+                                </label>
+                            </div>
+
+                            <div style="display: table-cell;">
+                                <h3>Render Engine</h3>
+                                <label for="render-type-ogl" class="pure-radio">
+                                    <input type="radio" id="render-type-ogl" name="plotly_render_engine" value="OpenGL" {{ CheckedOpenGL }}/>
+                                    WebGL (Recommended)
+                                </label>
+                                <label for="render-type-cpu" class="pure-radio">
+                                    <input type="radio" id="render-type-cpu" name="plotly_render_engine" value="CPU" {{ CheckedCPU }}/>
+                                    CPU
+                                </label>
+                            </div>
+                        </div>
+
+                        <br><br>
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <label>Max Plot Points<br>
+                                        <input style="width: 125px;" type="number" min="5" name="graph_max_data_points"
+                                               value="{{ MaxDataPoints }}">
+                                    </label>
+                                </div>
+
+                                &nbsp;&nbsp;&nbsp;
+
+                                <div style="display: table-cell;">
+                                    <label>Skip Data between plots (Interval Only)<br>
+                                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                                            <div style="display: table-row;">
+                                                <div style="display: table-cell;">
+                                                    <input style="width: 75px;" type="number" min="0" max="9999"
+                                                           value="{{ SkipDataPoints }}" name="graph_skip_data_points">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <button type="button" id="save-settings-button" class="pure-button"
+                            onclick="UpdateHiddenInputButtonPress('save')">
+                        Save Settings
+                    </button>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                    <button type="button" class="pure-button" onclick="UpdateHiddenInputButtonPress('email')">
+                        Save Settings for Graph Emails
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <h2><i class="fas fa-file-code"></i> View Generated Graphs</h2>
-                <p>To view generated graphs, click the links below.</p>
-
-                <h3>
-                    <u><a href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u><br>
-                    Created: {{ IntervalPlotlyDate }}
-                </h3>
-                <h3>
-                    <u><a href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u><br>
-                    Created: {{ TriggerPlotlyDate }}
-                </h3>
-                <h3>
-                    <u><a href="/ViewMQTTPlotlyGraph" target="_blank">MQTT Plotly Graph</a></u><br>
-                    Created: {{ MQTTPlotlyDate }}
-                </h3>
-                <h3>
-                    <u><a href="/ViewCustomPlotlyGraph" target="_blank">Custom Database Plotly Graph</a></u><br>
-                    Created: {{ CustomPlotlyDate }}
-                </h3>
-            </div>
-        </div>
-    </div>
-</div>
-
+</form>
 <script>
     function db_selection() {
         if (document.getElementById("databases").value === 'MainDatabase') {
             document.getElementById("MQTTDatabaseCheck").checked = false;
-            document.getElementById("MQTTDatabaseCheck").disabled = true;
-            document.getElementById("MQTTBaseTopicInput").disabled = true;
+            document.getElementById("MQTTSettings").hidden = true;
         } else if (document.getElementById("databases").value === 'MQTTSubscriberDatabase') {
             document.getElementById("MQTTDatabaseCheck").checked = true;
-            document.getElementById("MQTTDatabaseCheck").disabled = false;
-            document.getElementById("MQTTBaseTopicInput").disabled = false;
+            document.getElementById("MQTTSettings").hidden = false;
         }
         else {
-            document.getElementById("MQTTDatabaseCheck").disabled = false;
-            document.getElementById("MQTTBaseTopicInput").disabled = false;
+            document.getElementById("MQTTDatabaseCheck").checked = false;
+            document.getElementById("MQTTSettings").hidden = false;
         }
     }
 
     function CreatingGraph() {
         document.getElementById("blink_shadow").textContent = "Creating Graph - Please Wait";
         document.getElementById("create-graph-button").disabled = true;
+        document.getElementById("save-settings-button").disabled = true;
         const blinks = document.getElementById("blink_shadow");
         let shadow_colour = "green";
         window.setTimeout(RefreshPageTimed, 10000);
@@ -357,11 +417,33 @@
         SelectNav("sensor-graphing-db");
     }
 
+    function ShowHideDGA_Adv() {
+        if (document.getElementById("dga-settings-content").style.display === "none") {
+            document.getElementById("dga-settings-content").style.display = "inline-block";
+            document.getElementById("dga-button").textContent = "Hide Advanced Settings";
+        } else {
+            document.getElementById("dga-settings-content").style.display = "none";
+            document.getElementById("dga-button").textContent = "Show Advanced Settings";
+        }
+    }
+
+    function ManualDateRange() {
+        if (document.getElementById('manual-date-range-toggle').checked) {
+            document.getElementById("ManualDateRange").hidden = false;
+            document.getElementById("PastHoursRange").hidden = true;
+        } else {
+            document.getElementById("ManualDateRange").hidden = true;
+            document.getElementById("PastHoursRange").hidden = false;
+        }
+    }
+
     if (window.innerWidth < 500) {
         document.getElementById('MQTTBaseTopicInput').style.width = '325px';
     }
 
-    {{ RunScript | safe }}
-
+    ShowHideDGA_Adv();
+    ManualDateRange();
     CheckNotificationsAsync();
+
+    {{ RunScript | safe }}
 </script>

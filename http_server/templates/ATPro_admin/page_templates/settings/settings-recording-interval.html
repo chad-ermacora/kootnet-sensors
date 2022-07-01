@@ -1,5 +1,5 @@
 <form class="pure-form" method="POST" action="/atpro/settings-interval">
-    <h2><i class="fas fa-database"></i> Interval Recording</h2>
+    <h2><i class="fas fa-hourglass-half"></i> Interval Recording</h2>
 
     <label class="toggle-switch">
         <input type="checkbox" id="interval-toggle" class="toggle-switch-input"
@@ -14,7 +14,7 @@
         <div style="display: table; margin-left: auto; margin-right: auto;">
             <div style="display: table-row;">
                 <div style="display: table-cell;">
-                    <input style="width: 100px;" type="number" step="0.1" min="1" name="interval_delay_seconds"
+                    <input style="width: 100px;" type="number" step="0.25" min="0.25" name="interval_delay_seconds"
                            value="{{ IntervalDelay }}">
                 </div>
             </div>

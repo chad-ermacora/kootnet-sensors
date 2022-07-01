@@ -110,8 +110,7 @@ function SelectActiveMainMenu(nav_location) {
 
 function UnSelectAllMenus() {
 	document.getElementById("sensor-dashboard").classList.remove("active");
-	document.getElementById("sensor-readings").classList.remove("active");
-	document.getElementById("sensor-latency").classList.remove("active");
+	document.getElementById("sensor-readings-base").classList.remove("active");
 	document.getElementById("sensor-notes").classList.remove("active");
 	document.getElementById("sensor-graphing-db").classList.remove("active");
 	document.getElementById("sensor-graphing-live").classList.remove("active");

@@ -28,8 +28,6 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, zip_files, get_md5_hash_of_file, \
     verify_password_to_hash, get_list_of_filenames_in_dir as get_names_list_from_dir
 from operations_modules.app_generic_disk import get_file_content, write_file_to_disk
-from operations_modules import network_ip
-from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
     check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
@@ -62,43 +60,18 @@ def update_cached_variables():
         if default_http_flask_user == app_cached_variables.http_flask_user and not demo_mode:
             if verify_password_to_hash(default_http_flask_password):
                 atpro_notifications.manage_default_login_detected()
-
-    if app_cached_variables.current_platform == "Linux":
-        try:
-            os_release_content_lines = get_file_content("/etc/os-release").split("\n")
-            os_release_name = ""
-            for line in os_release_content_lines:
-                name_and_value = line.split("=")
-                if name_and_value[0].strip() == "PRETTY_NAME":
-                    os_release_name = name_and_value[1].strip()[1:-1]
-            app_cached_variables.operating_system_name = str(os_release_name)
-        except Exception as error:
-            logger.sensors_logger.error("Error caching OS Name: " + str(error))
-            app_cached_variables.operating_system_name = "NA"
-
-        if app_cached_variables.operating_system_name[:8] == "Raspbian":
+        if app_cached_variables.current_platform == "Linux":
             try:
-                if app_cached_variables.running_with_root:
-                    wifi_config_lines = get_file_content(file_locations.wifi_config_file).split("\n")
-                else:
-                    wifi_config_lines = ""
-                app_cached_variables.wifi_country_code = network_wifi.get_wifi_country_code(wifi_config_lines)
-                app_cached_variables.wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
-                app_cached_variables.wifi_security_type = network_wifi.get_wifi_security_type(wifi_config_lines)
-                app_cached_variables.wifi_psk = network_wifi.get_wifi_psk(wifi_config_lines)
+                os_release_content_lines = get_file_content("/etc/os-release").split("\n")
+                os_release_name = ""
+                for line in os_release_content_lines:
+                    name_and_value = line.split("=")
+                    if name_and_value[0].strip() == "PRETTY_NAME":
+                        os_release_name = name_and_value[1].strip()[1:-1]
+                app_cached_variables.operating_system_name = str(os_release_name)
             except Exception as error:
-                logger.primary_logger.warning("Error checking WiFi configuration: " + str(error))
-
-            try:
-                dhcpcd_config_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
-                if not network_ip.check_for_dhcp(dhcpcd_config_lines):
-                    app_cached_variables.ip = network_ip.get_dhcpcd_ip(dhcpcd_config_lines)
-                    app_cached_variables.ip_subnet = network_ip.get_subnet(dhcpcd_config_lines)
-                    app_cached_variables.gateway = network_ip.get_gateway(dhcpcd_config_lines)
-                    app_cached_variables.dns1 = network_ip.get_dns(dhcpcd_config_lines)
-                    app_cached_variables.dns2 = network_ip.get_dns(dhcpcd_config_lines, dns_server=1)
-            except Exception as error:
-                logger.primary_logger.warning("Error checking dhcpcd.conf: " + str(error))
+                logger.sensors_logger.error("Error caching OS Name: " + str(error))
+                app_cached_variables.operating_system_name = "NA"
 
     try:
         app_cached_variables.total_ram_memory = round(psutil.virtual_memory().total / 1024 / 1024 / 1024, 3)
@@ -133,7 +106,9 @@ def _update_ks_info_table_data():
     sleep(30)
     logger.primary_logger.debug("Updating Kootnet Sensors Database Information Table")
     try:
-        db_connection = sqlite3.connect(file_locations.sensor_database)
+        while app_cached_variables.sql_db_locked:
+            sleep(1)
+        db_connection = sqlite3.connect(file_locations.sensor_database, isolation_level=None)
         db_cursor = db_connection.cursor()
         create_table_and_datetime(db_v.table_ks_info, db_cursor)
 
@@ -166,6 +141,7 @@ def _update_ks_info_table_data():
         data_entries = _check_for_changes_in_sensor_info_data(data_entries)
         db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
+        db_connection.execute("PRAGMA optimize;")
         db_connection.close()
         logger.primary_logger.debug("Kootnet Sensors Database Information Updated OK")
     except Exception as error:
@@ -186,7 +162,7 @@ def _check_for_changes_in_sensor_info_data(data_entries):
 
 
 def _get_zipped_logs():
-    utc_now = datetime.utcnow().strftime("%Y-%m-%d_%H:%M_")
+    utc_now = datetime.utcnow().strftime("%Y-%m-%d_%H_%M_")
     try:
         return_names = [utc_now + os.path.basename(file_locations.primary_log),
                         utc_now + os.path.basename(file_locations.network_log),
@@ -214,13 +190,18 @@ def _md5_matches_previous_configs_zip_md5(new_md5):
 
 def _get_zipped_configurations():
     main_config = app_config_access.primary_config.get_config_as_str()
+    upgrades_config = remove_line_from_text(app_config_access.upgrades_config.get_config_as_str(), [3, 4])
+    urls_configuration = app_config_access.urls_config.get_config_as_str()
     installed_sensors = app_config_access.installed_sensors.get_config_as_str()
+    sensor_offsets_config = app_config_access.sensor_offsets.get_config_as_str()
     display_config = app_config_access.display_config.get_config_as_str()
     checkin_config = app_config_access.checkin_config.get_config_as_str()
     interval_recording_config = app_config_access.interval_recording_config.get_config_as_str()
     trigger_high_low = app_config_access.trigger_high_low.get_config_as_str()
     trigger_variances = app_config_access.trigger_variances.get_config_as_str()
     email_config = remove_line_from_text(app_config_access.email_config.get_config_as_str(), [5, 6])
+    email_reports_config = app_config_access.email_reports_config.get_config_as_str()
+    email_db_graph_config = app_config_access.email_db_graph_config.get_config_as_str()
     mqtt_broker_config = app_config_access.mqtt_broker_config.get_config_as_str()
     mqtt_pub_config = remove_line_from_text(app_config_access.mqtt_publisher_config.get_config_as_str(), [5, 6])
     mqtt_sub_config = remove_line_from_text(app_config_access.mqtt_subscriber_config.get_config_as_str(), [5, 6])
@@ -228,28 +209,40 @@ def _get_zipped_configurations():
     wu_config = remove_line_from_text(app_config_access.weather_underground_config.get_config_as_str(), [4, 5])
     luftdaten_config = app_config_access.luftdaten_config.get_config_as_str()
     sensor_control_config = app_config_access.sensor_control_config.get_config_as_str()
+    sensor_insights_config = app_config_access.sensor_insights.get_config_as_str()
 
     try:
-        return_names = [os.path.basename(file_locations.primary_config),
-                        os.path.basename(file_locations.installed_sensors_config),
-                        os.path.basename(file_locations.display_config),
-                        os.path.basename(file_locations.checkin_configuration),
-                        os.path.basename(file_locations.interval_config),
-                        os.path.basename(file_locations.trigger_high_low_config),
-                        os.path.basename(file_locations.trigger_variances_config),
-                        os.path.basename(file_locations.email_config),
-                        os.path.basename(file_locations.mqtt_broker_config),
-                        os.path.basename(file_locations.mqtt_publisher_config),
-                        os.path.basename(file_locations.mqtt_subscriber_config),
-                        os.path.basename(file_locations.osm_config),
-                        os.path.basename(file_locations.weather_underground_config),
-                        os.path.basename(file_locations.luftdaten_config),
-                        os.path.basename(file_locations.html_sensor_control_config)]
+        return_names = [
+            os.path.basename(file_locations.primary_config),
+            os.path.basename(file_locations.upgrades_config),
+            os.path.basename(file_locations.urls_configuration),
+            os.path.basename(file_locations.installed_sensors_config),
+            os.path.basename(file_locations.sensor_offsets_config),
+            os.path.basename(file_locations.display_config),
+            os.path.basename(file_locations.checkin_configuration),
+            os.path.basename(file_locations.interval_config),
+            os.path.basename(file_locations.trigger_high_low_config),
+            os.path.basename(file_locations.trigger_variances_config),
+            os.path.basename(file_locations.email_config),
+            os.path.basename(file_locations.email_reports_config),
+            os.path.basename(file_locations.email_db_graph_config),
+            os.path.basename(file_locations.mqtt_broker_config),
+            os.path.basename(file_locations.mqtt_publisher_config),
+            os.path.basename(file_locations.mqtt_subscriber_config),
+            os.path.basename(file_locations.osm_config),
+            os.path.basename(file_locations.weather_underground_config),
+            os.path.basename(file_locations.luftdaten_config),
+            os.path.basename(file_locations.html_sensor_control_config),
+            os.path.basename(file_locations.sensor_insights_config)
+        ]
 
-        return_files = [main_config, installed_sensors, display_config, checkin_config,
-                        interval_recording_config, trigger_high_low, trigger_variances,
-                        email_config, mqtt_broker_config, mqtt_pub_config, mqtt_sub_config,
-                        open_sense_map_config, wu_config, luftdaten_config, sensor_control_config]
+        return_files = [
+            main_config, upgrades_config, urls_configuration, installed_sensors, sensor_offsets_config,
+            display_config, checkin_config, interval_recording_config, trigger_high_low, trigger_variances,
+            email_config, email_reports_config, email_db_graph_config, mqtt_broker_config, mqtt_pub_config,
+            mqtt_sub_config, open_sense_map_config, wu_config, luftdaten_config, sensor_control_config,
+            sensor_insights_config
+        ]
 
         blob_data = zip_files(return_names, return_files, skip_datetime=True).read()
         return blob_data

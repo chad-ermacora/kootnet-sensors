@@ -77,8 +77,8 @@ def _start_plotly_graph(graph_data):
             var_sql_query = "SELECT " + var_column + \
                             " FROM " + graph_data.graph_db_table + \
                             " WHERE " + var_column + \
-                            " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
-                            "') AND datetime('" + get_sql_graph_end + \
+                            " IS NOT NULL AND DateTime BETWEEN date('" + get_sql_graph_start + \
+                            "') AND date('" + get_sql_graph_end + \
                             "') AND ROWID % " + str(graph_data.sql_queries_skip + 1) + " = 0" + \
                             " ORDER BY " + db_v.all_tables_datetime + " DESC" + \
                             " LIMIT " + str(graph_data.max_sql_queries)
@@ -86,8 +86,8 @@ def _start_plotly_graph(graph_data):
             var_time_sql_query = "SELECT " + db_v.all_tables_datetime + \
                                  " FROM " + graph_data.graph_db_table + \
                                  " WHERE " + var_column + \
-                                 " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
-                                 "') AND datetime('" + get_sql_graph_end + \
+                                 " IS NOT NULL AND DateTime BETWEEN date('" + get_sql_graph_start + \
+                                 "') AND date('" + get_sql_graph_end + \
                                  "') AND ROWID % " + str(graph_data.sql_queries_skip + 1) + " = 0" + \
                                  " ORDER BY " + db_v.all_tables_datetime + " DESC" + \
                                  " LIMIT " + str(graph_data.max_sql_queries)
