@@ -48,22 +48,23 @@ class CreateUpdateChecksInterface:
         self.update_server_file_present_full_installer = False
         self.update_server_file_present_upgrade_installer = False
         if start_auto_checks:
-            thread_function(self.update_versions_info_variables)
             thread_function(self._thread_worker_update_variables)
         else:
             self._update_new_release_versions()
 
     def update_versions_info_variables(self):
-        self._update_new_release_versions()
-        self._check_upgrade_files_present()
+        try:
+            self._update_new_release_versions()
+            self._check_upgrade_files_present()
+        except Exception as error:
+            logger.network_logger.warning("Failed to check for new versions: " + str(error))
 
     def _thread_worker_update_variables(self):
+        # Wait a bit to ensure network connectivity
+        time.sleep(10)
         while True:
-            try:
-                time.sleep(upgrades_config.automatic_upgrade_delay_hours * 60 * 60)
-                self.update_versions_info_variables()
-            except Exception as error:
-                logger.network_logger.warning("Failed to check for new versions: " + str(error))
+            self.update_versions_info_variables()
+            time.sleep(upgrades_config.automatic_upgrade_delay_hours * 60 * 60)
 
     def _update_new_release_versions(self):
         standard_url = urls_config.url_update_server + "kootnet_version.txt"
