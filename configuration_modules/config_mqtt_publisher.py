@@ -184,6 +184,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
         config_type = str(html_request.form.get("ConfigSection"))
         if config_type == "Main":
+            # Set all relevant enable/disable variables to 0 (including broker auth)
             self._reset_for_html_main_update()
 
             if html_request.form.get("enable_mqtt_publisher") is not None:
