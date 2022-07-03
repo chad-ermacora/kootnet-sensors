@@ -78,41 +78,41 @@ def _publish_on_pub(client, userdata, mid):
 
 
 def _publish_mqtt_message():
-    mqtt_pc = app_config_access.mqtt_publisher_config
-    mqtt_base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic
-    mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
-
-    selected_mqtt_send_format = app_config_access.mqtt_publisher_config.selected_mqtt_send_format
-    mqtt_send_format_kootnet = app_config_access.mqtt_publisher_config.mqtt_send_format_kootnet
-    mqtt_send_format_individual_topics = app_config_access.mqtt_publisher_config.mqtt_send_format_individual_topics
-    mqtt_send_format_custom_string = app_config_access.mqtt_publisher_config.mqtt_send_format_custom_string
-
-    # MQTT Publisher enabled sensors & get sensor reading functions lists
-    sensors_enabled_list = [
-        mqtt_pc.sensor_date_time, mqtt_pc.sensor_host_name, mqtt_pc.sensor_ip, mqtt_pc.sensor_uptime,
-        mqtt_pc.gps_latitude, mqtt_pc.gps_longitude, mqtt_pc.system_temperature, mqtt_pc.env_temperature,
-        mqtt_pc.pressure, mqtt_pc.altitude, mqtt_pc.humidity, mqtt_pc.dew_point, mqtt_pc.distance, mqtt_pc.gas,
-        mqtt_pc.particulate_matter, mqtt_pc.lumen, mqtt_pc.color, mqtt_pc.ultra_violet, mqtt_pc.accelerometer,
-        mqtt_pc.magnetometer, mqtt_pc.gyroscope
-    ]
-    sensors_function_list = [
-        _get_mqtt_formatted_datetime, _get_hostname, _get_ip, system_access.get_uptime_minutes, _get_gps_latitude,
-        _get_gps_longitude, sensor_access.get_cpu_temperature, sensor_access.get_environment_temperature,
-        sensor_access.get_pressure, sensor_access.get_altitude, sensor_access.get_humidity, sensor_access.get_dew_point,
-        sensor_access.get_distance, sensor_access.get_gas, sensor_access.get_particulate_matter,
-        sensor_access.get_lumen, sensor_access.get_ems_colors, sensor_access.get_ultra_violet,
-        sensor_access.get_accelerometer_xyz, sensor_access.get_magnetometer_xyz, sensor_access.get_gyroscope_xyz
-    ]
-
-    pub_msgs = {}
-    db_vars_to_mqtt_pub = {}
-    if selected_mqtt_send_format == mqtt_send_format_individual_topics:
-        pub_msgs = []
-        db_vars_to_mqtt_pub = _get_database_variable_to_mqtt_publisher_topic()
-    elif selected_mqtt_send_format == mqtt_send_format_custom_string:
-        pub_msgs = app_config_access.mqtt_publisher_config.mqtt_custom_data_string
-
     try:
+        mqtt_pc = app_config_access.mqtt_publisher_config
+        mqtt_base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic
+        mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
+
+        selected_mqtt_send_format = app_config_access.mqtt_publisher_config.selected_mqtt_send_format
+        mqtt_send_format_kootnet = app_config_access.mqtt_publisher_config.mqtt_send_format_kootnet
+        mqtt_send_format_individual_topics = app_config_access.mqtt_publisher_config.mqtt_send_format_individual_topics
+        mqtt_send_format_custom_string = app_config_access.mqtt_publisher_config.mqtt_send_format_custom_string
+
+        # MQTT Publisher enabled sensors & get sensor reading functions lists
+        sensors_enabled_list = [
+            mqtt_pc.sensor_date_time, mqtt_pc.sensor_host_name, mqtt_pc.sensor_ip, mqtt_pc.sensor_uptime,
+            mqtt_pc.gps_latitude, mqtt_pc.gps_longitude, mqtt_pc.system_temperature, mqtt_pc.env_temperature,
+            mqtt_pc.pressure, mqtt_pc.altitude, mqtt_pc.humidity, mqtt_pc.dew_point, mqtt_pc.distance, mqtt_pc.gas,
+            mqtt_pc.particulate_matter, mqtt_pc.lumen, mqtt_pc.color, mqtt_pc.ultra_violet, mqtt_pc.accelerometer,
+            mqtt_pc.magnetometer, mqtt_pc.gyroscope
+        ]
+        sensors_function_list = [
+            _get_mqtt_formatted_datetime, _get_hostname, _get_ip, system_access.get_uptime_minutes, _get_gps_latitude,
+            _get_gps_longitude, sensor_access.get_cpu_temperature, sensor_access.get_environment_temperature,
+            sensor_access.get_pressure, sensor_access.get_altitude, sensor_access.get_humidity, sensor_access.get_dew_point,
+            sensor_access.get_distance, sensor_access.get_gas, sensor_access.get_particulate_matter,
+            sensor_access.get_lumen, sensor_access.get_ems_colors, sensor_access.get_ultra_violet,
+            sensor_access.get_accelerometer_xyz, sensor_access.get_magnetometer_xyz, sensor_access.get_gyroscope_xyz
+        ]
+
+        pub_msgs = {}
+        db_vars_to_mqtt_pub = {}
+        if selected_mqtt_send_format == mqtt_send_format_individual_topics:
+            pub_msgs = []
+            db_vars_to_mqtt_pub = _get_database_variable_to_mqtt_publisher_topic()
+        elif selected_mqtt_send_format == mqtt_send_format_custom_string:
+            pub_msgs = app_config_access.mqtt_publisher_config.mqtt_custom_data_string
+
         for sensor_enabled, sensor_function in zip(sensors_enabled_list, sensors_function_list):
             if sensor_enabled:
                 sensor_data = sensor_function()
@@ -141,7 +141,12 @@ def _send_mqtt_pub_message(publish_msgs):
 
     try:
         if selected_mqtt_send_format == mqtt_send_format_individual_topics:
-            publish.multiple(publish_msgs, hostname=broker_address, port=broker_server_port, auth=mqtt_pub_auth)
+            # publish each sensor reading individually due to Adafruit IO only taking the first 2 with publish.multiple
+            for sensor_msg in publish_msgs:
+                publish.single(topic=sensor_msg["topic"], payload=sensor_msg["payload"], qos=sensor_msg["qos"],
+                               hostname=broker_address, port=broker_server_port, auth=mqtt_pub_auth)
+            # Old publish using publish.multiple()
+            # publish.multiple(publish_msgs, hostname=broker_address, port=broker_server_port, auth=mqtt_pub_auth)
         else:
             topic = app_config_access.mqtt_publisher_config.mqtt_base_topic[:-1]
             publish.single(topic=topic, payload=str(publish_msgs), qos=mqtt_publisher_qos,
