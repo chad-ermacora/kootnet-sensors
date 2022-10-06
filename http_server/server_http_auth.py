@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime
-from flask import session, redirect
+from flask import request, session, redirect
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 
@@ -28,11 +28,18 @@ class CreateLoginManager:
     @staticmethod
     def login_required(func):
         def secure_function(*args, **kwargs):
+            http_flask_login_session_ids = app_cached_variables.http_flask_login_session_ids
             if app_config_access.primary_config.demo_mode:
                 return func(*args, **kwargs)
-            if "user_id" in session and session['user_id'] in app_cached_variables.http_flask_login_session_ids:
-                app_cached_variables.http_flask_login_session_ids[session['user_id']] = datetime.utcnow()
+            if "user_id" in session and session['user_id'] in http_flask_login_session_ids:
+                if http_flask_login_session_ids[session['user_id']] < datetime.utcnow():
+                    http_flask_login_session_ids[session['user_id']] = datetime.utcnow()
                 return func(*args, **kwargs)
+            else:
+                cookie_dic = request.cookies.to_dict()
+                if "user_id" in cookie_dic and cookie_dic["user_id"] in http_flask_login_session_ids:
+                    session['user_id'] = cookie_dic["user_id"]
+                    return func(*args, **kwargs)
             return redirect("/atpro/login")
         secure_function.__name__ = func.__name__
         return secure_function

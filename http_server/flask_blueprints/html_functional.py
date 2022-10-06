@@ -165,7 +165,12 @@ def login():
                 new_session_id = sha256(urandom(12)).hexdigest()
                 session['user_id'] = new_session_id
                 app_cached_variables.http_flask_login_session_ids[new_session_id] = datetime.utcnow()
-                return redirect('/atpro/')
+                return_resp = make_response(redirect('/atpro/'))
+                if request.form.get('stay_logged_in') is not None:
+                    app_cached_variables.http_flask_login_session_ids[new_session_id] += timedelta(days=7)
+                    cookie_expiration = datetime.utcnow() + timedelta(days=7)
+                    return_resp.set_cookie("user_id", new_session_id, expires=cookie_expiration)
+                return return_resp
         _ip_failed_login(ip_address)
         return get_message_page("Login Failed", page_url="sensor-settings")
     return render_template("ATPro_admin/page_templates/login.html")
@@ -173,6 +178,8 @@ def login():
 
 @html_functional_routes.route("/atpro/logout")
 def html_atpro_logout():
+    if 'user_id' in session and session['user_id'] in app_cached_variables.http_flask_login_session_ids:
+        app_cached_variables.http_flask_login_session_ids.pop(session['user_id'])
     session.pop('user_id', None)
     return get_message_page("Logged Out", "You have been logged out")
 
@@ -181,7 +188,7 @@ def _address_is_banned(ip_address):
     """
     Checks to see if an IP is banned
     If the last failed login was more than 15 minutes ago, reset failed login attempts to 0
-    Returns True if there are more then 10 failed logins, else, False
+    Returns True if there are more than 10 failed logins, else, False
     :param ip_address: IP address as a string
     :return: True/False
     """
