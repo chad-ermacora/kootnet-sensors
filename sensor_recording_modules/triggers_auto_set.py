@@ -29,7 +29,7 @@ def auto_set_triggers_wait_time(config, multiplier=10.0, set_lowest=False):
         latency_variables.distance: 0, latency_variables.gas: 0, latency_variables.particulate_matter: 0,
         latency_variables.lumen: 0, latency_variables.colours: 0, latency_variables.ultra_violet: 0,
         latency_variables.accelerometer_xyz: 0, latency_variables.magnetometer_xyz: 0,
-        latency_variables.gyroscope_xyz: 0
+        latency_variables.gyroscope_xyz: 0, latency_variables.gps: 0
     }
 
     multi_latency_sets = [
