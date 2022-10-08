@@ -167,8 +167,8 @@ def login():
                 app_cached_variables.http_flask_login_session_ids[new_session_id] = datetime.utcnow()
                 return_resp = make_response(redirect('/atpro/'))
                 if request.form.get('stay_logged_in') is not None:
-                    app_cached_variables.http_flask_login_session_ids[new_session_id] += timedelta(days=7)
-                    cookie_expiration = datetime.utcnow() + timedelta(days=7)
+                    app_cached_variables.http_flask_login_session_ids[new_session_id] += timedelta(days=30)
+                    cookie_expiration = datetime.utcnow() + timedelta(days=30)
                     return_resp.set_cookie("user_id", new_session_id, expires=cookie_expiration)
                 return return_resp
         _ip_failed_login(ip_address)
