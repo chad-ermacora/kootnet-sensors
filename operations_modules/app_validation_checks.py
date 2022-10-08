@@ -83,6 +83,21 @@ def hostname_is_valid(text_hostname):
     return False
 
 
+def get_validate_csv_emails(csv_emails_string):
+    """ Checks provided CSV string of emails for valid emails. Returns CSV string of valid emails. """
+
+    return_string = ""
+    try:
+        for email in csv_emails_string.split(","):
+            if email_is_valid(email.strip()):
+                return_string += email.strip() + ","
+        if len(return_string) > 0:
+            return_string = return_string[:-1]
+    except Exception as error:
+        logger.primary_logger.error("Error Checking CSV Emails: " + str(error))
+    return return_string
+
+
 def email_is_valid(email):
     regex = "^(?!\.)[0-9a-zA-Z\.]+(?<!\.)@(?!\.)[0-9a-zA-Z\.]+(?<!\.)$"
     if re.search(regex, str(email)):

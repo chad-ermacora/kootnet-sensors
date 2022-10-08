@@ -19,7 +19,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_classes import CreateGeneralConfiguration
-from operations_modules.app_validation_checks import email_is_valid
+from operations_modules.app_validation_checks import email_is_valid, get_validate_csv_emails
 
 
 class CreateEmailConfiguration(CreateGeneralConfiguration):
@@ -85,7 +85,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.email_reports_time_of_day = html_request.form.get("send_email_report_at_time")
         if html_request.form.get("send_reports_to_email_address") is not None:
             send_report_to_csv_emails = html_request.form.get("send_reports_to_email_address")
-            self.send_report_to_csv_emails = _validate_csv_emails(send_report_to_csv_emails)
+            self.send_report_to_csv_emails = get_validate_csv_emails(send_report_to_csv_emails)
         self.update_configuration_settings_list()
 
     def update_with_html_request_graph(self, html_request):
@@ -101,7 +101,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.email_graph_time_of_day = html_request.form.get("send_email_graph_at_time")
         if html_request.form.get("send_graphs_to_email_address") is not None:
             send_graphs_to_csv_emails = html_request.form.get("send_graphs_to_email_address")
-            self.send_graphs_to_csv_emails = _validate_csv_emails(send_graphs_to_csv_emails)
+            self.send_graphs_to_csv_emails = get_validate_csv_emails(send_graphs_to_csv_emails)
         self.update_configuration_settings_list()
 
     def update_with_html_request_server(self, html_request):
@@ -170,18 +170,3 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             if self.load_from_file:
                 logger.primary_logger.info("Saving Email Configuration.")
                 self.save_config_to_file()
-
-
-def _validate_csv_emails(csv_emails_string):
-    """ Checks provided CSV string of emails for valid emails. Returns CSV string of valid emails. """
-
-    return_string = ""
-    try:
-        for email in csv_emails_string.split(","):
-            if email_is_valid(email.strip()):
-                return_string += email.strip() + ","
-        if len(return_string) > 0:
-            return_string = return_string[:-1]
-    except Exception as error:
-        logger.primary_logger.error("Error Checking CSV Emails: " + str(error))
-    return return_string
