@@ -170,3 +170,11 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             if self.load_from_file:
                 logger.primary_logger.info("Saving Email Configuration.")
                 self.save_config_to_file()
+
+    def check_if_smtp_configured(self):
+        if self.server_sending_email.strip() != "":
+            if self.server_smtp_address.strip() != "":
+                if self.server_smtp_user.strip() != "":
+                    if self.server_smtp_password.strip() != "":
+                        return True
+        return False
