@@ -91,6 +91,8 @@ def get_validate_csv_emails(csv_emails_string):
         for email in csv_emails_string.split(","):
             if email_is_valid(email.strip()):
                 return_string += email.strip() + ","
+            else:
+                logger.primary_logger.warning("Invalid email found during validation checks: " + str(email))
         if len(return_string) > 0:
             return_string = return_string[:-1]
     except Exception as error:
