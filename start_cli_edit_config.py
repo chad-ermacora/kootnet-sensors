@@ -79,21 +79,20 @@ def start_script():
         selection = input("Enter Number: ")
 
         try:
-            selection = int(selection)
             os.system("clear")
-            if selection == 1:
+            if selection == "1":
                 os.system("nano " + file_locations.primary_config)
                 os.system("nano " + file_locations.installed_sensors_config)
                 if app_cached_variables.running_as_service:
                     _restart_service()
-            elif selection == 2:
+            elif selection == "2":
                 _change_https_auth()
-            elif selection == 3:
+            elif selection == "3":
                 if app_cached_variables.running_as_service:
                     upgrade_python_pip_modules(python_location="/home/kootnet_data/env/bin/python")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 4:
+            elif selection == "4":
                 if app_cached_variables.running_with_root:
                     print("Starting Database Integrity Checks, Please Wait ...\n")
                     run_database_integrity_check(file_locations.sensor_database, quick=False)
@@ -102,7 +101,7 @@ def start_script():
                     print("\nDatabase Integrity Checks Complete")
                 else:
                     print("Database Integrity Checks Cancelled - Not Running as root")
-            elif selection == 5:
+            elif selection == "5":
                 if app_cached_variables.running_as_service:
                     update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
                     if update_checks_interface.standard_update_available:
@@ -115,7 +114,7 @@ def start_script():
                         print("No New Version Available\n")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 6:
+            elif selection == "6":
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Standard Re-Install\n")
                     upgrade_interface = CreateUpgradeScriptInterface()
@@ -125,21 +124,21 @@ def start_script():
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
-            elif selection == 7:
+            elif selection == "7":
                 os.system("rm -f -r " + file_locations.http_ssl_folder)
                 if app_cached_variables.running_as_service:
                     _restart_service(msg="SSL Certificate Removed\nRestarting Service to Create a New Certificate")
                 else:
                     print("SSL Certificate Removed")
-            elif selection == 8:
+            elif selection == "8":
                 if app_cached_variables.running_as_service:
                     _restart_service(msg="Kootnet Sensors Restarting")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 9:
+            elif selection == "9":
                 _test_sensors()
                 print("Testing Complete")
-            elif selection == 10:
+            elif selection == "10":
                 os.system("clear")
                 print("Primary Log\n\n")
                 os.system(view_log_system_command + file_locations.primary_log)
@@ -152,17 +151,17 @@ def start_script():
                 print("Sensors Log\n\n")
                 os.system(view_log_system_command + file_locations.sensors_log)
                 print("\nEnd of Logs")
-            elif selection == 11:
+            elif selection == "11":
                 print(extra_options_menu)
-            elif selection == 12:
+            elif selection == "12" or selection == "exit" or selection == "quit":
                 running = False
-            elif selection == 20:
+            elif selection == "20":
                 if app_cached_variables.running_with_root:
                     print("Starting Operating System Upgrade\n")
                     upgrade_linux_os(thread_the_function=False)
                 else:
                     print("OS Upgrade Cancelled - Not Running as root")
-            elif selection == 21:
+            elif selection == "21":
                 if app_cached_variables.running_as_service:
                     update_checks_interface = CreateUpdateChecksInterface(start_auto_checks=False)
                     if update_checks_interface.developmental_update_available:
@@ -176,7 +175,7 @@ def start_script():
                         print("No New Version Available\n")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 22:
+            elif selection == "22":
                 if app_cached_variables.running_as_service:
                     print("Starting HTTP Developmental Re-Install\n")
                     upgrade_interface = CreateUpgradeScriptInterface()
@@ -187,21 +186,21 @@ def start_script():
                     print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
-            elif selection == 23:
+            elif selection == "23":
                 if app_cached_variables.running_as_service:
                     os.system(app_cached_variables.bash_commands["EnableService"])
                     os.system(app_cached_variables.bash_commands["StartService"])
                     logger.primary_logger.info("TCT - Kootnet Sensors Enabled")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 24:
+            elif selection == "24":
                 if app_cached_variables.running_as_service:
                     os.system(app_cached_variables.bash_commands["DisableService"])
                     os.system(app_cached_variables.bash_commands["StopService"])
                     logger.primary_logger.info("TCT - Kootnet Sensors Disabled")
                 else:
                     print(msg_service_not_installed)
-            elif selection == 25:
+            elif selection == "25":
                 if input("Are you sure you want to reset ALL configurations? (y/n): ").lower() == "y":
                     os.system("clear")
                     config_list = [file_locations.primary_config, file_locations.installed_sensors_config,
@@ -217,14 +216,14 @@ def start_script():
                         _restart_service()
                 else:
                     print("Configuration Reset Cancelled")
-            elif selection == 26:
+            elif selection == "26":
                 print("Starting SMB Standard Upgrade\n")
                 upgrade_interface = CreateUpgradeScriptInterface()
                 upgrade_interface.download_type = download_type_smb
                 upgrade_interface.thread = False
                 upgrade_interface.start_kootnet_sensors_upgrade()
                 print(msg_upgrade_started)
-            elif selection == 27:
+            elif selection == "27":
                 print("Starting SMB Developmental Upgrade\n")
                 upgrade_interface = CreateUpgradeScriptInterface()
                 upgrade_interface.download_type = download_type_smb
@@ -232,7 +231,7 @@ def start_script():
                 upgrade_interface.thread = False
                 upgrade_interface.start_kootnet_sensors_upgrade()
                 print(msg_upgrade_started)
-            elif selection == 28:
+            elif selection == "28":
                 print("Starting SMB Standard Re-Install\n")
                 upgrade_interface = CreateUpgradeScriptInterface()
                 upgrade_interface.download_type = download_type_smb
@@ -240,7 +239,7 @@ def start_script():
                 upgrade_interface.thread = False
                 upgrade_interface.start_kootnet_sensors_upgrade()
                 print(msg_upgrade_started)
-            elif selection == 29:
+            elif selection == "29":
                 print("Starting SMB Developmental Re-Install\n")
                 upgrade_interface = CreateUpgradeScriptInterface()
                 upgrade_interface.download_type = download_type_smb
@@ -249,9 +248,9 @@ def start_script():
                 upgrade_interface.thread = False
                 upgrade_interface.start_kootnet_sensors_upgrade()
                 print(msg_upgrade_started)
-            elif selection == 31:
+            elif selection == "31":
                 start_deb_build_cli_menu()
-            elif selection == 32:
+            elif selection == "32":
                 run_ks_command = "/home/kootnet_data/env/bin/python3 /opt/kootnet-sensors/start_sensor_services.py"
                 if app_cached_variables.running_with_root:
                     os.system(run_ks_command)
