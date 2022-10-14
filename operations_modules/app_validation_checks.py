@@ -101,8 +101,8 @@ def get_validate_csv_emails(csv_emails_string):
 
 
 def email_is_valid(email):
-    regex = "^(?!\.)[0-9a-zA-Z\.]+(?<!\.)@(?!\.)[0-9a-zA-Z\.]+(?<!\.)$"
-    if re.search(regex, str(email)):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    if re.fullmatch(regex, str(email)):
         return True
     return False
 
