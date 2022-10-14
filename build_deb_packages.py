@@ -79,11 +79,10 @@ def start_deb_build_cli_menu():
         selection = input("Enter Number: ")
 
         try:
-            selection = int(selection)
             os.system("clear")
-            if selection == 1:
+            if selection == "1":
                 start_debian_package_build()
-            elif selection == 2:
+            elif selection == "2":
                 print(f"Current Minor Version: {current_version.minor_version}")
                 new_version = input("Enter Minor Version: ")
                 if new_version == "back":
@@ -93,7 +92,7 @@ def start_deb_build_cli_menu():
                     _change_program_version(current_version)
                 else:
                     print("Only Numbers can be used")
-            elif selection == 3:
+            elif selection == "3":
                 print(f"Current Feature Version: {current_version.feature_version}")
                 new_version = input("Enter Feature Version: ")
                 if new_version == "back":
@@ -103,7 +102,7 @@ def start_deb_build_cli_menu():
                     _change_program_version(current_version)
                 else:
                     print("Only Numbers can be used")
-            elif selection == 4:
+            elif selection == "4":
                 print(f"Current Major Version: {current_version.major_version}")
                 new_version = input("Enter Major Version: ")
                 if new_version == "back":
@@ -113,14 +112,14 @@ def start_deb_build_cli_menu():
                     _change_program_version(current_version)
                 else:
                     print("Only Numbers can be used")
-            elif selection == 5:
+            elif selection == "5":
                 print(configurations_menu)
                 _edit_default_configs()
-            elif selection == 6:
+            elif selection == "6":
                 os.system("sudo apt-get -y install zip")
-            elif selection == 11:
+            elif selection == "11":
                 _copy_to_smb()
-            elif selection == 12:
+            elif selection == "12" or selection == "exit" or selection == "quit":
                 running = False
             else:
                 os.system("clear")
