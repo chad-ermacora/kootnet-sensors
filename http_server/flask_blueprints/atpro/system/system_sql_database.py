@@ -40,8 +40,8 @@ uploaded_databases_folder = file_locations.uploaded_databases_folder
 sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
 
 
-@html_atpro_system_sql_db_routes.route("/atpro/system-db-local")
-def html_atpro_settings_db_information():
+@html_atpro_system_sql_db_routes.route("/atpro/system-db-backups")
+def html_atpro_settings_db_backups():
     custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
     db_backup_dropdown_selection = ""
     for zip_name in app_cached_variables.zipped_db_backup_list:
@@ -54,29 +54,37 @@ def html_atpro_settings_db_information():
         if check:
             run_script = "CreatingDownload();"
     return render_template(
-        "ATPro_admin/page_templates/system/system-db-local.html",
+        "ATPro_admin/page_templates/system/system-db-backups.html",
+        HourOffset=app_config_access.primary_config.utc0_hour_offset,
+        BackupDBOptionNames=db_backup_dropdown_selection,
+        ZipMainDBCreated=_get_file_creation_date(file_locations.database_zipped),
+        ZipMainDBFileSize=get_file_size(file_locations.database_zipped),
+        ZipMQTTDBCreated=_get_file_creation_date(file_locations.mqtt_database_zipped),
+        ZipMQTTDBFileSize=get_file_size(file_locations.mqtt_database_zipped),
+        ZipCheckinDBCreated=_get_file_creation_date(file_locations.checkin_database_zipped),
+        ZipCheckinDBFileSize=get_file_size(file_locations.checkin_database_zipped),
+        RunScript=run_script
+    )
+
+
+@html_atpro_system_sql_db_routes.route("/atpro/system-db-info")
+def html_atpro_settings_db_information():
+    return render_template(
+        "ATPro_admin/page_templates/system/system-db-info.html",
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
         SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
         SQLDatabaseDateRange=get_main_db_first_last_date(app_config_access.primary_config.utc0_hour_offset),
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
-        ZipMainDBCreated=_get_file_creation_date(file_locations.database_zipped),
-        ZipMainDBFileSize=get_file_size(file_locations.database_zipped),
         NumberNotes=app_cached_variables.notes_total_count,
         SQLMQTTDatabaseLocation=_remove_filename_from_location(file_locations.mqtt_subscriber_database),
         SQLMQTTDatabaseName=file_locations.mqtt_subscriber_database.split("/")[-1],
         SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
-        ZipMQTTDBCreated=_get_file_creation_date(file_locations.mqtt_database_zipped),
-        ZipMQTTDBFileSize=get_file_size(file_locations.mqtt_database_zipped),
         SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
         SQLCheckinDatabaseLocation=_remove_filename_from_location(file_locations.sensor_checkin_database),
         SQLCheckinDatabaseName=file_locations.sensor_checkin_database.split("/")[-1],
         SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
-        ZipCheckinDBCreated=_get_file_creation_date(file_locations.checkin_database_zipped),
-        ZipCheckinDBFileSize=get_file_size(file_locations.checkin_database_zipped),
-        SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
-        BackupDBOptionNames=db_backup_dropdown_selection,
-        RunScript=run_script
+        SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database)))
     )
 
 

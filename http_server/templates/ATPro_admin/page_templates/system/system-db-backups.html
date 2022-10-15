@@ -15,14 +15,12 @@
     }
 </style>
 
-<form method="POST" id="download-form" action="/DatabaseDownloads">
-    <input type="text" id="button-function" name="button-function" value="download" hidden>
-</form>
-
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
         <div class="card-content">
             <form method="POST" action="/atpro/system-db-management" target="_blank">
+                <p class="blink_shadow" style="color: green;" hidden>Generating Database Zip Please Wait ...</p>
+
                 <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
                 <p>
                     Download SQLite3 Databases for offline access or backup purposes.<br>
@@ -43,46 +41,16 @@
                     <i class="fas fa-file-archive"></i> Download Backup
                 </button>
             </form><br>
-            <p class="blink_shadow" style="color: green;" hidden>Generating Database Zip Please Wait ...</p>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-12 col-m-12 col-sm-12">
+    <div class="col-4 col-m-6 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <h2><i class="fas fa-database"></i> Main Database</h2>
 
-                <h3 class="db-header-items-name">
-                    DB Name: <span class="db-header-items-data">{{ SQLDatabaseName }}</span>
-                </h3>
-                <h3 class="db-header-items-name">
-                    Location: <span class="db-header-items-data">{{ SQLDatabaseLocation }}</span>
-                </h3>
-
-                <div class="row">
-                    <div class="col-12 col-m-12 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Date Range in UTC{{ HourOffset }}</span><br>
-                            {{ SQLDatabaseDateRange }}
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-m-6 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Size on Disk</span><br>{{ SQLDatabaseSize }} MB
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-m-6 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Number of Notes</span><br>{{ NumberNotes }}
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Downloads</h2>
                 <h3 class="db-header-items-name">
                     Zip Created: <span class="db-header-items-data">{{ ZipMainDBCreated }} UTC{{ HourOffset }}</span>
                     <br>
@@ -102,33 +70,11 @@
         </div>
     </div>
 
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-4 col-m-6 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <h2><i class="fas fa-database"></i> MQTT Subscriber Database</h2>
 
-                <h3 class="db-header-items-name">
-                    DB Name: <span class="db-header-items-data">{{ SQLMQTTDatabaseName }}</span>
-                </h3>
-                <h3 class="db-header-items-name">
-                    Location: <span class="db-header-items-data">{{ SQLMQTTDatabaseLocation }}</span>
-                </h3>
-
-                <div class="row">
-                    <div class="col-6 col-m-12 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Size on Disk</span><br>{{ SQLMQTTDatabaseSize }} MB
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-m-12 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLMQTTSensorsInDB }}
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Downloads</h2>
                 <h3 class="db-header-items-name">
                     Zip Created: <span class="db-header-items-data">{{ ZipMQTTDBCreated }} UTC{{ HourOffset }}</span>
                     <br>
@@ -148,33 +94,11 @@
         </div>
     </div>
 
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-4 col-m-6 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <h2><i class="fas fa-database"></i> Checkin Server Database</h2>
 
-                <h3 class="db-header-items-name">
-                    DB Name: <span class="db-header-items-data">{{ SQLCheckinDatabaseName }}</span>
-                </h3>
-                <h3 class="db-header-items-name">
-                    Location: <span class="db-header-items-data">{{ SQLCheckinDatabaseLocation }}</span>
-                </h3>
-
-                <div class="row">
-                    <div class="col-6 col-m-12 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Size on Disk</span><br>{{ SQLCheckinDatabaseSize }} MB
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-m-12 col-sm-12">
-                        <div class="counter bg-primary">
-                            <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLCheckinSensorsInDB }}
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Downloads</h2>
                 <h3 class="db-header-items-name">
                     Zip Created: <span class="db-header-items-data">{{ ZipCheckinDBCreated }} UTC{{ HourOffset }}</span>
                     <br>
@@ -194,6 +118,10 @@
         </div>
     </div>
 </div>
+
+<form method="POST" id="download-form" action="/DatabaseDownloads">
+    <input type="text" id="button-function" name="button-function" value="download" hidden>
+</form>
 
 <script>
     function SQLDownloadsButton(new_button_function, target_window='_blank') {
@@ -215,7 +143,7 @@
     }
 
     function RefreshPageTimed() {
-        SelectNav('sensor-system', skip_menu_select=true);
+        SelectSystemNav('system-db-backups');
     }
 
     {{ RunScript | safe }}

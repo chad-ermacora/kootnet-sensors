@@ -10,14 +10,19 @@
     <div class="pure-menu">
         <ul class="pure-menu-list pure-menu-horizontal">
             <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
-            system-db-local system-db-management system-db-uploads">
+            system-db-backups system-db-info system-db-management system-db-uploads">
                 <a style="cursor: default;" class="pure-menu-link">
                     <i class="fas fa-database"></i> Databases
                 </a>
                 <ul class="pure-menu-children">
                     <li class="pure-menu-item">
-                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
-                            <i class="fas fa-info-circle"></i> <i class="fas fa-download"></i> Information & Downloads
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-backups')">
+                            <i class="fas fa-download"></i> Backups
+                        </a>
+                    </li>
+                    <li class="pure-menu-item">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-info')">
+                            <i class="fas fa-info-circle"></i> Information
                         </a>
                     </li>
                     <li class="pure-menu-item">
@@ -105,7 +110,8 @@
         document.getElementById("system-page-view").innerHTML = html_loading;
 
         document.getElementsByClassName("raw-configurations")[0].classList.remove("pure-menu-selected");
-        document.getElementsByClassName("system-db-local")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-db-backups")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-db-info")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-networking")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-ssl")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-change-login")[0].classList.remove("pure-menu-selected");
@@ -120,5 +126,5 @@
     }
 
     CheckNotificationsAsync();
-    SelectSystemNav("system-db-local");
+    SelectSystemNav("system-db-backups");
 </script>
