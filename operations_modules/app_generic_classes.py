@@ -204,7 +204,7 @@ class CreateNetworkSystemCommands:
 
 #  ToDo: this is now only used in unit tests, which should be changed to HTML post or put
 class CreateNetworkSetCommands:
-    """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
+    """ Create an object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
 
     def __init__(self):
         self.set_primary_configuration = "SetPrimaryConfiguration"
@@ -224,7 +224,7 @@ class CreateNetworkSetCommands:
 
 
 class CreateNetworkGetCommands:
-    """ Create a object instance holding available network "Get" commands (AKA get data from remote sensor). """
+    """ Create an object instance holding available network "Get" commands (AKA get data from remote sensor). """
 
     def __init__(self):
         self.check_online_status = "CheckOnlineStatus"
@@ -347,7 +347,7 @@ class CreateNetworkGetCommands:
 
 
 class CreateLiveGraphWrapperNetworkGetCommands:
-    """ Create a object instance holding Wrapper versions of available network "Get" commands """
+    """ Create an object instance holding Wrapper versions of available network "Get" commands """
 
     def __init__(self):
         self.sensor_name = "LGWGetHostName"
@@ -432,7 +432,7 @@ class CreateLiveGraphWrapperNetworkGetCommands:
 
 
 class CreateDatabaseVariables:
-    """ Creates a object instance holding SQLite3 database table and row names. """
+    """ Creates an object instance holding SQLite3 database table and row names. """
 
     def __init__(self):
         self.table_interval = "IntervalData"
@@ -530,6 +530,97 @@ class CreateDatabaseVariables:
         self.gps_pdop = "GPS_PDOP"
         self.gps_hdop = "GPS_HDOP"
         self.gps_vdop = "GPS_VDOP"
+
+    def get_clean_db_col_name(self, db_column):
+        if db_column == self.all_tables_datetime:
+            return "Date & Time"
+        elif db_column == self.sensor_uptime:
+            return "System Uptime"
+        elif db_column == self.system_temperature:
+            return "System Temperature"
+        elif db_column == self.env_temperature:
+            return "Environmental Temperature"
+        elif db_column == self.env_temperature_offset:
+            return "Environmental Temperature Offset"
+        elif db_column == self.pressure:
+            return "Pressure"
+        elif db_column == self.altitude:
+            return "Altitude"
+        elif db_column == self.humidity:
+            return "Humidity"
+        elif db_column == self.dew_point:
+            return "Dew Point"
+        elif db_column == self.distance:
+            return "Distance"
+        elif db_column == self.gas_resistance_index:
+            return "Gas VOC Ohms"
+        elif db_column == self.gas_oxidising:
+            return "Gas Oxidising"
+        elif db_column == self.gas_reducing:
+            return "Gas Reducing"
+        elif db_column == self.gas_nh3:
+            return "Gas NH3"
+        elif db_column == self.particulate_matter_1:
+            return "Particulate Matter 1"
+        elif db_column == self.particulate_matter_2_5:
+            return "Particulate Matter 2.5"
+        elif db_column == self.particulate_matter_4:
+            return "Particulate Matter 4"
+        elif db_column == self.particulate_matter_10:
+            return "Particulate Matter 10"
+        elif db_column == self.lumen:
+            return "Lumen"
+        elif db_column == self.red:
+            return "Red"
+        elif db_column == self.orange:
+            return "Orange"
+        elif db_column == self.yellow:
+            return "Yellow"
+        elif db_column == self.green:
+            return "Green"
+        elif db_column == self.blue:
+            return "Blue"
+        elif db_column == self.violet:
+            return "Violet"
+        elif db_column == self.ultra_violet_index:
+            return "Ultra Violet Index"
+        elif db_column == self.ultra_violet_a:
+            return "Ultra Violet A"
+        elif db_column == self.ultra_violet_b:
+            return "Ultra Violet B"
+        elif db_column == self.acc_x:
+            return "Accelerometer X"
+        elif db_column == self.acc_y:
+            return "Accelerometer Y"
+        elif db_column == self.acc_z:
+            return "Accelerometer Z"
+        elif db_column == self.mag_x:
+            return "Magnetometer X"
+        elif db_column == self.mag_y:
+            return "Magnetometer Y"
+        elif db_column == self.mag_z:
+            return "Magnetometer Z"
+        elif db_column == self.gyro_x:
+            return "Gyroscope X"
+        elif db_column == self.gyro_y:
+            return "Gyroscope Y"
+        elif db_column == self.gyro_z:
+            return "Gyroscope Z"
+        elif db_column == self.latitude:
+            return "Latitude"
+        elif db_column == self.longitude:
+            return "Longitude"
+        elif db_column == self.gps_timestamp:
+            return "GPS TimeStamp"
+        elif db_column == self.gps_num_satellites:
+            return "Number of GPS Satellite Connections"
+        elif db_column == self.gps_quality:
+            return "GPS Quality"
+        elif db_column == self.gps_mode_fix_type:
+            return "GPS Mode Fix Type"
+        elif db_column == self.gps_speed_over_ground:
+            return "GPS Speed Over Ground"
+        return db_column
 
     def get_sensor_columns_list(self):
         """ Returns SQL Table columns used for Interval recording as a list. """
