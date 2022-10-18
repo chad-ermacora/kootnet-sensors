@@ -19,6 +19,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_classes import CreateGeneralConfiguration
+from operations_modules.app_validation_checks import get_validate_csv_emails
 
 
 class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
@@ -59,11 +60,21 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             "Magnetometer Z High Trigger", "Seconds between Magnetometer readings", "Enable Gyroscope",
             "Gyroscope X Low Trigger", "Gyroscope X High Trigger", "Gyroscope Y Low Trigger",
             "Gyroscope Y High Trigger", "Gyroscope Z Low Trigger", "Gyroscope Z High Trigger",
-            "Seconds between Gyroscope readings"
+            "Seconds between Gyroscope readings", "Enable Email Alerts", "Send Alerts to CSV Emails",
+            "Enable High Alerts", "Enable Low Alerts", "Send up to 1 email every hour(s) (Set to 0 to always send)",
+            "Enable returning to Normal Alerts"
         ]
         self.valid_setting_count = len(self.config_settings_names)
 
         self.enable_high_low_trigger_recording = 0
+
+        self.enable_email_alerts = 0
+        self.alerts_csv_emails = ""
+        self.alerts_high_enabled = 0
+        self.alerts_normal_enabled = 0
+        self.alerts_low_enabled = 0
+        # If self.alerts_resend_hourly = 0, it doesn't resend email alerts
+        self.alerts_resend_emails_every_hours = 6
 
         self._disable_all_triggers()
 
@@ -179,6 +190,24 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("checkbox_enable_high_low_trigger_recording") is not None:
             self.enable_high_low_trigger_recording = 1
+
+        if html_request.form.get("checkbox_enable_high_low_emails") is not None:
+            self.enable_email_alerts = 1
+
+        if html_request.form.get("alerts_csv_emails") is not None:
+            csv_emails = html_request.form.get("alerts_csv_emails")
+            self.alerts_csv_emails = get_validate_csv_emails(csv_emails)
+
+        if html_request.form.get("checkbox_enable_high_alert_emails") is not None:
+            self.alerts_high_enabled = 1
+
+        if html_request.form.get("checkbox_enable_normal_alert_emails") is not None:
+            self.alerts_normal_enabled = 1
+
+        if html_request.form.get("checkbox_enable_low_alert_emails") is not None:
+            self.alerts_low_enabled = 1
+
+        self.alerts_resend_emails_every_hours = float(html_request.form.get("resend_alert_email_hours"))
 
         if html_request.form.get("cpu_temperature") is not None:
             self.cpu_temperature_enabled = 1
@@ -414,7 +443,9 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             str(self.magnetometer_z_high), str(self.magnetometer_wait_seconds), str(self.gyroscope_enabled),
             str(self.gyroscope_x_low), str(self.gyroscope_x_high), str(self.gyroscope_y_low),
             str(self.gyroscope_y_high), str(self.gyroscope_z_low), str(self.gyroscope_z_high),
-            str(self.gyroscope_wait_seconds)
+            str(self.gyroscope_wait_seconds), str(self.enable_email_alerts), str(self.alerts_csv_emails),
+            str(self.alerts_high_enabled), str(self.alerts_low_enabled), str(self.alerts_resend_emails_every_hours),
+            str(self.alerts_normal_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -514,6 +545,12 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             self.gyroscope_z_low = float(self.config_settings[92])
             self.gyroscope_z_high = float(self.config_settings[93])
             self.gyroscope_wait_seconds = float(self.config_settings[94])
+            self.enable_email_alerts = int(self.config_settings[95])
+            self.alerts_csv_emails = str(self.config_settings[96]).strip()
+            self.alerts_high_enabled = int(self.config_settings[97])
+            self.alerts_low_enabled = int(self.config_settings[98])
+            self.alerts_resend_emails_every_hours = float(self.config_settings[99])
+            self.alerts_normal_enabled = int(self.config_settings[100])
         except Exception as error:
             logger.primary_logger.debug("Trigger High/Low Config: " + str(error))
             self.update_configuration_settings_list()
@@ -523,6 +560,11 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
 
     def _disable_all_triggers(self):
         self.enable_high_low_trigger_recording = 0
+        self.enable_email_alerts = 0
+        self.alerts_csv_emails = ""
+        self.alerts_high_enabled = 0
+        self.alerts_normal_enabled = 0
+        self.alerts_low_enabled = 0
         self.cpu_temperature_enabled = 0
         self.env_temperature_enabled = 0
         self.pressure_enabled = 0

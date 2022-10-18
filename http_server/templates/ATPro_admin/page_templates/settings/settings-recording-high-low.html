@@ -5,14 +5,77 @@
 </style>
 
 <form class="pure-form" method="POST" action="/atpro/settings-hl">
-    <h2><i class="fas fa-chart-line"></i> High/Low Trigger Recording</h2>
+    <h2><i class="fas fa-chart-line"></i> High/Low Triggers</h2>
 
     <label class="toggle-switch">
         <input type="checkbox" id="enable-hl-toggle-switch" class="toggle-switch-input"
-               name="checkbox_enable_high_low_trigger_recording" {{ CheckedEnableHLTRecording }}>
+               name="checkbox_enable_high_low_trigger_recording" onclick="enable_disable_high_low()"
+                {{ CheckedEnableHLTRecording }}>
         <label class="toggle-switch-label" for="enable-hl-toggle-switch"></label>
-        Enable High/Low Trigger Recording
+        Enable High/Low Triggers & Recording
     </label>
+
+    <br>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="enable-hl-emails-toggle-switch" class="toggle-switch-input"
+               name="checkbox_enable_high_low_emails" onclick="email_settings_hidden()" {{ CheckedEnableHLEmails }}>
+        <label class="toggle-switch-label" for="enable-hl-emails-toggle-switch"></label>
+        Enable Email Alerts
+    </label>
+
+    <br>
+
+    <div id="email-alert-settings"><br>
+        <label>
+            Email Alerts to - Use comma separated values Eg. email1@here.com,email2@there.com<br><br>
+            <textarea id="email-addresses-textarea" name="alerts_csv_emails"
+                      style="width: 400px; height: 100px;">{{ EmailAlertsToCSVAddresses }}</textarea>
+        </label>
+
+        <br><br>
+
+        <div style="display: table; margin-left: auto; margin-right: auto;">
+            <div style="display: table-row;">
+                <div style="display: table-cell;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-high-emails-toggle-switch" class="toggle-switch-input"
+                               name="checkbox_enable_high_alert_emails" {{ CheckedEnableHighAlertEmails }}>
+                        <label class="toggle-switch-label" for="enable-high-emails-toggle-switch"></label>
+                        High Alerts
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-normal-emails-toggle-switch" class="toggle-switch-input"
+                               name="checkbox_enable_normal_alert_emails" {{ CheckedEnableNormalAlertEmails }}>
+                        <label class="toggle-switch-label" for="enable-normal-emails-toggle-switch"></label>
+                        Normal Alerts
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-low-emails-toggle-switch" class="toggle-switch-input"
+                               name="checkbox_enable_low_alert_emails" {{ CheckedEnableLowAlertEmails }}>
+                        <label class="toggle-switch-label" for="enable-low-emails-toggle-switch"></label>
+                        Low Alerts
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <p>Send a maximum of 1 email per sensor reading every set Hour(s)</p>
+
+        <label>Hour(s)
+            <div style="display: table; margin-left: auto; margin-right: auto;">
+                <div style="display: table-row;">
+                    <div style="display: table-cell;">
+                        <input style="width: 100px;" type="number" min="0.05" step="0.05" max="999.0"
+                               name="resend_alert_email_hours" value="{{ AlertEmailHours }}">
+                    </div>
+                </div>
+            </div>
+        </label>
+        <p style="color: red;">Note: You must configure your email SMTP settings found under Settings -> Email -> SMTP Settings</p>
+    </div>
 
     <br><br>
 
@@ -1366,3 +1429,27 @@
 
     <button type="submit" class="pure-button">Update</button>
 </form>
+
+<script>
+    function enable_disable_high_low() {
+        if (document.getElementById("enable-hl-toggle-switch").checked) {
+            document.getElementById("enable-hl-emails-toggle-switch").disabled = false;
+        } else {
+            document.getElementById("enable-hl-emails-toggle-switch").checked = false;
+            document.getElementById("enable-hl-emails-toggle-switch").disabled = true;
+        }
+        email_settings_hidden();
+    }
+
+    function email_settings_hidden() {
+        if (document.getElementById("enable-hl-emails-toggle-switch").checked) {
+            document.getElementById("email-alert-settings").style.display = "inline-block";
+        } else {
+            document.getElementById("email-alert-settings").style.display = "none";
+        }
+    }
+
+    enable_disable_high_low();
+    email_settings_hidden();
+
+</script>

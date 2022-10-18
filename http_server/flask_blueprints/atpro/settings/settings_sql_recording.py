@@ -77,6 +77,12 @@ def html_atpro_sensor_settings_high_low():
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-high-low.html",
         CheckedEnableHLTRecording=recording_enabled,
+        CheckedEnableHLEmails=get_html_checkbox_state(high_low_settings.enable_email_alerts),
+        EmailAlertsToCSVAddresses=high_low_settings.alerts_csv_emails,
+        CheckedEnableHighAlertEmails=get_html_checkbox_state(high_low_settings.alerts_high_enabled),
+        CheckedEnableNormalAlertEmails=get_html_checkbox_state(high_low_settings.alerts_normal_enabled),
+        CheckedEnableLowAlertEmails=get_html_checkbox_state(high_low_settings.alerts_low_enabled),
+        AlertEmailHours=high_low_settings.alerts_resend_emails_every_hours,
         CheckedCPUTemperature=get_html_checkbox_state(high_low_settings.cpu_temperature_enabled),
         TriggerLowCPUTemperature=high_low_settings.cpu_temperature_low,
         TriggerHighCPUTemperature=high_low_settings.cpu_temperature_high,
