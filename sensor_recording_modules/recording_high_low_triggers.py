@@ -16,10 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import copy
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from operations_modules import logger
 from operations_modules.app_generic_classes import CreateMonitoredThread
+from operations_modules.email_server import CreateSensorReadingEmailAlert
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import sqlite_database
@@ -197,34 +199,65 @@ class _CreateHighLowTriggerThreadData:
 class _SingleTriggerThread:
     def __init__(self, custom_trigger_variables):
         self.current_state = "Disabled"
+        self.previous_email_state = "Normal"
+        self.sensor_name = str(custom_trigger_variables["database_column"])
+        self.low_trigger = custom_trigger_variables["low_trigger"]
+        self.high_trigger = custom_trigger_variables["high_trigger"]
+        self.last_reported_abnormal_sate = datetime(1920, 1, 1, 1, 1, 1)
+        self.email_alert_obj = CreateSensorReadingEmailAlert(self.sensor_name, self.high_trigger, self.low_trigger)
 
         self.custom_trigger_variables = custom_trigger_variables
         if self.custom_trigger_variables["enabled"]:
             self.current_state = "Starting"
             if self.custom_trigger_variables["get_reading_func"]() is not None:
-                self.low_trigger = self.custom_trigger_variables["low_trigger"]
-                self.high_trigger = self.custom_trigger_variables["high_trigger"]
-
                 while not app_cached_variables.restart_all_trigger_threads:
                     try:
                         sensor_reading = self.custom_trigger_variables["get_reading_func"]()
-                        sensor_reading = sensor_reading[self.custom_trigger_variables["database_column"]]
+                        sensor_reading = sensor_reading[self.sensor_name]
                         reading_taken_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
                         if self.high_trigger > sensor_reading > self.low_trigger:
                             if self.current_state != "Normal":
                                 self.current_state = "Normal"
                                 self._write_readings_to_sql(reading_taken_at, sensor_reading, self.current_state)
+
                         elif sensor_reading < self.low_trigger:
                             if self.current_state != "Low":
                                 self.current_state = "Low"
                                 self._write_readings_to_sql(reading_taken_at, sensor_reading, self.current_state)
+
                         elif sensor_reading > self.high_trigger:
                             if self.current_state != "High":
                                 self.current_state = "High"
                                 self._write_readings_to_sql(reading_taken_at, sensor_reading, self.current_state)
+
+                        if app_config_access.trigger_high_low.enable_email_alerts:
+                            # The following goes somewhat like this. Only add to email alerts to be sent if
+                            # the current state is different from the previous state (High/Normal/Low)
+                            # OR
+                            # The current state is the same as the previous state BUT not "Normal" AND
+                            # the time since the last alert was passed through is more or equal to the time
+                            # between sending emails alerts found in the High/Low Triggers configuration.
+                            #
+                            # After passing the above, it then makes sure the current state is enabled
+                            # for email alerts in the High/Low Trigger configuration.
+                            # If enabled, an alert is added to the que of alerts to be emailed
+                            time_passed = datetime.utcnow() - self.last_reported_abnormal_sate
+                            tmp_eeh = app_config_access.trigger_high_low.alerts_resend_emails_every_hours
+                            resend_delay = timedelta(hours=tmp_eeh)
+                            if self.previous_email_state != self.current_state or \
+                                    self.current_state != "Normal" and time_passed >= resend_delay:
+                                self.previous_email_state = copy.copy(self.current_state)
+                                alerts_normal_enabled = app_config_access.trigger_high_low.alerts_normal_enabled
+                                alerts_low_enabled = app_config_access.trigger_high_low.alerts_low_enabled
+                                alerts_high_enabled = app_config_access.trigger_high_low.alerts_high_enabled
+                                if self.current_state == "Normal" and alerts_normal_enabled or \
+                                        self.current_state == "Low" and alerts_low_enabled or \
+                                        self.current_state == "High" and alerts_high_enabled:
+                                    self.email_alert_obj.add_trigger_email_entry(sensor_reading, self.current_state)
+                                    self.last_reported_abnormal_sate = datetime.utcnow()
                     except Exception as error:
-                        log_msg = "Trigger problem in '" + str(self.custom_trigger_variables["database_column"])
-                        logger.primary_logger.error(log_msg + "' Trigger Thread: " + str(error))
+                        log_msg = f"Trigger problem in '{self.sensor_name}' Trigger Thread: {str(error)}"
+                        logger.primary_logger.error(log_msg)
 
                     sleep_fraction_interval = 5
                     if self.custom_trigger_variables["sleep_duration"] < 5:
@@ -235,8 +268,7 @@ class _SingleTriggerThread:
                         sleep(sleep_fraction_interval)
                         sleep_total += sleep_fraction_interval
             else:
-                log_msg = "High/Low Triggers: " + str(custom_trigger_variables["database_column"])
-                logger.primary_logger.info(log_msg + ": Sensor Missing")
+                logger.primary_logger.info(f"High/Low Triggers: {self.sensor_name}: Sensor Missing")
                 self.current_state = "Sensor Missing"
                 while not app_cached_variables.restart_all_trigger_threads:
                     sleep(10)
@@ -252,57 +284,105 @@ class _SingleTriggerThread:
                          ") VALUES (?,?,?,?)"
             sqlite_database.write_to_sql_database(sql_string, sql_data)
         except Exception as error:
-            log_msg = "Trigger '" + str(self.custom_trigger_variables["database_column"])
-            logger.primary_logger.error(log_msg + "' Recording Failure: " + str(error))
+            logger.primary_logger.error(f"Trigger '{self.sensor_name}' Recording Failure: {str(error)}")
 
 
 class _MultiTriggerThread:
     def __init__(self, custom_trigger_variables):
-        self.current_state = []
-        for _ in custom_trigger_variables["database_column"]:
-            self.current_state.append("Disabled")
+        self.current_states = []
+        self.previous_email_states = []
+        self.email_alert_obj_list = []
+
+        self.sensor_name = ""
+        for text_char in custom_trigger_variables["database_column"][0]:
+            if not text_char.isdigit():
+                self.sensor_name += text_char
+        self.sensor_name = self.sensor_name.replace("_", " ").strip()
+
         if custom_trigger_variables["enabled"]:
-            for index, _ in enumerate(custom_trigger_variables["database_column"]):
-                self.current_state[index] = "Starting"
-            if custom_trigger_variables["get_reading_func"]() is not None:
+            self.last_reported_abnormal_sate = datetime(1920, 1, 1, 1, 1, 1)
+            self.db_col_list = copy.copy(custom_trigger_variables["database_column"])
+            self.trig_low_list = custom_trigger_variables["low_trigger"]
+            self.trig_high_list = custom_trigger_variables["high_trigger"]
+            sensor_readings = custom_trigger_variables["get_reading_func"]()
+            if sensor_readings is not None:
+                index = 0
+                for sensor_name in custom_trigger_variables["database_column"]:
+                    if sensor_name in sensor_readings and sensor_readings[sensor_name] is not None:
+                        trig_low = self.trig_low_list[index]
+                        trig_high = self.trig_high_list[index]
+                        email_alert_obj = CreateSensorReadingEmailAlert(sensor_name, trig_high, trig_low)
+                        self.email_alert_obj_list.append(email_alert_obj)
+                        self.current_states.append("Starting")
+                        self.previous_email_states.append("Normal")
+                        index += 1
+                    else:
+                        self.trig_low_list.pop(index)
+                        self.trig_high_list.pop(index)
+                        self.db_col_list.pop(index)
+
                 while not app_cached_variables.restart_all_trigger_threads:
+                    alerts_normal_enabled = app_config_access.trigger_high_low.alerts_normal_enabled
+                    alerts_low_enabled = app_config_access.trigger_high_low.alerts_low_enabled
+                    alerts_high_enabled = app_config_access.trigger_high_low.alerts_high_enabled
                     try:
                         sensor_readings = custom_trigger_variables["get_reading_func"]()
                         reading_taken_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-                        db_col_list = custom_trigger_variables["database_column"]
-                        trig_low_list = custom_trigger_variables["low_trigger"]
-                        trig_high_list = custom_trigger_variables["high_trigger"]
+                        # The following checks to make sure the sensors reading(s) provided is not None, which would
+                        # indicate a hardware malfunction, then checks for each possible reading from that type
+                        # of sensor as well as checks to see if the individual readings are not None, since some
+                        # sensors don't have all the sensors of its type. If the reading is valid, test it against
+                        # the high/low triggers, otherwise, skip that sensor reading.
                         if sensor_readings is not None:
-                            for reading_db_name, reading in sensor_readings.items():
-                                index = 0
-                                db_col = reading_db_name
-                                column_found = False
-                                for i, column in enumerate(db_col_list):
-                                    if column == reading_db_name:
-                                        column_found = True
-                                        index = i
-                                        db_col = column
-                                if column_found:
-                                    trig_low = trig_low_list[index]
-                                    trig_high = trig_high_list[index]
+                            for index, sensor_name in enumerate(self.db_col_list):
+                                if sensor_name in sensor_readings and sensor_readings[sensor_name] is not None:
+                                    reading = sensor_readings[sensor_name]
+                                    trig_low = self.trig_low_list[index]
+                                    trig_high = self.trig_high_list[index]
                                     if trig_low < reading < trig_high:
-                                        if self.current_state[index] != "Normal":
-                                            self.current_state[index] = "Normal"
+                                        if self.current_states[index] != "Normal":
+                                            self.current_states[index] = "Normal"
                                             self._write_readings_to_sql(reading_taken_at, reading,
-                                                                        self.current_state[index], db_col)
+                                                                        self.current_states[index], sensor_name)
                                     elif trig_low > reading:
-                                        if self.current_state[index] != "Low":
-                                            self.current_state[index] = "Low"
+                                        if self.current_states[index] != "Low":
+                                            self.current_states[index] = "Low"
                                             self._write_readings_to_sql(reading_taken_at, reading,
-                                                                        self.current_state[index], db_col)
+                                                                        self.current_states[index], sensor_name)
                                     elif trig_high < reading:
-                                        if self.current_state[index] != "High":
-                                            self.current_state[index] = "High"
-                                            self._write_readings_to_sql(reading_taken_at, reading,
-                                                                        self.current_state[index], db_col)
+                                        if self.current_states[index] != "High":
+                                            self.current_states[index] = "High"
+                                            self._write_readings_to_sql(
+                                                reading_taken_at, reading, self.current_states[index], sensor_name
+                                            )
+                                    if app_config_access.trigger_high_low.enable_email_alerts:
+                                        # The following goes somewhat like this. Only add to email alerts to be sent if
+                                        # the current state is different from the previous state (High/Normal/Low)
+                                        # OR
+                                        # The current state is the same as the previous state BUT not "Normal" AND
+                                        # the time since the last alert was passed through is more or equal to the time
+                                        # between sending emails alerts found in the High/Low Triggers configuration.
+                                        #
+                                        # After passing the above, it then makes sure the current state is enabled
+                                        # for email alerts in the High/Low Trigger configuration.
+                                        # If enabled, an alert is added to the que of alerts to be emailed
+                                        time_passed = datetime.utcnow() - self.last_reported_abnormal_sate
+                                        tmp_eeh = app_config_access.trigger_high_low.alerts_resend_emails_every_hours
+                                        resend_delay = timedelta(hours=tmp_eeh)
+                                        if self.previous_email_states[index] != self.current_states[index] or \
+                                                self.current_states[index] != "Normal" and time_passed >= resend_delay:
+
+                                            self.previous_email_states[index] = copy.copy(self.current_states[index])
+                                            if self.current_states[index] == "Normal" and alerts_normal_enabled or \
+                                                    self.current_states[index] == "Low" and alerts_low_enabled or \
+                                                    self.current_states[index] == "High" and alerts_high_enabled:
+                                                self.email_alert_obj_list[index].add_trigger_email_entry(
+                                                    reading, self.current_states[index]
+                                                )
+                                                self.last_reported_abnormal_sate = datetime.utcnow()
                     except Exception as error:
-                        log_msg = "Trigger problem in '" + str(custom_trigger_variables["database_column"])
-                        logger.primary_logger.error(log_msg + "' Trigger Thread: " + str(error))
+                        log_msg = f"Trigger problem in '{self.sensor_name}' Trigger Thread: {str(error)}"
+                        logger.primary_logger.error(log_msg)
 
                     sleep_fraction_interval = 5
                     if custom_trigger_variables["sleep_duration"] < 5:
@@ -313,9 +393,7 @@ class _MultiTriggerThread:
                         sleep(sleep_fraction_interval)
                         sleep_total += sleep_fraction_interval
             else:
-                log_msg = "High/Low Triggers: " + str(custom_trigger_variables["database_column"])
-                logger.primary_logger.info(log_msg + ": Sensor Missing")
-                self.current_state = "Sensor Missing"
+                logger.primary_logger.info(f"High/Low Triggers - {self.sensor_name}: Sensor Missing")
                 while not app_cached_variables.restart_all_trigger_threads:
                     sleep(10)
 
@@ -331,8 +409,7 @@ class _MultiTriggerThread:
                          ") VALUES (?,?,?,?)"
             sqlite_database.write_to_sql_database(sql_string, sql_data)
         except Exception as error:
-            log_msg = "Trigger '" + str(database_column) + "' Recording Failure: " + str(error)
-            logger.primary_logger.error(log_msg)
+            logger.primary_logger.error(f"Trigger '{str(database_column)}' Recording Failure: {str(error)}")
 
 
 def start_trigger_high_low_recording_server():
