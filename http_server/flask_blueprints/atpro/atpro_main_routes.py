@@ -35,7 +35,7 @@ html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 
 html_sensor_readings_row = """
     <div class='col-3 col-m-6 col-sm-12'>
-        <div class="card">
+        <div class="card" style="min-width: 150px;">
             <div class="card-content">
                 <div class="readings-header">{{ SensorName }}</div>
                 <div class="readings">{{ SensorReading }}</div>
