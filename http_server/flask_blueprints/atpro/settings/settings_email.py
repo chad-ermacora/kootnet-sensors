@@ -120,10 +120,10 @@ def html_atpro_send_reports_email():
     msg = "Check the Network logs for more information"
     if email_is_valid(email_address):
         if button_pressed == "reports":
-            thread_function(send_report_emails, args=[email_address])
+            thread_function(send_report_emails, args=email_address)
             return get_message_page("Reports email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "graphs":
-            thread_function(send_db_graph_emails, args=[email_address])
+            thread_function(send_db_graph_emails, args=email_address)
             return get_message_page("Graph email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "settings":
             thread_function(send_test_email, args=email_address)
