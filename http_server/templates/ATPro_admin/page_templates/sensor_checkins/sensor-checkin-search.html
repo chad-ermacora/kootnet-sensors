@@ -141,13 +141,20 @@
     }
 
     function Searching() {
-        const updating_html_var = '<div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content">' +
-            '<h2><i class="fas fa-info-circle"></i> Updating Information, Please Wait ...</h2></div></div></div>'
+        const updating_html_var = '<div class="col-12 col-m-12 col-sm-12">' +
+            '<div class="card"><div class="card-content"><h2 id="blink_shadow" style="color: green;">' +
+            '<i class="fas fa-info-circle"></i> Updating Information, Please Wait ...</h2></div></div></div>'
 
         document.getElementById("find-sensor-btn").disabled = true;
         document.getElementById("checkin-selection").disabled = true;
         document.getElementById("hidden-sensor-info").hidden = true;
         document.getElementById("sensor-id-info").innerHTML = updating_html_var;
+
+        let blinks = document.getElementById("blink_shadow");
+        blinks.style.color = "green";
+        window.setInterval(function () {
+            blinks.style.color = (blinks.style.color === "green") ? "red" : "green";
+        }, 1000);
     }
 
     function PageRefresh() {
