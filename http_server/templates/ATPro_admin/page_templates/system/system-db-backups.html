@@ -8,19 +8,12 @@
     .db-header-items-data {
         font-weight: bold;
     }
-
-    .blink_shadow {
-        font-weight: bolder;
-        font-size: large;
-    }
 </style>
 
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
         <div class="card-content">
             <form method="POST" action="/atpro/system-db-management" target="_blank">
-                <p class="blink_shadow" style="color: green;" hidden>Generating Database Zip Please Wait ...</p>
-
                 <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
                 <p>
                     Download SQLite3 Databases for offline access or backup purposes.<br>
@@ -41,6 +34,14 @@
                     <i class="fas fa-file-archive"></i> Download Backup
                 </button>
             </form><br>
+        </div>
+    </div>
+</div>
+
+<div id="generating-card" class="col-12 col-m-12 col-sm-12" hidden>
+    <div class="card">
+        <div class="card-content">
+            <h2 id="blink_shadow"><i class="fas fa-info-circle"></i> Generating Database Zip Please Wait ...</h2>
         </div>
     </div>
 </div>
@@ -131,14 +132,15 @@
     }
 
     function CreatingDownload() {
-        document.querySelectorAll('.generating-zip').forEach(e => e.disabled = true);
-        document.querySelectorAll('.blink_shadow').forEach(e => e.hidden = false);
+        let blinks = document.getElementById("blink_shadow");
+        blinks.style.color = "green";
 
-        let shadow_colour = "green";
+        document.getElementById("generating-card").hidden = false;
+        document.querySelectorAll('.generating-zip').forEach(e => e.disabled = true);
+
         window.setTimeout(RefreshPageTimed, 5000);
         window.setInterval(function () {
-            shadow_colour = (shadow_colour === "green") ? "red" : "green";
-            document.querySelectorAll('.blink_shadow').forEach(e => e.style.color = shadow_colour);
+            blinks.style.color = (blinks.style.color === "green") ? "red" : "green";
         }, 1000);
     }
 

@@ -111,7 +111,7 @@ updating_checkin_info_html_msg = """
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
         <div class="card-content">
-            <h2><i class="fas fa-info-circle"></i> Updating Information, Please Wait ...</h2>
+            <h2 id="blink_shadow"><i class="fas fa-info-circle"></i> Updating Information, Please Wait ...</h2>
         </div>
     </div>
 </div>

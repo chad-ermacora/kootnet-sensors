@@ -67,16 +67,14 @@ html_sensor_insights_updating = """
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card" style="width: 100vw;">
         <div class="card-content">
-            <h2 style="text-align: center;">
+            <h2 id="blink_shadow" style="text-align: center;">
                 <i class="fas fa-info-circle"></i> Updating Information, Please Wait ...
             </h2>
         </div>
     </div>
 </div>
 <script>
-    document.getElementById("insights-refresh-btn").disabled = true;
-    SetInsightGenDateTime('Generation in Progress');
-    window.setTimeout(RefreshInsightsPageTimed, 5000);
+GeneratingInsights();
 </script>
 """
 

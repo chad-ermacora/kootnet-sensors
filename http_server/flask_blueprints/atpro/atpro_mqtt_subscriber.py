@@ -37,7 +37,8 @@ db_v = app_cached_variables.database_variables
 mqtt_sub_tet_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
 mqtt_sub_tet_location += "mqtt-subscriber-table-entry-template.html"
 mqtt_sub_table_entry_template = get_file_content(mqtt_sub_tet_location).strip()
-generating_mqtt_table_html = "<h3><strong><a style='color: red;'>Generating Table, please wait ...</a></strong></h3>"
+generating_mqtt_table_html = "<h2><strong><a id='blink_shadow' style='color: red;'>" + \
+                             "Generating Table, please wait ...</a></strong></h2>"
 
 
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-view-data-stream")
@@ -152,7 +153,7 @@ def html_atpro_mqtt_subscriber_generate_sensors_html_list():
     if app_cached_variables.mqtt_subscriber_sensors_html_list != generating_mqtt_table_html:
         app_cached_variables.mqtt_subscriber_sensors_html_list = generating_mqtt_table_html
         thread_function(_generate_mqtt_subscriber_sensors_html_list)
-    return html_atpro_mqtt_subscriber_sensors_list()
+    return "Generating"
 
 
 def _generate_mqtt_subscriber_sensors_html_list():

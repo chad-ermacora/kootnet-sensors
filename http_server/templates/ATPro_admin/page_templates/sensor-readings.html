@@ -159,6 +159,17 @@
 </div>
 
 <script>
+    function GeneratingInsights() {
+        let blinks = document.getElementById("blink_shadow");
+        blinks.style.color = "green";
+        SetInsightGenDateTime('Generation in Progress');
+        document.getElementById("insights-refresh-btn").disabled = true;
+        window.setTimeout(RefreshInsightsPageTimed, 5000);
+        window.setInterval(function () {
+            blinks.style.color = (blinks.style.color === "green") ? "red" : "green";
+        }, 1000);
+    }
+
     function DateRangeHidden() {
         document.getElementById("date-range-selection").hidden = document.getElementById("use-all-data").checked;
     }
@@ -170,7 +181,7 @@
     function RefreshingInsights() {
         document.getElementById("insights-refresh-btn").disabled = true;
         fetch("/atpro/Generate-Sensor-Insights");
-        SelectReadingsNav("sensor-insights");
+        window.setTimeout(RefreshInsightsPageTimed, 500);
     }
 
     function RefreshInsightsPageTimed() {

@@ -48,7 +48,8 @@
 
 <br>
 
-<button type="button" class="pure-button" onclick="window.location='/atpro/mqtt-subscriber-generate-sensors-list'">
+<button type="button" class="pure-button" id="gen-mqtt-sub-sensor-list-btn"
+        onclick="ClickGenMQTTSubTable()">
     Refresh Table Content
 </button>
 
@@ -71,8 +72,20 @@
 </html>
 
 <script>
+    function ClickGenMQTTSubTable() {
+        document.getElementById("gen-mqtt-sub-sensor-list-btn").disabled = true;
+        fetch("/atpro/mqtt-subscriber-generate-sensors-list");
+        window.setTimeout(RefreshPageTimed, 500);
+    }
+
     function CreatingMQTTSubTable() {
+        document.getElementById("gen-mqtt-sub-sensor-list-btn").disabled = true;
+        let blinks = document.getElementById("blink_shadow");
+        blinks.style.color = "green";
         window.setTimeout(RefreshPageTimed, 5000);
+        window.setInterval(function () {
+            blinks.style.color = (blinks.style.color === "green") ? "red" : "green";
+        }, 1000);
     }
 
     function RefreshPageTimed() {
