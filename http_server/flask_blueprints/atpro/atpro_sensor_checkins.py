@@ -66,6 +66,27 @@ checkin_lookup_entry_dates = []
 checkin_lookup_date_selected = ""
 
 
+def _clear_checkin_search(custom_sensor_info_text=""):
+    global checkins_update_in_progress
+    global checkin_search_sensor_id
+    global checkin_sensor_info
+    global checkin_search_sensor_installed_sensors
+    global checkin_search_primary_log
+    global checkin_search_network_log
+    global checkin_search_sensors_log
+    global checkin_lookup_entry_dates
+    global checkin_lookup_date_selected
+
+    checkin_search_sensor_id = ""
+    checkin_sensor_info = custom_sensor_info_text
+    checkin_search_sensor_installed_sensors = ""
+    checkin_search_primary_log = ""
+    checkin_search_network_log = ""
+    checkin_search_sensors_log = ""
+    checkin_lookup_entry_dates = []
+    checkin_lookup_date_selected = ""
+
+
 def _update_checkin_lookup_variables():
     global checkin_search_sensor_id
     global checkin_lookup_entry_dates
@@ -74,8 +95,8 @@ def _update_checkin_lookup_variables():
     checkin_lookup_entry_dates = []
 
     if _check_sensor_id_exists(checkin_search_sensor_id):
-        sql_query = "SELECT " + db_v.all_tables_datetime + " FROM '" + checkin_search_sensor_id + "' WHERE " \
-                    + db_v.all_tables_datetime + " != '' ORDER BY " + db_v.all_tables_datetime + " DESC;"
+        sql_query = f"SELECT {db_v.all_tables_datetime} FROM '{checkin_search_sensor_id}' WHERE " + \
+                    f"{db_v.all_tables_datetime} != '' ORDER BY {db_v.all_tables_datetime} DESC;"
         date_tuples = sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_checkin_database)
         return_dates = []
         checkin_lookup_date_selected = get_sql_element(date_tuples[0])
@@ -95,8 +116,8 @@ def _get_date_entry_text_label(date_entry):
 
     return_label_text = ""
     for column_name, label_text in zip(column_names, label_texts):
-        sql_query = "SELECT " + column_name + " FROM '" + checkin_search_sensor_id + "' WHERE " \
-                    + db_v.all_tables_datetime + " == '" + date_entry + "';"
+        sql_query = f"SELECT {column_name} FROM '{checkin_search_sensor_id}' WHERE " + \
+                    f"{db_v.all_tables_datetime} == '{date_entry}';"
         sql_return_data = sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_checkin_database)
         sql_return_data = str(get_sql_element(sql_return_data)).strip()
         if sql_return_data != "" and sql_return_data != "None":
@@ -104,7 +125,7 @@ def _get_date_entry_text_label(date_entry):
     return return_label_text
 
 
-checkin_temp_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
+checkin_temp_location = f"{file_locations.program_root_dir}/http_server/templates/ATPro_admin/page_templates/"
 checkin_temp_location += "sensor_checkins/sensor-checkin-table-entry-template.html"
 checkin_table_entry_template = get_file_content(checkin_temp_location).strip()
 updating_checkin_info_html_msg = """
@@ -144,7 +165,7 @@ def html_atpro_sensor_checkin_main_view():
     run_script = ""
     if checkins_sensors_html_table_list == updating_checkin_info_html_msg:
         run_script = "CreatingSensorCheckinsTable();"
-    checkin_table_last_update = str(checkins_sensors_html_list_last_updated) + " UTC" + str(utc0_hour_offset)
+    checkin_table_last_update = f"{str(checkins_sensors_html_list_last_updated)} UTC {str(utc0_hour_offset)}"
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-main-view.html",
                            SensorsInDatabase=str(sensor_count),
                            CheckinDBSize=db_size_mb,
@@ -192,19 +213,19 @@ def _clear_old_sensor_checkin_data(sensor_id):
     sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
 
     try:
-        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_loc)
+        write_to_sql_database(f"DELETE FROM '{sensor_id}';", None, sql_database_location=db_loc)
 
         check_sensor_checkin_columns(sensor_id)
-        sql_ex_string = "INSERT OR IGNORE INTO '" + sensor_id + "' (" + \
-                        db_v.all_tables_datetime + "," + \
-                        db_v.sensor_name + "," + \
-                        db_v.ip + "," + \
-                        db_v.kootnet_sensors_version + "," + \
-                        db_v.sensor_check_in_installed_sensors + "," + \
-                        db_v.sensor_uptime + "," + \
-                        db_v.sensor_check_in_primary_log + "," + \
-                        db_v.sensor_check_in_network_log + "," + \
-                        db_v.sensor_check_in_sensors_log + ")" + \
+        sql_ex_string = f"INSERT OR IGNORE INTO '{sensor_id}' (" + \
+                        f"{db_v.all_tables_datetime}," + \
+                        f"{db_v.sensor_name}," + \
+                        f"{db_v.ip}," + \
+                        f"{db_v.kootnet_sensors_version}," + \
+                        f"{db_v.sensor_check_in_installed_sensors}," + \
+                        f"{db_v.sensor_uptime}," + \
+                        f"{db_v.sensor_check_in_primary_log}," + \
+                        f"{db_v.sensor_check_in_network_log}," + \
+                        f"{db_v.sensor_check_in_sensors_log})" + \
                         " VALUES (?,?,?,?,?,?,?,?,?);"
 
         sql_data = [last_checkin_date, sensor_name, sensor_ip, program_version, installed_sensors,
@@ -213,7 +234,7 @@ def _clear_old_sensor_checkin_data(sensor_id):
         if len(checkin_lookup_entry_dates) > 0:
             _update_checkin_lookup_variables()
     except Exception as error:
-        logger.primary_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
+        logger.primary_logger.error(f"Sensor Check-ins - Clearing Sensor '{sensor_id}' Data: {str(error)}")
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-delete-old-sensors", methods=["POST"])
@@ -238,7 +259,7 @@ def _thread_delete_sensors_older_then(delete_sensors_older_days):
         write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
         logger.network_logger.info("Checkin Database Clean-up Finished")
     except Exception as error:
-        logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
+        logger.primary_logger.warning(f"Error trying to delete old sensors from the Check-Ins database: {str(error)}")
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/generate-checkin-sensors-list")
@@ -281,7 +302,7 @@ def _generate_sensors_checkins_html_list():
         dt_format = "%Y-%m-%d %H:%M:%S"
         checkins_sensors_html_list_last_updated = datetime.utcnow().strftime(dt_format)
     except Exception as error:
-        logger.network_logger.warning("Failed to Generate Sensor Checkins HTML List: " + str(error))
+        logger.network_logger.warning(f"Failed to Generate Sensor Checkins HTML List: {str(error)}")
         checkins_sensors_html_table_list = checkin_table_failed
         checkins_sensors_html_list_last_updated = "NA"
 
@@ -340,9 +361,9 @@ def _get_drop_down_items():
 
     dropdown_selection = ""
     if not checkins_update_in_progress:
-        custom_drop_downs_html_text = "<option value='{{ CheckinDateEntry }}' {{ Selected }}>{{ CheckinDateEntryName }}</option>"
+        custom_dd_html = "<option value='{{ CheckinDateEntry }}' {{ Selected }}>{{ CheckinDateEntryName }}</option>"
         for file_name in checkin_lookup_entry_dates:
-            new_entry = custom_drop_downs_html_text.replace("{{ CheckinDateEntry }}", file_name[0])
+            new_entry = custom_dd_html.replace("{{ CheckinDateEntry }}", file_name[0])
             if file_name[0] == checkin_lookup_date_selected:
                 new_entry = new_entry.replace("{{ Selected }}", "selected")
             else:
@@ -366,7 +387,7 @@ def search_sensor_delete_senor_id():
     global checkin_search_sensor_id
 
     if checkin_search_sensor_id != "":
-        write_to_sql_database("DROP TABLE '" + checkin_search_sensor_id + "';", None, sql_database_location=db_loc)
+        write_to_sql_database(f"DROP TABLE '{checkin_search_sensor_id}';", None, sql_database_location=db_loc)
         _update_search_sensor_check_ins(checkin_search_sensor_id)
     return view_search_sensor_check_ins()
 
@@ -390,12 +411,6 @@ def search_sensor_check_ins():
 def _threaded_checkin_lookup(sensor_id_and_date):
     global checkins_update_in_progress
     global checkin_search_sensor_id
-    global checkin_sensor_info
-    global checkin_search_sensor_installed_sensors
-    global checkin_search_primary_log
-    global checkin_search_network_log
-    global checkin_search_sensors_log
-    global checkin_lookup_entry_dates
     global checkin_lookup_date_selected
     try:
         if sensor_id_and_date[0] != "":
@@ -408,20 +423,13 @@ def _threaded_checkin_lookup(sensor_id_and_date):
                     print(str(error))
                     checkin_lookup_date_selected = ""
             else:
-                checkin_search_sensor_id = ""
-                checkin_sensor_info = "Sensor ID Not Found\n\n"
-                checkin_search_sensor_installed_sensors = ""
-                checkin_search_primary_log = ""
-                checkin_search_network_log = ""
-                checkin_search_sensors_log = ""
-                checkin_lookup_entry_dates = []
-                checkin_lookup_date_selected = ""
+                _clear_checkin_search()
 
                 sensor_id = get_clean_sql_table_name(sensor_id_and_date[0])
                 _update_search_sensor_check_ins(sensor_id)
                 _update_checkin_lookup_variables()
     except Exception as error:
-        logger.network_logger.error("Checkins Search Failed: " + str(error))
+        logger.network_logger.error(f"Checkins Search Failed: {str(error)}")
     checkins_update_in_progress = False
 
 
@@ -434,6 +442,8 @@ def _update_search_sensor_check_ins(sensor_id):
             checkin_search_sensor_id = sensor_id
         _update_sensor_info_string()
         _search_checkin_get_logs(checkin_search_sensor_id)
+    else:
+        _clear_checkin_search(custom_sensor_info_text="Sensor ID Not Found")
 
 
 def _search_checkin_get_logs(sensor_id):
@@ -466,15 +476,14 @@ def _update_sensor_info_string():
 
     utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
     db_last_datetime_entry = get_one_db_entry_wrapper(checkin_search_sensor_id, db_v.all_tables_datetime)
-    get_sensor_checkin_count_per_id_sql = "SELECT count('" + db_v.all_tables_datetime + "') FROM '" + \
-                                          checkin_search_sensor_id + "';"
+    get_sc_count_per_id_sql = f"SELECT count('{db_v.all_tables_datetime}') FROM '{checkin_search_sensor_id}';"
 
     sensor_name = get_one_db_entry_wrapper(checkin_search_sensor_id, db_v.sensor_name,
                                            specific_date=checkin_lookup_date_selected)
     sensor_ip = get_one_db_entry_wrapper(checkin_search_sensor_id, db_v.ip,
                                          specific_date=checkin_lookup_date_selected)
     last_checkin_datetime = adjust_datetime(db_last_datetime_entry, utc0_hour_offset)
-    checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_loc)
+    checkin_count = sql_execute_get_data(get_sc_count_per_id_sql, sql_database_location=db_loc)
     software_version = get_one_db_entry_wrapper(checkin_search_sensor_id, ks_version_col,
                                                 specific_date=checkin_lookup_date_selected)
     sensor_uptime = get_one_db_entry_wrapper(checkin_search_sensor_id, db_v.sensor_uptime,
@@ -514,17 +523,17 @@ def _get_converted_datetime(date_time_string, date_format="%Y-%m-%d %H:%M:%S"):
         date_time_object = datetime.strptime(date_time_string[:19], date_format)
         return date_time_object
     except Exception as error:
-        logger.network_logger.debug("Checkins View - Unable to convert Date & Time from string: " + str(error))
+        logger.network_logger.debug(f"Checkins View - Unable to convert Date & Time from string: {str(error)}")
     return datetime.strptime("1901-01-01 01:01:01", date_format)
 
 
 def _delete_sensor_id(sensor_id):
     """ Deletes provided Text Sensor ID from the Check-In database """
-    write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=db_loc)
+    write_to_sql_database(f"DROP TABLE '{sensor_id}';", None, sql_database_location=db_loc)
 
 
 def _check_sensor_id_exists(sensor_id):
-    sql_query = "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + sensor_id + "'"
+    sql_query = f"SELECT count(name) FROM sqlite_master WHERE type='table' AND name='{sensor_id}';"
     try:
         while app_cached_variables.sql_db_locked:
             sleep(1)
@@ -545,8 +554,8 @@ def get_one_db_entry_wrapper(table_name, column_name, specific_date=None, order=
     if specific_date is not None and len(checkin_lookup_entry_dates) > 0:
         if specific_date == "":
             specific_date = checkin_lookup_entry_dates[0][0]
-        sql_query = "SELECT " + column_name + " FROM '" + table_name + "' WHERE " \
-                    + db_v.all_tables_datetime + " == '" + specific_date + "'" + " LIMIT 1;"
+        sql_query = f"SELECT {column_name} FROM '{table_name}' " + \
+                    f"WHERE {db_v.all_tables_datetime} == '{specific_date}' LIMIT 1;"
         return_entry = get_sql_element(sql_execute_get_data(sql_query, sql_database_location=db_loc))
         return return_entry
     return get_one_db_entry(table_name=table_name, column_name=column_name, order=order, database=db_loc)
@@ -559,12 +568,11 @@ def get_last_rec_db_entry_wrapper(table_name, column_name):
     if len(checkin_lookup_entry_dates) > 0:
         if checkin_lookup_date_selected == "":
             checkin_lookup_date_selected = checkin_lookup_entry_dates[-1][0]
-        sql_query = "SELECT rowid FROM '" + table_name + "' WHERE " + \
-                    db_v.all_tables_datetime + " == '" + checkin_lookup_date_selected + "'"
+        sql_query = f"SELECT rowid FROM '{table_name}' WHERE " + \
+                    f"{db_v.all_tables_datetime} == '{checkin_lookup_date_selected}';"
         row_id = str(get_sql_element(sql_execute_get_data(sql_query, sql_database_location=db_loc)))
-        sql_query = "SELECT " + column_name + " FROM '" + table_name + "' WHERE " + column_name + \
-                    " IS NOT NULL AND " + column_name + " != '' AND rowid BETWEEN 0 AND " + row_id + \
-                    " ORDER BY rowid DESC LIMIT 1;"
+        sql_query = f"SELECT {column_name} FROM '{table_name}' WHERE {column_name} IS NOT NULL " + \
+                    f"AND {column_name} != '' AND rowid BETWEEN 0 AND {row_id} ORDER BY rowid DESC LIMIT 1;"
         return_value = str(get_sql_element(sql_execute_get_data(sql_query, sql_database_location=db_loc)))
         return return_value
     return get_one_db_entry_wrapper(table_name, column_name)
