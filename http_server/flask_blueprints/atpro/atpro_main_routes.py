@@ -73,6 +73,7 @@ def html_atpro_dashboard():
         CPUTemperature=str(cpu_temp),
         SensorUptime=get_uptime_str(),
         SensorReboots=app_cached_variables.reboot_count,
+        ProgramRAMUsage=str(system_access.get_program_mem_usage()) + " MB",
         RAMUsage=str(system_access.get_ram_space(return_type=1)) + " GB",
         RAMTotal=str(app_cached_variables.total_ram_memory) + " GB",
         DiskUsage=str(system_access.get_disk_space(return_type=1)) + " GB",
@@ -109,11 +110,12 @@ def html_atpro_sensor_readings_base():
 
 @html_atpro_main_routes.route("/atpro/sensor-readings")
 def html_atpro_sensor_readings():
+    get_clean_db_col_name = app_cached_variables.database_variables.get_clean_db_col_name
     all_readings = sensor_access.get_all_available_sensor_readings()
     html_final_code = ""
     for index, reading in all_readings.items():
         reading_unit = " " + sensor_access.get_reading_unit(index)
-        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index.replace("_", " "))
+        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", get_clean_db_col_name(index))
         new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + reading_unit)
         html_final_code += new_reading + "\n"
     return html_final_code

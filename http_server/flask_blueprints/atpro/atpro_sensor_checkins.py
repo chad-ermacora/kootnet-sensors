@@ -27,7 +27,7 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_size, adjust_datetime, thread_function
 from operations_modules.app_generic_disk import get_file_content
 from operations_modules.sqlite_database import sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, \
-    get_sql_element, get_sqlite_tables_in_list, get_one_db_entry
+    get_sql_element, get_sqlite_tables_in_list, get_one_db_entry, get_table_count_from_db
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
@@ -127,7 +127,7 @@ def html_atpro_sensor_checkin_main_view():
     global checkins_db_sensors_count_from_past_days
     global checkins_sensors_html_table_list
 
-    sensor_count = len(get_sqlite_tables_in_list(db_loc))
+    sensor_count = get_table_count_from_db(db_loc)
     checkins_db_sensors_count = sensor_count
     if os.path.isfile(db_loc):
         db_size_mb = get_file_size(db_loc, round_to=3)

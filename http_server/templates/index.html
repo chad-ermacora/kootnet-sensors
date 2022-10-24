@@ -24,7 +24,8 @@
         <b>Version:</b> {{ KootnetVersion }}<br><br>
         <b>HostName (Sensor Name):</b> {{ HostName }}<br><br>
         <b>Local IP:</b> {{ LocalIP }}<br><br>
-        <b>Disk Space:</b> {{ DiskSpaceMessage | safe }}<br><br>
+        <b>Disk Space:</b> {{ DiskSpaceMessage | safe }}<br>
+        <b>Program Memory Usage:</b> {{ MemoryUsed }} MB<br><br>
         <b>Sensor's DateTime with TimeZone:</b>  {{ DateTime }}<br>
         <b>Sensor's DateTime in UTC0:</b>  {{ DateTimeUTC }}
     </p>

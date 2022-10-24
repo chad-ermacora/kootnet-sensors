@@ -28,7 +28,7 @@ db_v = app_cached_variables.database_variables
 
 
 class CreateOtherDataEntry:
-    """ Creates a object, holding required data for making a 'OtherData' SQL execute string. """
+    """ Creates an object, holding required data for making a 'OtherData' SQL execute string. """
 
     def __init__(self):
         self.database_location = file_locations.sensor_database
@@ -180,7 +180,8 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_sensor_checkins, db_cursor)
-        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table' " + \
+                              f"AND name != '{db_v.table_db_info}';"
         db_cursor.execute(get_sensor_checkin_ids_sql)
         sensor_ids = db_cursor.fetchall()
 
@@ -191,14 +192,13 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
                    db_v.sensor_check_in_sensors_log]
         for sensor_id in sensor_ids:
             cleaned_id = str(sensor_id[0]).strip()
-            if not _ks_system_table(cleaned_id):
-                for column in columns:
-                    try:
-                        add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
-                        db_cursor.execute(add_columns_sql)
-                    except Exception as error:
-                        if str(error)[:21] != "duplicate column name":
-                            logger.primary_logger.error("Checkin Database Error: " + str(error))
+            for column in columns:
+                try:
+                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                    db_cursor.execute(add_columns_sql)
+                except Exception as error:
+                    if str(error)[:21] != "duplicate column name":
+                        logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
         db_connection.close()
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
@@ -216,20 +216,20 @@ def check_mqtt_subscriber_database_structure(database_location=file_locations.mq
         db_cursor = db_connection.cursor()
 
         create_ks_db_info_table(db_v.db_info_database_type_mqtt, db_cursor)
-        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table' " + \
+                              f"AND name != '{db_v.table_db_info}';"
         db_cursor.execute(get_sensor_checkin_ids_sql)
         mqtt_sensor_strings = db_cursor.fetchall()
 
         for sensor_string in mqtt_sensor_strings:
             cleaned_id = str(sensor_string[0]).strip()
-            if not _ks_system_table(cleaned_id):
-                for column in db_v.get_sensor_columns_list():
-                    try:
-                        add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
-                        db_cursor.execute(add_columns_sql)
-                    except Exception as error:
-                        if str(error)[:21] != "duplicate column name":
-                            logger.primary_logger.error("Checkin Database Error: " + str(error))
+            for column in db_v.get_sensor_columns_list():
+                try:
+                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                    db_cursor.execute(add_columns_sql)
+                except Exception as error:
+                    if str(error)[:21] != "duplicate column name":
+                        logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
         db_connection.close()
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
@@ -326,14 +326,21 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
 
 def get_sqlite_tables_in_list(database_location):
     """ Returns a list of SQLite3 database table names. """
-    get_sqlite_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
+    get_sqlite_tables_query = "SELECT name FROM sqlite_master WHERE type='table' " + \
+                              f"AND name != '{db_v.table_db_info}';"
     sqlite_tables_list = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)
     final_list = []
     for entry in sqlite_tables_list:
         entry = get_sql_element(entry)
-        if not _ks_system_table(entry):
-            final_list.append(entry)
+        final_list.append(entry)
     return final_list
+
+
+def get_table_count_from_db(database_location):
+    get_sqlite_tables_query = "SELECT count(*) FROM sqlite_master WHERE type = 'table' " + \
+                              f"AND name != '{db_v.table_db_info}';"
+    table_count = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)[0][0]
+    return table_count
 
 
 def get_one_db_entry(table_name, column_name, order="DESC", database=file_locations.sensor_database):

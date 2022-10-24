@@ -29,7 +29,7 @@ from configuration_modules import app_config_access
 from operations_modules.app_generic_functions import get_list_of_filenames_in_dir, zip_files, get_file_size, \
     adjust_datetime
 from operations_modules.app_generic_disk import get_file_content
-from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
+from operations_modules.sqlite_database import get_table_count_from_db, write_to_sql_database, sql_execute_get_data, \
     get_main_db_first_last_date, universal_database_structure_check
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_clean_db_name, \
@@ -75,17 +75,45 @@ def html_atpro_settings_db_information():
         SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
         SQLDatabaseDateRange=get_main_db_first_last_date(app_config_access.primary_config.utc0_hour_offset),
-        SQLDatabaseSize=get_file_size(file_locations.sensor_database),
+        NumberInterval=str(_get_interval_entry_count()),
+        NumberTriggers=str(_get_trigger_entry_count()),
         NumberNotes=app_cached_variables.notes_total_count,
+        SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         SQLMQTTDatabaseLocation=_remove_filename_from_location(file_locations.mqtt_subscriber_database),
         SQLMQTTDatabaseName=file_locations.mqtt_subscriber_database.split("/")[-1],
         SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
-        SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
+        SQLMQTTSensorsInDB=str(get_table_count_from_db(file_locations.mqtt_subscriber_database)),
         SQLCheckinDatabaseLocation=_remove_filename_from_location(file_locations.sensor_checkin_database),
         SQLCheckinDatabaseName=file_locations.sensor_checkin_database.split("/")[-1],
         SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
-        SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database)))
+        SQLCheckinSensorsInDB=str(get_table_count_from_db(file_locations.sensor_checkin_database))
     )
+
+
+def _get_interval_entry_count():
+    return_text = "Error"
+    try:
+        column_name = app_cached_variables.database_variables.all_tables_datetime
+        table_name = app_cached_variables.database_variables.table_interval
+        note_count_sql_query = f"SELECT count({column_name}) FROM {table_name}"
+        return_text = f"{sql_execute_get_data(note_count_sql_query)[0][0]:,}"
+    except Exception as error:
+        log_msg = f"Get Entry Count of Column DateTime from Interval Recording DB Failed: {str(error)}"
+        logger.primary_logger.error(log_msg)
+    return return_text
+
+
+def _get_trigger_entry_count():
+    return_text = "Error"
+    try:
+        column_name = app_cached_variables.database_variables.all_tables_datetime
+        table_name = app_cached_variables.database_variables.table_trigger
+        note_count_sql_query = f"SELECT count({column_name}) FROM {table_name}"
+        return_text = f"{sql_execute_get_data(note_count_sql_query)[0][0]:,}"
+    except Exception as error:
+        log_msg = f"Get Entry Count of Column DateTime from Trigger Recording DB Failed: {str(error)}"
+        logger.primary_logger.error(log_msg)
+    return return_text
 
 
 def _get_file_creation_date(file_location):

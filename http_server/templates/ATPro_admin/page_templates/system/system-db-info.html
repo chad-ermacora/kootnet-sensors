@@ -31,15 +31,27 @@
                         </div>
                     </div>
 
-                    <div class="col-6 col-m-6 col-sm-12">
+                    <div class="col-3 col-m-6 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Size on Disk</span><br>{{ SQLDatabaseSize }} MB
+                            <span class="sensor-info">Number of<br>Interval Recordings</span><br>{{ NumberInterval }}
                         </div>
                     </div>
 
-                    <div class="col-6 col-m-6 col-sm-12">
+                    <div class="col-3 col-m-6 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Number of Notes</span><br>{{ NumberNotes }}
+                            <span class="sensor-info">Number of<br>Trigger Recordings</span><br>{{ NumberTriggers }}
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Number of<br>Notes</span><br>{{ NumberNotes }}
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Size on<br>Disk</span><br>{{ SQLDatabaseSize }} MB
                         </div>
                     </div>
                 </div>
@@ -62,13 +74,13 @@
                 <div class="row">
                     <div class="col-6 col-m-12 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Size on Disk</span><br>{{ SQLMQTTDatabaseSize }} MB
+                            <span class="sensor-info">Number of<br>Sensors</span><br>{{ SQLMQTTSensorsInDB }}
                         </div>
                     </div>
 
                     <div class="col-6 col-m-12 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLMQTTSensorsInDB }}
+                            <span class="sensor-info">Size on<br>Disk</span><br>{{ SQLMQTTDatabaseSize }} MB
                         </div>
                     </div>
                 </div>
@@ -91,13 +103,13 @@
                 <div class="row">
                     <div class="col-6 col-m-12 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Size on Disk</span><br>{{ SQLCheckinDatabaseSize }} MB
+                            <span class="sensor-info">Number of<br>Sensors</span><br>{{ SQLCheckinSensorsInDB }}
                         </div>
                     </div>
 
                     <div class="col-6 col-m-12 col-sm-12">
                         <div class="counter bg-primary">
-                            <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLCheckinSensorsInDB }}
+                            <span class="sensor-info">Size on<br>Disk</span><br>{{ SQLCheckinDatabaseSize }} MB
                         </div>
                     </div>
                 </div>

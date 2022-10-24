@@ -159,11 +159,12 @@ def _generate_sensor_insights():
 
 
 def _create_sensor_insights_html(column_name, unit_name):
+    get_clean_db_col_name = app_cached_variables.database_variables.get_clean_db_col_name
     final_html_code = html_sensor_insights_row
     try:
         low_entries = _get_html_min_entries(column_name, unit_name)
         high_entries = _get_html_max_entries(column_name, unit_name)
-        final_html_code = final_html_code.replace("{{ SensorName }}", column_name.replace("_", " "))
+        final_html_code = final_html_code.replace("{{ SensorName }}", get_clean_db_col_name(column_name))
         final_html_code = final_html_code.replace("{{ AddHighestReadings }}", high_entries)
         final_html_code = final_html_code.replace("{{ AddLowestReadings }}", low_entries)
     except Exception as error:

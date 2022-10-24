@@ -49,6 +49,16 @@ def get_ram_space(return_type=0):
     return ram_space
 
 
+def get_program_mem_usage():
+    memory_in_mb = 0.0
+    try:
+        ks_prog_mem = psutil.Process(os.getpid())
+        memory_in_mb = round(((ks_prog_mem.memory_info().rss / 1024) / 1024), 2)
+    except Exception as error:
+        logger.sensors_logger.warning("Error caching program Memory Usage: " + str(error))
+    return memory_in_mb
+
+
 def get_disk_space(return_type=0):
     """
     return_type options: 0 = Free Space, 1 = Used Space, 2 = Total Space, 3 = Percent Space Used

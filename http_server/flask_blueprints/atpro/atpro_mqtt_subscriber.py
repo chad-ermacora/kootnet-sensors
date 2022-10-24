@@ -23,7 +23,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_size, adjust_datetime, thread_function
 from operations_modules.app_generic_disk import get_file_content
-from operations_modules.sqlite_database import get_sqlite_tables_in_list, get_clean_sql_table_name, get_one_db_entry
+from operations_modules.sqlite_database import get_table_count_from_db, get_clean_sql_table_name, get_one_db_entry
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
@@ -54,7 +54,7 @@ def html_atpro_mqtt_subscriber_data_stream_view():
         for line in mqtt_subscriber_log_content.split("\n"):
             new_return += _mqtt_sub_entry_to_html(line)
         mqtt_subscriber_log_content = new_return
-    new_sensors_in_db_count = len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))
+    new_sensors_in_db_count = get_table_count_from_db(file_locations.mqtt_subscriber_database)
     app_cached_variables.mqtt_subscriber_sensors_count = new_sensors_in_db_count
     return render_template(
         "ATPro_admin/page_templates/mqtt-subscriber-data-view.html",
@@ -84,6 +84,7 @@ def _get_html_text(setting):
 
 
 def _mqtt_sub_entry_to_html(sub_entry):
+    get_clean_db_col_name = app_cached_variables.database_variables.get_clean_db_col_name
     sensor_id = ""
     sensor_time = ""
     sensor_data = ""
@@ -100,9 +101,8 @@ def _mqtt_sub_entry_to_html(sub_entry):
                     if index == "DateTime":
                         pass
                     else:
-                        index = index.replace("_", " ")
                         sensor_data += "<div class='col-6 col-m-6 col-sm-6'><div class='counter bg-primary'>"
-                        sensor_data += "<span class='sensor-info'>" + index + "</span><br>"
+                        sensor_data += f"<span class='sensor-info'>{get_clean_db_col_name(index)}</span><br>"
                         sensor_data += str(data) + unit_measurement_type + "<br></div></div>"
             else:
                 sensor_id = "NA"
@@ -158,8 +158,8 @@ def html_atpro_mqtt_subscriber_generate_sensors_html_list():
 
 def _generate_mqtt_subscriber_sensors_html_list():
     try:
-        mqtt_subscriber_sensors = get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database)
-        app_cached_variables.mqtt_subscriber_sensors_count = len(mqtt_subscriber_sensors)
+        mqtt_subscriber_sensors = get_table_count_from_db(file_locations.mqtt_subscriber_database)
+        app_cached_variables.mqtt_subscriber_sensors_count = mqtt_subscriber_sensors
 
         sensors_html_list = []
         for sensor_id in mqtt_subscriber_sensors:

@@ -48,4 +48,5 @@ def html_index():
                            HostName=app_cached_variables.hostname,
                            LocalIP=app_cached_variables.ip,
                            DiskSpaceMessage=disk_message,
+                           MemoryUsed=str(system_access.get_program_mem_usage()),
                            DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
