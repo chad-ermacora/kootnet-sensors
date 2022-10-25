@@ -39,7 +39,7 @@ mqtt_sub_tet_location = file_locations.program_root_dir + "/http_server/template
 mqtt_sub_tet_location += "mqtt-subscriber-table-entry-template.html"
 mqtt_sub_table_entry_template = get_file_content(mqtt_sub_tet_location).strip()
 generating_mqtt_table_html = "<h2><strong><a id='blink_shadow' style='color: red;'>" + \
-                             "Generating Table, please wait ...</a></strong></h2>"
+                             "Generating Table, Please Wait ...</a></strong></h2>"
 
 
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-view-data-stream")
