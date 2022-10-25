@@ -37,9 +37,9 @@ class CreateSensorInsightsConfiguration(CreateGeneralConfiguration):
 
         self.use_all_recorded_data = 1
         self.ignore_null_types = 0
-        self.start_date_range = "2012-01-01T00:00"
+        self.start_date_range = "2018-11-06T14:34"
         self.end_date_range = "2222-01-01T00:00:00"
-        self.insights_per_sensor = 10
+        self.insights_per_sensor = 3
 
         self.update_configuration_settings_list()
         if load_from_file:
