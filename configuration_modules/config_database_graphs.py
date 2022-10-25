@@ -51,7 +51,7 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.graph_past_hours = 168.0
         self.hours_multiplier = 24.0
         self.graph_using_date_range = 0
-        self.graph_start_date = "2019-07-01 00:00:00"
+        self.graph_start_date = "2018-11-06 14:34:13"
         self.graph_end_date = "2219-07-01 00:00:00"
 
         self.sql_database_selection = "MainDatabase"  # or MQTTSubscriberDatabase or CheckinDatabase
