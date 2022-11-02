@@ -1,11 +1,12 @@
 <style>
     .db-header-items-name {
         color: var(--second-color);
-        font-size: large;
+        font-size: larger;
         font-weight: bolder;
     }
 
     .db-header-items-data {
+        font-size: large;
         font-weight: bold;
     }
 </style>
@@ -14,14 +15,35 @@
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
+                <span class="db-header-items-name">Database Information Last Updated</span>
+                <br><br>
+                <span class="db-header-items-data">{{ DBInfoUpdateDateTime | safe }}</span>
+                <br><br>
+                <button id="db-info-refresh-btn" type="button" class="pure-button" style="text-align: center;"
+                        onclick="StartDBInformationRefresh()">
+                    Refresh Database Information
+                </button>
+                <div id="db-info-refreshing" hidden>
+                    <h2 id="blink_shadow">
+                        <i class="fas fa-info-circle"></i> Refreshing Database Information, Please Wait ...
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
                 <h2><i class="fas fa-database"></i> Main Database</h2>
 
-                <h3 class="db-header-items-name">
-                    DB Name: <span class="db-header-items-data">{{ SQLDatabaseName }}</span>
-                </h3>
-                <h3 class="db-header-items-name">
-                    Location: <span class="db-header-items-data">{{ SQLDatabaseLocation }}</span>
-                </h3>
+                <span class="db-header-items-name">DB Name: </span>
+                <span class="db-header-items-data">{{ SQLDatabaseName }}</span>
+                <br>
+                <span class="db-header-items-name">Location: </span>
+                <span class="db-header-items-data">{{ SQLDatabaseLocation }}</span>
 
                 <div class="row">
                     <div class="col-12 col-m-12 col-sm-12">
@@ -64,21 +86,27 @@
             <div class="card-content">
                 <h2><i class="fas fa-database"></i> MQTT Subscriber Database</h2>
 
-                <h3 class="db-header-items-name">
-                    DB Name: <span class="db-header-items-data">{{ SQLMQTTDatabaseName }}</span>
-                </h3>
-                <h3 class="db-header-items-name">
-                    Location: <span class="db-header-items-data">{{ SQLMQTTDatabaseLocation }}</span>
-                </h3>
+                <span class="db-header-items-name">DB Name:</span>
+                <span class="db-header-items-data">{{ SQLMQTTDatabaseName }}</span>
+                <br>
+                <span class="db-header-items-name">Location: </span>
+                <span class="db-header-items-data">{{ SQLMQTTDatabaseLocation }}</span>
+
 
                 <div class="row">
-                    <div class="col-6 col-m-12 col-sm-12">
+                    <div class="col-12 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Number of Recordings</span><br>{{ SQLMQTTEntriesInDB }}
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-6 col-sm-12">
                         <div class="counter bg-primary">
                             <span class="sensor-info">Number of<br>Sensors</span><br>{{ SQLMQTTSensorsInDB }}
                         </div>
                     </div>
 
-                    <div class="col-6 col-m-12 col-sm-12">
+                    <div class="col-6 col-m-6 col-sm-12">
                         <div class="counter bg-primary">
                             <span class="sensor-info">Size on<br>Disk</span><br>{{ SQLMQTTDatabaseSize }} MB
                         </div>
@@ -93,21 +121,26 @@
             <div class="card-content">
                 <h2><i class="fas fa-database"></i> Checkin Server Database</h2>
 
-                <h3 class="db-header-items-name">
-                    DB Name: <span class="db-header-items-data">{{ SQLCheckinDatabaseName }}</span>
-                </h3>
-                <h3 class="db-header-items-name">
-                    Location: <span class="db-header-items-data">{{ SQLCheckinDatabaseLocation }}</span>
-                </h3>
+                <span class="db-header-items-name">DB Name: </span>
+                <span class="db-header-items-data">{{ SQLCheckinDatabaseName }}</span>
+                <br>
+                <span class="db-header-items-name">Location: </span>
+                <span class="db-header-items-data">{{ SQLCheckinDatabaseLocation }}</span>
 
                 <div class="row">
-                    <div class="col-6 col-m-12 col-sm-12">
+                    <div class="col-12 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Number of Checkins</span><br>{{ SQLCheckinEntriesInDB }}
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-6 col-sm-12">
                         <div class="counter bg-primary">
                             <span class="sensor-info">Number of<br>Sensors</span><br>{{ SQLCheckinSensorsInDB }}
                         </div>
                     </div>
 
-                    <div class="col-6 col-m-12 col-sm-12">
+                    <div class="col-6 col-m-6 col-sm-12">
                         <div class="counter bg-primary">
                             <span class="sensor-info">Size on<br>Disk</span><br>{{ SQLCheckinDatabaseSize }} MB
                         </div>
@@ -117,3 +150,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    function StartDBInformationRefresh() {
+        fetch("/atpro/system-db-info-refresh");
+        CreatingDBInformation();
+    }
+
+    function CreatingDBInformation() {
+        document.getElementById("db-info-refresh-btn").disabled = true;
+        document.getElementById("db-info-refreshing").hidden = false;
+
+        let blinks = document.getElementById("blink_shadow");
+        blinks.style.color = "green";
+        window.setTimeout(RefreshPageTimed, 6000);
+        window.setInterval(function () {
+            blinks.style.color = (blinks.style.color === "green") ? "red" : "green";
+        }, 1000);
+    }
+
+    function RefreshPageTimed() {
+        SelectSystemNav('system-db-info')
+    }
+
+    {{ RunScript | safe }}
+</script>

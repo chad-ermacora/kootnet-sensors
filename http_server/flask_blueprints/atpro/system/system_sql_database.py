@@ -16,10 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import copy
 import os
 import zipfile
 from random import randint
-from datetime import datetime
+from datetime import datetime, timedelta
 from threading import Thread
 from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
@@ -27,10 +28,10 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules.app_generic_functions import get_list_of_filenames_in_dir, zip_files, get_file_size, \
-    adjust_datetime
+    adjust_datetime, thread_function
 from operations_modules.app_generic_disk import get_file_content
 from operations_modules.sqlite_database import get_table_count_from_db, write_to_sql_database, sql_execute_get_data, \
-    get_main_db_first_last_date, universal_database_structure_check
+    get_main_db_first_last_date, universal_database_structure_check, get_sqlite_tables_in_list
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_clean_db_name, \
     get_html_atpro_index, sanitize_text
@@ -38,6 +39,12 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, g
 html_atpro_system_sql_db_routes = Blueprint("html_atpro_system_sql_db_routes", __name__)
 uploaded_databases_folder = file_locations.uploaded_databases_folder
 sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
+system_db_info_html_page = None
+system_db_info_html_page_generation_in_progress = False
+
+html_db_info_temp_loc = f"{file_locations.program_root_dir}/http_server/templates/ATPro_admin/page_templates/"
+html_db_info_temp_loc += "system/system-db-info.html"
+system_db_info_html_template = get_file_content(html_db_info_temp_loc)
 
 
 @html_atpro_system_sql_db_routes.route("/atpro/system-db-backups")
@@ -69,25 +76,84 @@ def html_atpro_settings_db_backups():
 
 @html_atpro_system_sql_db_routes.route("/atpro/system-db-info")
 def html_atpro_settings_db_information():
+    global system_db_info_html_page
+    global system_db_info_html_page_generation_in_progress
+
+    if system_db_info_html_page is not None and not system_db_info_html_page_generation_in_progress:
+        return system_db_info_html_page
+    elif system_db_info_html_page is None and not system_db_info_html_page_generation_in_progress:
+        html_atpro_settings_db_information_refresh()
     return render_template(
         "ATPro_admin/page_templates/system/system-db-info.html",
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
+        DBInfoUpdateDateTime="Generating ...",
         SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
-        SQLDatabaseDateRange=get_main_db_first_last_date(app_config_access.primary_config.utc0_hour_offset),
-        NumberInterval=str(_get_interval_entry_count()),
-        NumberTriggers=str(_get_trigger_entry_count()),
-        NumberNotes=app_cached_variables.notes_total_count,
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         SQLMQTTDatabaseLocation=_remove_filename_from_location(file_locations.mqtt_subscriber_database),
         SQLMQTTDatabaseName=file_locations.mqtt_subscriber_database.split("/")[-1],
         SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
-        SQLMQTTSensorsInDB=str(get_table_count_from_db(file_locations.mqtt_subscriber_database)),
         SQLCheckinDatabaseLocation=_remove_filename_from_location(file_locations.sensor_checkin_database),
         SQLCheckinDatabaseName=file_locations.sensor_checkin_database.split("/")[-1],
         SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
-        SQLCheckinSensorsInDB=str(get_table_count_from_db(file_locations.sensor_checkin_database))
+        RunScript="CreatingDBInformation();"
     )
+
+
+@html_atpro_system_sql_db_routes.route("/atpro/system-db-info-refresh")
+def html_atpro_settings_db_information_refresh():
+    thread_function(_thread_db_information_generation)
+    return "OK"
+
+
+def _thread_db_information_generation():
+    logger.network_logger.info("Database Information Page Generation Started ...")
+    global system_db_info_html_page
+    global system_db_info_html_template
+    global system_db_info_html_page_generation_in_progress
+
+    system_db_info_html_page_generation_in_progress = True
+    try:
+        start_datetime = datetime.utcnow()
+        utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+        db_info_updated_datetime = datetime.utcnow() + timedelta(hours=utc0_hour_offset)
+        db_datetime_format = f"%B %d %Y<br>%H:%M:%S UTC{utc0_hour_offset}"
+
+        replacement_variables_dic = {
+            "HourOffset": app_config_access.primary_config.utc0_hour_offset,
+            "DBInfoUpdateDateTime | safe": db_info_updated_datetime.strftime(db_datetime_format),
+            "SQLDatabaseLocation": _remove_filename_from_location(file_locations.sensor_database),
+            "SQLDatabaseName": file_locations.sensor_database.split("/")[-1],
+            "SQLDatabaseDateRange": get_main_db_first_last_date(app_config_access.primary_config.utc0_hour_offset),
+            "NumberInterval": str(_get_interval_entry_count()),
+            "NumberTriggers": str(_get_trigger_entry_count()),
+            "NumberNotes": app_cached_variables.notes_total_count,
+            "SQLDatabaseSize": get_file_size(file_locations.sensor_database),
+            "SQLMQTTDatabaseLocation": _remove_filename_from_location(file_locations.mqtt_subscriber_database),
+            "SQLMQTTDatabaseName": file_locations.mqtt_subscriber_database.split("/")[-1],
+            "SQLMQTTDatabaseSize": get_file_size(file_locations.mqtt_subscriber_database),
+            "SQLMQTTSensorsInDB": str(get_table_count_from_db(file_locations.mqtt_subscriber_database)),
+            "SQLMQTTEntriesInDB": _get_count_all_table_entries(file_locations.mqtt_subscriber_database),
+            "SQLCheckinDatabaseLocation": _remove_filename_from_location(file_locations.sensor_checkin_database),
+            "SQLCheckinDatabaseName": file_locations.sensor_checkin_database.split("/")[-1],
+            "SQLCheckinDatabaseSize": get_file_size(file_locations.sensor_checkin_database),
+            "SQLCheckinSensorsInDB": str(get_table_count_from_db(file_locations.sensor_checkin_database)),
+            "SQLCheckinEntriesInDB": _get_count_all_table_entries(file_locations.sensor_checkin_database),
+            "RunScript | safe": ""
+        }
+
+        db_info_html_page = copy.copy(system_db_info_html_template)
+        for index_name, value in replacement_variables_dic.items():
+            db_info_html_page = db_info_html_page.replace(f"{{{{ {index_name} }}}}", str(value))
+
+        system_db_info_html_page = db_info_html_page
+
+        seconds = round((datetime.utcnow() - start_datetime).total_seconds(), 3)
+        logger.network_logger.info(f"Database Information Page took {str(seconds)} Seconds to Generate")
+    except Exception as error:
+        logger.network_logger.error(f"Generating Database Information Page Failed: {str(error)}")
+        system_db_info_html_page = "<h1>Error Generating Database Information Details</h1>"
+    system_db_info_html_page_generation_in_progress = False
 
 
 def _get_interval_entry_count():
@@ -114,6 +180,21 @@ def _get_trigger_entry_count():
         log_msg = f"Get Entry Count of Column DateTime from Trigger Recording DB Failed: {str(error)}"
         logger.primary_logger.error(log_msg)
     return return_text
+
+
+def _get_count_all_table_entries(database_location):
+    all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
+    tables_list = get_sqlite_tables_in_list(database_location)
+
+    total_db_entries = 0
+    for table_var in tables_list:
+        try:
+            row_count_query = f"SELECT count('{all_tables_datetime}') FROM '{table_var}';"
+            total_db_entries += sql_execute_get_data(row_count_query, sql_database_location=database_location)[0][0]
+        except Exception as error:
+            log_msg = f"Getting Count of all Entries in all Tables - {database_location}: {str(error)}"
+            logger.primary_logger.error(log_msg)
+    return f"{total_db_entries:,}"
 
 
 def _get_file_creation_date(file_location):
