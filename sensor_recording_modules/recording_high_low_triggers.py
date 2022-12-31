@@ -250,8 +250,15 @@ class _SingleTriggerThread:
                                 alerts_normal_enabled = app_config_access.trigger_high_low.alerts_normal_enabled
                                 alerts_low_enabled = app_config_access.trigger_high_low.alerts_low_enabled
                                 alerts_high_enabled = app_config_access.trigger_high_low.alerts_high_enabled
-                                if self.current_state == "Normal" and alerts_normal_enabled or \
-                                        self.current_state == "Low" and alerts_low_enabled or \
+
+                                if self.current_state == "Normal" and alerts_normal_enabled:
+                                    # This is to make sure emails are not sent when "Returning to normal"
+                                    # from a state that's not enabled to send email alerts
+                                    if self.previous_email_state == "Low" and alerts_low_enabled or \
+                                            self.previous_email_state == "High" and alerts_high_enabled:
+                                        self.email_alert_obj.add_trigger_email_entry(sensor_reading, self.current_state)
+                                        self.last_reported_abnormal_sate = datetime.utcnow()
+                                elif self.current_state == "Low" and alerts_low_enabled or \
                                         self.current_state == "High" and alerts_high_enabled:
                                     self.email_alert_obj.add_trigger_email_entry(sensor_reading, self.current_state)
                                     self.last_reported_abnormal_sate = datetime.utcnow()
