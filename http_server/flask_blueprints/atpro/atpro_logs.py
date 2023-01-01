@@ -30,9 +30,9 @@ html_atpro_logs_routes = Blueprint("html_atpro_logs_routes", __name__)
 @auth.login_required
 def html_atpro_sensor_logs():
     return render_template("ATPro_admin/page_templates/sensor-logs.html",
-                           PrimaryLogs=_get_log_view_message("Primary Log", file_locations.primary_log),
-                           NetworkLogs=_get_log_view_message("Network Log", file_locations.network_log),
-                           SensorsLogs=_get_log_view_message("Sensors Log", file_locations.sensors_log))
+                           PrimaryLogs=get_log_view_message("Primary Log", file_locations.primary_log),
+                           NetworkLogs=get_log_view_message("Network Log", file_locations.network_log),
+                           SensorsLogs=get_log_view_message("Sensors Log", file_locations.sensors_log))
 
 
 @html_atpro_logs_routes.route('/atpro/logs/log-download-all-zipped')
@@ -56,7 +56,7 @@ def atpro_delete_log(url_path):
     return get_html_atpro_index("SelectNav('sensor-logs', skip_menu_select=true);")
 
 
-def _get_log_view_message(log_name, log_location):
+def get_log_view_message(log_name, log_location):
     log_lines = _get_sensor_log_lines(log_location)
     log_lines_length = len(log_lines)
 
