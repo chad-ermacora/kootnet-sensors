@@ -552,6 +552,8 @@ class CreateDatabaseVariables:
             return "Dew Point"
         elif db_column == self.distance:
             return "Distance"
+        elif db_column == self.gas_all_dic:
+            return "Gas"
         elif db_column == self.gas_resistance_index:
             return "Gas VOC Ohms"
         elif db_column == self.gas_oxidising:
@@ -560,6 +562,8 @@ class CreateDatabaseVariables:
             return "Gas Reducing"
         elif db_column == self.gas_nh3:
             return "Gas NH3"
+        elif db_column == self.particulate_matter_all_dic:
+            return "Particulate Matter"
         elif db_column == self.particulate_matter_1:
             return "Particulate Matter 1"
         elif db_column == self.particulate_matter_2_5:
@@ -570,6 +574,8 @@ class CreateDatabaseVariables:
             return "Particulate Matter 10"
         elif db_column == self.lumen:
             return "Lumen"
+        elif db_column == self.colour_all_dic:
+            return "Color"
         elif db_column == self.red:
             return "Red"
         elif db_column == self.orange:
@@ -582,30 +588,40 @@ class CreateDatabaseVariables:
             return "Blue"
         elif db_column == self.violet:
             return "Violet"
+        elif db_column == self.ultra_violet_all_dic:
+            return "Ultra Violet"
         elif db_column == self.ultra_violet_index:
             return "Ultra Violet Index"
         elif db_column == self.ultra_violet_a:
             return "Ultra Violet A"
         elif db_column == self.ultra_violet_b:
             return "Ultra Violet B"
+        elif db_column == self.acc_all_dic:
+            return "Accelerometer"
         elif db_column == self.acc_x:
             return "Accelerometer X"
         elif db_column == self.acc_y:
             return "Accelerometer Y"
         elif db_column == self.acc_z:
             return "Accelerometer Z"
+        elif db_column == self.mag_all_dic:
+            return "Magnetometer"
         elif db_column == self.mag_x:
             return "Magnetometer X"
         elif db_column == self.mag_y:
             return "Magnetometer Y"
         elif db_column == self.mag_z:
             return "Magnetometer Z"
+        elif db_column == self.gyro_all_dic:
+            return "Gyroscope"
         elif db_column == self.gyro_x:
             return "Gyroscope X"
         elif db_column == self.gyro_y:
             return "Gyroscope Y"
         elif db_column == self.gyro_z:
             return "Gyroscope Z"
+        elif db_column == self.gps_all_dic:
+            return "GPS"
         elif db_column == self.latitude:
             return "Latitude"
         elif db_column == self.longitude:
