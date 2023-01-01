@@ -1,0 +1,20 @@
+<div class="lcars-text-bar"><span>Sensor Readings</span></div>
+
+<div class="data-cascade">
+    {{ WaterFallData | safe }}
+</div>
+
+<form style="display: inline-block;" method="POST" action="/LCARS/ViewGraph">
+    <input type="text" name="graph_selection" value="temperature" hidden>
+    <div class="data-cascade-button-group">
+        <div class="cascade-wrapper">
+            <div class="flexbox">
+                <div class="col">
+                    <div class="buttons">
+                        {{ SensorButtons | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

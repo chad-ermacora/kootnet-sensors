@@ -1,0 +1,59 @@
+<script>
+    let {{ ChartName }}ctx = document.getElementById('{{ ChartName }}').getContext('2d');
+    let {{ ChartName }} = new Chart({{ ChartName }}ctx,
+        {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{{ ChartDataSets }}]
+            },
+            options: {
+                animation: false,
+                plugins: {}
+            }
+        });
+
+    let {{ ChartName }}set_timeout_timer = 15000;
+    async function {{ ChartName }}AddDataToGraph() {
+        let {{ ChartName }}update_okay = false;
+        {{ AllFetchCommands }}
+        if ({{ ChartName }}update_okay) {
+            document.getElementById('{{ ChartName }}container').hidden = false;
+            if ({{ ChartName }}.data.labels.length > {{ GraphMaxDataPoints }}) {
+                {{ ChartName }}.data.labels.shift();
+            }
+            {{ ChartName }}.data.labels.push(new Date().toLocaleTimeString());
+            {{ ChartName }}.update();
+            setTimeout({{ ChartName }}AddDataToGraph, {{ ChartUpdateInterval }});
+        } else {
+            document.getElementById('{{ ChartName }}container').hidden = true;
+            setTimeout({{ ChartName }}AddDataToGraph, {{ ChartName }}set_timeout_timer);
+        }
+    }
+    {{ ChartName }}AddDataToGraph();
+
+    await fetch("{{ SensorDataURL }}")
+        .then(response => {
+            if (response.status === 404) {
+                {{ ChartName }}set_timeout_timer = 600000;
+                return "NoSensor";
+            } else if (response.status === 503) {
+                {{ ChartName }}set_timeout_timer = 10000;
+                return "NoSensor";
+            } else {
+                if (!response.ok) {throw new Error('Network response was not OK');}
+                return response.json();
+            }
+        })
+        .then(data => {
+            if (data !== "NoSensor") {
+                {{ ChartName }}update_okay = true;
+                if ({{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.length > {{ GraphMaxDataPoints }}) {
+                    {{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.shift();
+                }
+                {{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.push(data);
+                document.getElementById("{{ ChartName }}_current_reading").innerText = 'Current Reading: ' + data;
+            }
+        })
+        .catch(error => {});
+</script>

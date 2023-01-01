@@ -1,0 +1,51 @@
+<style>
+    .log-page-view {
+        color: var(--second-color);
+        font-weight: bold;
+        text-align: left;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="buttons">
+    <a href="#" onclick="SelectLogNav('log-primary')">Primary Log</a>
+    <a href="#" onclick="SelectLogNav('log-network')">Network Log</a>
+    <a href="#" onclick="SelectLogNav('log-sensors')">Sensors Log</a>
+    <a href="#" onclick="DownloadLogsZipped()">Download All Logs</a>
+</div>
+
+<div class="lcars-bar">
+  <div class="lcars-bar-inner"></div>
+</div>
+
+<div id="log-primary">
+    {{ PrimaryLogs | safe }}
+</div>
+
+<div id="log-network">
+    {{ NetworkLogs | safe }}
+</div>
+
+<div id="log-sensors">
+    {{ SensorsLogs | safe }}
+</div>
+
+<br>
+
+<script>
+    function SelectLogNav(nav_location) {
+        document.getElementById("log-primary").hidden = true;
+        document.getElementById("log-network").hidden = true;
+        document.getElementById("log-sensors").hidden = true;
+        document.getElementById(nav_location).hidden = false;
+    }
+
+    function DownloadLogsZipped() {
+        let r = confirm("Download a zip file of all logs?");
+        if (r === true) {
+            window.location.href = '/atpro/logs/log-download-all-zipped';
+        }
+    }
+
+    SelectLogNav("log-primary");
+</script>

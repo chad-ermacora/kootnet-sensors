@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>KS - LCARS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="date=no">
+<link rel="stylesheet" type="text/css" href="../extras/LCARS/lcars-nemesis-blue.min.css">
+<link href="../extras/LCARS/google-antonio-font.css" rel="stylesheet">
+<script src="../jquery.min.js"></script>
+</head>
+<body id="stretch">
+<div class="wrap">
+	<div class="left-frame-top">
+		<div class="panel-1"><a href="/LCARS/">{{ SensorName }}</a></div>
+	</div>
+	<div class="right-frame-top">
+		<div class="banner">
+			{{ DateTimeUTC }}
+		</div>
+			<div class="data-cascade-button-group">
+				<div class="cascade-wrapper">
+
+                    <div class="flexbox">
+                        <div class="col">
+                            <p>
+                                <span style="color: #8bf;">System OS:</span> {{ SystemOS }}<br>
+                                <span style="color: #8bf;">RAM Free:</span> {{ RAMFree }}<br>
+                                <span style="color: #8bf;">Uptime:</span> {{ Uptime }}
+                            </p>
+                        </div>
+                    </div>
+				</div>
+				<div class="button-col">
+					<div class="button" id="top-left"><a href="/LCARS/">Readings</a></div>
+					<div class="button" id="bottom-left"><a href="/LCARS/Logs">Logs</a></div>
+				</div>
+				<div class="button-col">
+					<div class="button" id="top-right"><a href="/LCARS/About">About</a></div>
+					<div class="button" id="bottom-right"><a href="/">Exit</a></div>
+				</div>
+			</div>
+		<div class="top-corner-bg">
+			<div class="top-corner"></div>
+		</div>
+		<div class="bar-panel">
+			<div class="bar-1"></div>
+			<div class="bar-2"></div>
+			<div class="bar-3"></div>
+			<div class="bar-4"></div>
+			<div class="bar-5"></div>
+		</div>
+	</div>
+</div>
+<div class="wrap" id="gap">
+	<div class="left-frame">
+		<div>
+			<div class="panel-3">
+                IP <span class="hop">{{ IPAddress }}</span>
+            </div>
+			<div class="panel-4">
+                RAM Usage {{ RAMPercent }}
+            </div>
+			<div class="panel-5">
+                Debug Logging {{ DebugLogging }}
+            </div>
+			<div class="panel-6">
+                Installed Sensors <span class="hop">{{ InstalledSensors }}</span>
+            </div>
+			<div class="panel-7">
+                07<span class="hop">-637488</span>
+            </div>
+			<div class="panel-8">
+                08<span class="hop">-038472</span>
+            </div>
+			<div class="panel-9">
+                09<span class="hop">-081966</span>
+            </div>
+		</div>
+		<div>
+			<div class="panel-10">10<span class="hop">-31</span></div>
+			
+		</div>
+	</div>
+	<div class="right-frame">
+		<div class="bar-panel">
+		<div class="bar-6"></div>
+		<div class="bar-7"></div>
+		<div class="bar-8"></div>
+		<div class="bar-9"></div>
+		<div class="bar-10"></div>
+		</div>
+		<div class="corner-bg">
+			<div class="corner"></div>
+		</div>
+		<div class="content">
+
+			<!-- Start your content here. -->
+
+			{{ MainContent | safe }}
+	
+			<!-- End content area. -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../extras/LCARS/lcars.js"></script>
+</body>
+</html>

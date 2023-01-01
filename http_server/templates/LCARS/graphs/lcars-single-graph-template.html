@@ -1,0 +1,78 @@
+<script src="/chart.min.js"></script>
+
+<style>
+    #graph-container {
+        background: black;
+        text-align: center;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    table td {
+        border-top: 1px solid;
+        padding: 15px;
+        text-align: center;
+        font-weight: bolder;
+        color: orange;
+    }
+
+    table th {
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+        padding: 15px 12px;
+        text-align: center;
+        color: darkblue;
+    }
+</style>
+
+<div id="graph-container">
+    <h2 style="color: red;">Sensor Address: {{ SensorAddress }}</h2>
+    <table class="pure-table">
+        <thead>
+            <tr>
+                <th>Host Name</th>
+                <th>Remote Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="sensor-hostname">{{ SensorHostName }}</td>
+                <td>{{ RemoteSensorVersion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 id="ssl-warning-msg" style="color: red;">If this message does not go away, try disabling SSL Verification</h3>
+
+    <br>
+
+    <div class="button" onclick="window.location='/LiveGraphView'">Clear & Refresh</div>
+
+    <br>
+
+    <div class="row">
+        <div id="{{ ChartName }}container" class="col-{{ MinColSize }} col-m-6 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <p id="{{ ChartName }}_current_reading" style="color: orange;">{{ ChartName }} Current Reading: NA</p>
+                    <canvas id="{{ ChartName }}"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function CheckSensorOnline() {
+        if (document.getElementById("sensor-hostname").innerText === "") {
+            document.getElementById("ssl-warning-msg").hidden = true;
+        }
+    }
+
+    CheckSensorOnline();
+</script>
+
+{{ GraphJSCode }}

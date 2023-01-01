@@ -29,6 +29,7 @@ from configuration_modules import app_config_access
 
 from http_server.flask_blueprints.html_functional import html_functional_routes
 from http_server.flask_blueprints.basic_html_pages import html_basic_routes
+from http_server.flask_blueprints.LCARS.lcars_html_pages import html_lcars_routes
 
 from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
 from http_server.flask_blueprints.atpro.atpro_sensor_insights import html_atpro_sensor_insights_routes
@@ -81,6 +82,7 @@ class CreateSensorHTTP:
 
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_basic_routes)
+        app.register_blueprint(html_lcars_routes)
 
         app.register_blueprint(html_atpro_main_routes)
         app.register_blueprint(html_atpro_sensor_insights_routes)
