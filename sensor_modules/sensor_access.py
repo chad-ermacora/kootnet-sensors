@@ -630,3 +630,165 @@ def display_message(text_msg, check_test=False):
     else:
         logger.sensors_logger.debug("* Unable to Display Text: Display disabled in Primary Configuration")
         return False
+
+
+# Todo: Finish function
+def get_available_sensors_dic():
+    """
+    Checks witch sensor boards are installed and returns the present sensors in a dictionary
+    All reading names are from the database variables class
+    :return: Dictionary of available sensors
+    """
+    sensors_list = {}
+    if app_config_access.installed_sensors.kootnet_dummy_sensor:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+        sensors_list[db_v.altitude] = 1
+        sensors_list[db_v.humidity] = 1
+        sensors_list[db_v.distance] = 1
+        sensors_list[db_v.gas_reducing] = 1
+        sensors_list[db_v.gas_oxidising] = 1
+        sensors_list[db_v.gas_nh3] = 1
+        sensors_list[db_v.gas_resistance_index] = 1
+        sensors_list[db_v.particulate_matter_1] = 1
+        sensors_list[db_v.particulate_matter_2_5] = 1
+        sensors_list[db_v.particulate_matter_4] = 1
+        sensors_list[db_v.particulate_matter_10] = 1
+        sensors_list[db_v.lumen] = 1
+        sensors_list[db_v.red] = 1
+        sensors_list[db_v.orange] = 1
+        sensors_list[db_v.yellow] = 1
+        sensors_list[db_v.green] = 1
+        sensors_list[db_v.blue] = 1
+        sensors_list[db_v.violet] = 1
+        sensors_list[db_v.ultra_violet_index] = 1
+        sensors_list[db_v.ultra_violet_a] = 1
+        sensors_list[db_v.ultra_violet_b] = 1
+        sensors_list[db_v.acc_x] = 1
+        sensors_list[db_v.acc_y] = 1
+        sensors_list[db_v.acc_z] = 1
+        sensors_list[db_v.mag_x] = 1
+        sensors_list[db_v.mag_y] = 1
+        sensors_list[db_v.mag_z] = 1
+        sensors_list[db_v.gyro_x] = 1
+        sensors_list[db_v.gyro_y] = 1
+        sensors_list[db_v.gyro_z] = 1
+        sensors_list[db_v.gps_timestamp] = 1
+        sensors_list[db_v.gps_num_satellites] = 1
+        sensors_list[db_v.gps_quality] = 1
+        sensors_list[db_v.gps_mode_fix_type] = 1
+        sensors_list[db_v.gps_speed_over_ground] = 1
+        sensors_list[db_v.gps_hdop] = 1
+        sensors_list[db_v.gps_pdop] = 1
+        sensors_list[db_v.gps_vdop] = 1
+        return sensors_list
+    if app_config_access.installed_sensors.pimoroni_bh1745:
+        sensors_list[db_v.lumen] = 1
+        sensors_list[db_v.red] = 1
+        sensors_list[db_v.green] = 1
+        sensors_list[db_v.blue] = 1
+    if app_config_access.installed_sensors.pimoroni_as7262:
+        sensors_list[db_v.red] = 1
+        sensors_list[db_v.orange] = 1
+        sensors_list[db_v.yellow] = 1
+        sensors_list[db_v.green] = 1
+        sensors_list[db_v.blue] = 1
+        sensors_list[db_v.violet] = 1
+    if app_config_access.installed_sensors.pimoroni_bmp280:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+    if app_config_access.installed_sensors.pimoroni_bme280:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+        sensors_list[db_v.humidity] = 1
+    if app_config_access.installed_sensors.pimoroni_bme680:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+        sensors_list[db_v.humidity] = 1
+        sensors_list[db_v.gas_resistance_index] = 1
+    if app_config_access.installed_sensors.pimoroni_weather_hat:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+        sensors_list[db_v.humidity] = 1
+        sensors_list[db_v.lumen] = 1
+        sensors_list[db_v.distance] = 1
+    if app_config_access.installed_sensors.pimoroni_enviro:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+        sensors_list[db_v.lumen] = 1
+        sensors_list[db_v.red] = 1
+        sensors_list[db_v.green] = 1
+        sensors_list[db_v.blue] = 1
+        sensors_list[db_v.acc_x] = 1
+        sensors_list[db_v.acc_y] = 1
+        sensors_list[db_v.acc_z] = 1
+        sensors_list[db_v.mag_x] = 1
+        sensors_list[db_v.mag_y] = 1
+        sensors_list[db_v.mag_z] = 1
+    if app_config_access.installed_sensors.pimoroni_enviro2 or app_config_access.installed_sensors.pimoroni_enviroplus:
+        sensors_list[db_v.env_temperature] = 1
+        sensors_list[db_v.pressure] = 1
+        sensors_list[db_v.humidity] = 1
+        sensors_list[db_v.lumen] = 1
+        sensors_list[db_v.distance] = 1
+        sensors_list[db_v.gas_reducing] = 1
+        sensors_list[db_v.gas_oxidising] = 1
+        sensors_list[db_v.gas_nh3] = 1
+    if app_config_access.installed_sensors.pimoroni_sgp30:
+        sensors_list[db_v.gas_resistance_index] = 1
+    if app_config_access.installed_sensors.pimoroni_pms5003:
+        sensors_list[db_v.particulate_matter_1] = 1
+        sensors_list[db_v.particulate_matter_2_5] = 1
+        sensors_list[db_v.particulate_matter_10] = 1
+    if app_config_access.installed_sensors.pimoroni_msa301:
+        sensors_list[db_v.acc_x] = 1
+        sensors_list[db_v.acc_y] = 1
+        sensors_list[db_v.acc_z] = 1
+    if app_config_access.installed_sensors.pimoroni_lsm303d:
+        sensors_list[db_v.acc_x] = 1
+        sensors_list[db_v.acc_y] = 1
+        sensors_list[db_v.acc_z] = 1
+        sensors_list[db_v.mag_x] = 1
+        sensors_list[db_v.mag_y] = 1
+        sensors_list[db_v.mag_z] = 1
+    if app_config_access.installed_sensors.pimoroni_icm20948:
+        sensors_list[db_v.acc_x] = 1
+        sensors_list[db_v.acc_y] = 1
+        sensors_list[db_v.acc_z] = 1
+        sensors_list[db_v.mag_x] = 1
+        sensors_list[db_v.mag_y] = 1
+        sensors_list[db_v.mag_z] = 1
+        sensors_list[db_v.gyro_x] = 1
+        sensors_list[db_v.gyro_y] = 1
+        sensors_list[db_v.gyro_z] = 1
+    if app_config_access.installed_sensors.pimoroni_vl53l1x:
+        sensors_list[db_v.distance] = 1
+    if app_config_access.installed_sensors.pimoroni_ltr_559:
+        sensors_list[db_v.lumen] = 1
+        sensors_list[db_v.distance] = 1
+    if app_config_access.installed_sensors.pimoroni_veml6075:
+        sensors_list[db_v.ultra_violet_a] = 1
+        sensors_list[db_v.ultra_violet_b] = 1
+    if app_config_access.installed_sensors.pimoroni_pa1010d:
+        sensors_list[db_v.gps_timestamp] = 1
+        sensors_list[db_v.gps_num_satellites] = 1
+        sensors_list[db_v.gps_quality] = 1
+        sensors_list[db_v.gps_mode_fix_type] = 1
+        sensors_list[db_v.gps_speed_over_ground] = 1
+        sensors_list[db_v.gps_hdop] = 1
+        sensors_list[db_v.gps_pdop] = 1
+        sensors_list[db_v.gps_vdop] = 1
+    if app_config_access.installed_sensors.pimoroni_mcp9600:
+        sensors_list[db_v.env_temperature] = 1
+    if app_config_access.installed_sensors.pimoroni_mics6814:
+        sensors_list[db_v.gas_reducing] = 1
+        sensors_list[db_v.gas_oxidising] = 1
+        sensors_list[db_v.gas_nh3] = 1
+    if app_config_access.installed_sensors.sensirion_sps30:
+        sensors_list[db_v.particulate_matter_1] = 1
+        sensors_list[db_v.particulate_matter_2_5] = 1
+        sensors_list[db_v.particulate_matter_4] = 1
+        sensors_list[db_v.particulate_matter_10] = 1
+    if app_config_access.installed_sensors.w1_therm_sensor:
+        sensors_list[db_v.env_temperature] = 1
+    return sensors_list
