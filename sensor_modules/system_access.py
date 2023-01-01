@@ -41,8 +41,7 @@ def get_ram_space(return_type=0):
             ram_space = app_cached_variables.total_ram_memory
         elif return_type == 3:
             ram_space = psutil.virtual_memory().percent
-
-        if ram_space is not None:
+        if ram_space is not None and return_type != 3:
             ram_space = round((ram_space / 1024 / 1024 / 1024), 3)
     except Exception as error:
         logger.primary_logger.warning("Get RAM Space: " + str(error))
