@@ -17,9 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from operations_modules import file_locations
-from operations_modules import logger
+# from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_logs import get_log_view_message
@@ -29,12 +29,14 @@ from sensor_modules import sensor_access
 from sensor_modules import system_access
 
 html_lcars_routes = Blueprint("html_LCARS_routes", __name__)
+auto_refresh_readings_page = True
 
 
 @html_lcars_routes.route("/LCARS/")
 @html_lcars_routes.route("/LCARS/index")
 @html_lcars_routes.route("/LCARS/index.html")
 def html_lcars_index(main_content=None):
+    global auto_refresh_readings_page
     g_t_c_e = get_html_enabled_disabled_text
 
     utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
@@ -42,10 +44,15 @@ def html_lcars_index(main_content=None):
     date_time_now = f"{date_time_now.strftime('%b %d, %Y - %H:%M:%S')} UTC{str(utc0_hour_offset)}"
 
     if main_content is None:
-        lcars_buttons = _get_lcars_html_sensor_buttons()
+        button_name = "Enable<br>&nbsp;&nbsp;Automatic Refresh"
+        html_refresh_page = ""
+        if auto_refresh_readings_page:
+            button_name = "Disable<br>&nbsp;&nbsp;Automatic Refresh"
+            html_refresh_page = "window.setTimeout(RefreshPageTimed, 10000);"
         main_content = render_template("LCARS/lcars-content-main.html",
-                                       SensorButtons=lcars_buttons,
-                                       WaterFallData=_get_lcars_html_sensor_readings_waterfall())
+                                       WaterFallData=_get_lcars_html_sensor_readings_waterfall(),
+                                       AutoRefreshScript=html_refresh_page,
+                                       ButtonName=button_name)
     return render_template("LCARS/lcars-index-nemesis-blue.html",
                            SensorName=app_cached_variables.hostname,
                            DateTimeUTC=date_time_now,
@@ -60,25 +67,6 @@ def html_lcars_index(main_content=None):
                            )
 
 
-def _get_lcars_html_sensor_buttons():
-    html_lcars_sensor_button_template = "<a href='/LCARS/{{ SensorName }}' class='bluey two-rows'>" + \
-                                        "{{ SensorName }} <br> {{ SensorReading }} {{ ReadingType }}</a>"
-
-    lcars_sensor_buttons = ""
-    avail_sensor_dic = sensor_access.get_available_sensors_dic()
-    all_sensor_readings = sensor_access.get_all_available_sensor_readings()
-    for index, enabled in avail_sensor_dic.items():
-        button_name = app_cached_variables.database_variables.get_clean_db_col_name(index)
-        reading_type = sensor_access.get_reading_unit(index)
-        if index == app_cached_variables.database_variables.env_temperature:
-            button_name = "Temperature"
-        if index in all_sensor_readings:
-            lcars_sensor_buttons += html_lcars_sensor_button_template.replace("{{ SensorName }}", button_name)
-            lcars_sensor_buttons = lcars_sensor_buttons.replace("{{ SensorReading }}", str(all_sensor_readings[index]))
-            lcars_sensor_buttons = lcars_sensor_buttons.replace("{{ ReadingType }}", reading_type)
-    return lcars_sensor_buttons
-
-
 def _get_lcars_html_sensor_readings_waterfall():
     row_count = 1
     sensor_count = 1
@@ -88,6 +76,8 @@ def _get_lcars_html_sensor_readings_waterfall():
     for index, reading in all_sensor_readings.items():
         sensor_name = app_cached_variables.database_variables.get_clean_db_col_name(index)
         reading_type = sensor_access.get_reading_unit(index)
+
+        # The following sensor names get changed due to length restrictions
         if index == app_cached_variables.database_variables.env_temperature:
             sensor_name = "Temperature"
         elif index == app_cached_variables.database_variables.env_temperature_offset:
@@ -105,13 +95,17 @@ def _get_lcars_html_sensor_readings_waterfall():
         elif index == app_cached_variables.database_variables.gps_speed_over_ground:
             sensor_name = "GPS Speed"
 
+        # HTML template code for adding an entry into the "Sensor Readings" webpage
         html_lcars_readings_template = f"<div class='dc{str(sensor_count)}'>" + \
                                        "{{ SensorName }} -> {{ SensorReading }} {{ ReadingType }}</div>"
 
+        # Replace place-holders with actual sensor names and values
         lcars_readings_data += html_lcars_readings_template.replace("{{ SensorName }}", sensor_name)
         lcars_readings_data = lcars_readings_data.replace("{{ SensorReading }}", str(all_sensor_readings[index]))
         lcars_readings_data = lcars_readings_data.replace("{{ ReadingType }}", reading_type)
-        if not sensor_count % 4:
+
+        # Once there are 4 sensors in a row, start a new row
+        if sensor_count == 4:
             row_count += 1
             sensor_count = 0
             lcars_readings_data += f"</div>\n\n<div class='row-{str(row_count)}'>\n"
@@ -119,12 +113,14 @@ def _get_lcars_html_sensor_readings_waterfall():
     return f"{lcars_readings_data}</div>"
 
 
-@html_lcars_routes.route("/LCARS/ViewGraph", methods=["GET", "POST"])
-def html_lcars_view_graph():
-    if request.method == "POST":
-        graph_to_view = str(request.form.get("graph_selection"))[:55]
-
-    return "WIP"
+@html_lcars_routes.route("/LCARS/PlayPauseReadingsAutoUpdate")
+def html_lcars_play_pause_readings_auto_update():
+    global auto_refresh_readings_page
+    if auto_refresh_readings_page:
+        auto_refresh_readings_page = False
+    else:
+        auto_refresh_readings_page = True
+    return html_lcars_index()
 
 
 @html_lcars_routes.route("/LCARS/Logs")

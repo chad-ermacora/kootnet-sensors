@@ -4,17 +4,22 @@
     {{ WaterFallData | safe }}
 </div>
 
-<form style="display: inline-block;" method="POST" action="/LCARS/ViewGraph">
-    <input type="text" name="graph_selection" value="temperature" hidden>
-    <div class="data-cascade-button-group">
-        <div class="cascade-wrapper">
-            <div class="flexbox">
-                <div class="col">
-                    <div class="buttons">
-                        {{ SensorButtons | safe }}
-                    </div>
-                </div>
+<div style="display: table; margin-left: auto; margin-right: auto;">
+    <div style="display: table-row;">
+        <div style="display: table-cell;">
+            <div class="buttons">
+                <a class="two-rows" style="text-align: center;" href="/LCARS/PlayPauseReadingsAutoUpdate">
+                    {{ ButtonName | safe }}
+                </a>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+<script>
+    function RefreshPageTimed() {
+        window.location = "/LCARS/"
+    }
+
+    {{ AutoRefreshScript | safe }}
+</script>
