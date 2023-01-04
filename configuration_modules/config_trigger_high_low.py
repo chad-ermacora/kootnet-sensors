@@ -406,7 +406,107 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             self.gyroscope_z_high = float(html_request.form.get("trigger_high_gyroscope_z"))
         if html_request.form.get("seconds_gyroscope") is not None:
             self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
+
+        self._validate_high_low_triggers()
         self.update_configuration_settings_list()
+
+    def _validate_high_low_triggers(self):
+        if not self._validate_triggers("CPU Temp", self.cpu_temperature_low, self.cpu_temperature_high):
+            self.cpu_temperature_enabled = 0
+
+        if not self._validate_triggers("Env Temp", self.env_temperature_low, self.env_temperature_high):
+            self.env_temperature_enabled = 0
+
+        if not self._validate_triggers("Pressure", self.pressure_low, self.pressure_high):
+            self.pressure_enabled = 0
+
+        if not self._validate_triggers("Altitude", self.altitude_low, self.altitude_high):
+            self.altitude_enabled = 0
+
+        if not self._validate_triggers("Humidity", self.humidity_low, self.humidity_high):
+            self.humidity_enabled = 0
+
+        if not self._validate_triggers("Distance", self.distance_low, self.distance_high):
+            self.distance_enabled = 0
+
+        if not self._validate_triggers("Gas Index", self.gas_resistance_index_low, self.gas_resistance_index_high):
+            self.gas_enabled = 0
+        if not self._validate_triggers("Gas Oxidising", self.gas_oxidising_low, self.gas_oxidising_high):
+            self.gas_enabled = 0
+        if not self._validate_triggers("Gas Reducing", self.gas_reducing_low, self.gas_reducing_high):
+            self.gas_enabled = 0
+        if not self._validate_triggers("Gas NH3", self.gas_nh3_low, self.gas_nh3_high):
+            self.gas_enabled = 0
+
+        if not self._validate_triggers("PM 1", self.particulate_matter_1_low, self.particulate_matter_1_high):
+            self.particulate_matter_enabled = 0
+        if not self._validate_triggers("PM 2.5", self.particulate_matter_2_5_low, self.particulate_matter_2_5_high):
+            self.particulate_matter_enabled = 0
+        if not self._validate_triggers("PM 4", self.particulate_matter_4_low, self.particulate_matter_4_high):
+            self.particulate_matter_enabled = 0
+        if not self._validate_triggers("PM 10", self.particulate_matter_10_low, self.particulate_matter_10_high):
+            self.particulate_matter_enabled = 0
+
+        if not self._validate_triggers("Lumen", self.lumen_low, self.lumen_high):
+            self.lumen_enabled = 0
+
+        if not self._validate_triggers("Red", self.red_low, self.red_high):
+            self.colour_enabled = 0
+        if not self._validate_triggers("Orange", self.orange_low, self.orange_high):
+            self.colour_enabled = 0
+        if not self._validate_triggers("Yellow", self.yellow_low, self.yellow_high):
+            self.colour_enabled = 0
+        if not self._validate_triggers("Green", self.green_low, self.green_high):
+            self.colour_enabled = 0
+        if not self._validate_triggers("Blue", self.blue_low, self.blue_high):
+            self.colour_enabled = 0
+        if not self._validate_triggers("Violet", self.violet_low, self.violet_high):
+            self.colour_enabled = 0
+
+        # if not self._validate_triggers("UV Index", self.ultra_violet_index_low, self.ultra_violet_index_high):
+        #     self.ultra_violet_enabled = 0
+        if not self._validate_triggers("UV A", self.ultra_violet_a_low, self.ultra_violet_a_high):
+            self.ultra_violet_enabled = 0
+        if not self._validate_triggers("UV B", self.ultra_violet_b_low, self.ultra_violet_b_high):
+            self.ultra_violet_enabled = 0
+
+        if not self._validate_triggers("Acc X", self.accelerometer_x_low, self.accelerometer_x_high):
+            self.accelerometer_enabled = 0
+        if not self._validate_triggers("Acc Y", self.accelerometer_y_low, self.accelerometer_y_high):
+            self.accelerometer_enabled = 0
+        if not self._validate_triggers("Acc Z", self.accelerometer_z_low, self.accelerometer_z_high):
+            self.accelerometer_enabled = 0
+
+        if not self._validate_triggers("Mag X", self.magnetometer_x_low, self.magnetometer_x_high):
+            self.magnetometer_enabled = 0
+        if not self._validate_triggers("Mag Y", self.magnetometer_y_low, self.magnetometer_y_high):
+            self.magnetometer_enabled = 0
+        if not self._validate_triggers("Mag Z", self.magnetometer_z_low, self.magnetometer_z_high):
+            self.magnetometer_enabled = 0
+
+        if not self._validate_triggers("Gyro X", self.gyroscope_x_low, self.gyroscope_x_high):
+            self.gyroscope_enabled = 0
+        if not self._validate_triggers("Gyro Y", self.gyroscope_y_low, self.gyroscope_y_high):
+            self.gyroscope_enabled = 0
+        if not self._validate_triggers("Gyro Z", self.gyroscope_z_low, self.gyroscope_z_high):
+            self.gyroscope_enabled = 0
+
+    @staticmethod
+    def _validate_triggers(sensor_name, low_trigger, high_trigger):
+        """
+        Takes the low and high triggers for a sensor.
+        If the low trigger is lower than the high, return True else False.
+
+        :param sensor_name: Sensor's name in text
+        :param low_trigger: Number (int or float)
+        :param high_trigger: Number (int or float)
+        :return: True/False
+        """
+        if low_trigger < high_trigger:
+            return True
+        log_msg = f"Trigger High/Low Config: {sensor_name}'s Low Trigger is not lower than the set High Trigger"
+        logger.primary_logger.warning(log_msg)
+        return False
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
@@ -506,12 +606,12 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             self.orange_high = float(self.config_settings[53])
             self.yellow_low = float(self.config_settings[54])
             self.yellow_high = float(self.config_settings[55])
-            self.green_high = float(self.config_settings[56])
-            self.green_low = float(self.config_settings[57])
-            self.blue_high = float(self.config_settings[58])
-            self.blue_low = float(self.config_settings[59])
-            self.violet_high = float(self.config_settings[60])
-            self.violet_low = float(self.config_settings[61])
+            self.green_low = float(self.config_settings[56])
+            self.green_high = float(self.config_settings[57])
+            self.blue_low = float(self.config_settings[58])
+            self.blue_high = float(self.config_settings[59])
+            self.violet_low = float(self.config_settings[60])
+            self.violet_high = float(self.config_settings[61])
             self.colour_wait_seconds = float(self.config_settings[62])
             self.ultra_violet_enabled = int(self.config_settings[63])
             self.ultra_violet_index_low = float(self.config_settings[64])
