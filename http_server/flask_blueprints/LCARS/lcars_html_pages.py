@@ -61,7 +61,7 @@ def html_lcars_index(main_content=None):
                            RAMPercent=f"{str(system_access.get_ram_space(return_type=3))} %",
                            DebugLogging=g_t_c_e(app_config_access.primary_config.enable_debug_logging),
                            InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
-                           Uptime=get_uptime_str(),
+                           Uptime=get_uptime_str().replace("<br>", " "),  # Replace to Keep uptime on one line
                            IPAddress=app_cached_variables.ip,
                            MainContent=main_content
                            )
