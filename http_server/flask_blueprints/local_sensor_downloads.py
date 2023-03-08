@@ -44,11 +44,11 @@ def download_all_sql_databases_zipped():
                         get_file_content(file_locations.sensor_checkin_database, open_type="rb"),
                         get_file_content(file_locations.mqtt_subscriber_database, open_type="rb")]
         return_zip = zip_files(return_names, return_files)
-        return send_file(return_zip, attachment_filename=zip_name, as_attachment=True)
+        return send_file(return_zip, download_name=zip_name, as_attachment=True)
     except Exception as error:
         logger.primary_logger.error("* Download All Databases Zip: " + str(error))
         return_zip = "Error Creating Zip on " + app_cached_variables.ip + " - " + app_cached_variables.hostname
-        return send_file(return_zip + " - " + str(error), attachment_filename=zip_name + ".txt", as_attachment=True)
+        return send_file(return_zip + " - " + str(error), download_name=zip_name + ".txt", as_attachment=True)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabase")
@@ -114,7 +114,7 @@ def _button_functions(button_pressed, request_ip="N/A"):
         #     sensor_database = file_locations.sensor_database
         #     if os.path.isfile(sensor_database):
         #         sql_filename = _add_host_and_ip_to_filename("Sensor_Database", "sqlite")
-        #         return send_file(sensor_database, as_attachment=True, attachment_filename=sql_filename)
+        #         return send_file(sensor_database, as_attachment=True, download_name=sql_filename)
         #     return "Kootnet Sensors main database not found"
         #
         # elif button_pressed == "download-mqtt-sub-db-raw":
@@ -122,7 +122,7 @@ def _button_functions(button_pressed, request_ip="N/A"):
         #     mqtt_subscriber_database = file_locations.mqtt_subscriber_database
         #     if os.path.isfile(mqtt_subscriber_database):
         #         sql_filename = _add_host_and_ip_to_filename("MQTT_Database", "sqlite")
-        #         return send_file(mqtt_subscriber_database, as_attachment=True, attachment_filename=sql_filename)
+        #         return send_file(mqtt_subscriber_database, as_attachment=True, download_name=sql_filename)
         #     return "Kootnet Sensors MQTT Subscriber database not found"
         #
         # elif button_pressed == "download-checkin-db-raw":
@@ -130,7 +130,7 @@ def _button_functions(button_pressed, request_ip="N/A"):
         #     sensor_checkin_database = file_locations.sensor_checkin_database
         #     if os.path.isfile(sensor_checkin_database):
         #         sql_filename = _add_host_and_ip_to_filename("Sensors_Checkin_Database", "sqlite")
-        #         return send_file(sensor_checkin_database, as_attachment=True, attachment_filename=sql_filename)
+        #         return send_file(sensor_checkin_database, as_attachment=True, download_name=sql_filename)
         #     return "Kootnet Sensors Checkin database not found"
 
         if button_pressed == "download-main-db-zip":
@@ -139,7 +139,7 @@ def _button_functions(button_pressed, request_ip="N/A"):
                 if os.path.isfile(database_zipped):
                     zip_filename = _add_host_and_ip_to_filename("Main_Database", "zip")
                     logger.network_logger.debug("* Download Zipped Main SQL Database Accessed by " + request_ip)
-                    return send_file(database_zipped, as_attachment=True, attachment_filename=zip_filename)
+                    return send_file(database_zipped, as_attachment=True, download_name=zip_filename)
                 return "Zipped Main SQL database not found, 'Generate New Zip' before trying again."
             else:
                 return "Creating database zip, please try again later ..."
@@ -151,7 +151,7 @@ def _button_functions(button_pressed, request_ip="N/A"):
                     zip_filename = _add_host_and_ip_to_filename("MQTT_Subscriber_Database", "zip")
                     log_msg = "* Download Zipped MQTT Subscriber SQL Database Accessed by "
                     logger.network_logger.debug(log_msg + request_ip)
-                    return send_file(mqtt_database_zipped, as_attachment=True, attachment_filename=zip_filename)
+                    return send_file(mqtt_database_zipped, as_attachment=True, download_name=zip_filename)
                 return "Zipped MQTT Subscriber SQL database not found, 'Generate New Zip' before trying again."
             else:
                 return "Creating database zip, please try again later ..."
@@ -162,7 +162,7 @@ def _button_functions(button_pressed, request_ip="N/A"):
                 if os.path.isfile(checkin_database_zipped):
                     zip_filename = _add_host_and_ip_to_filename("Checkin_Database", "zip")
                     logger.network_logger.debug("* Download Zipped Checkin SQL Database Accessed by " + request_ip)
-                    return send_file(checkin_database_zipped, as_attachment=True, attachment_filename=zip_filename)
+                    return send_file(checkin_database_zipped, as_attachment=True, download_name=zip_filename)
                 return "Zipped Sensor Checkin SQL database not found, 'Generate New Zip' before trying again."
             else:
                 return "Creating database zip, please try again later ..."
@@ -188,8 +188,12 @@ def _button_functions(button_pressed, request_ip="N/A"):
 
 
 def _add_host_and_ip_to_filename(filename, file_extension):
-    file_name_part1 = app_cached_variables.hostname + "-" + app_cached_variables.ip.split(".")[-1]
-    return_filename = file_name_part1 + "_" + filename + "." + file_extension
+    try:
+        file_name_part1 = app_cached_variables.hostname + "-" + app_cached_variables.ip.split(".")[-1]
+        return_filename = file_name_part1 + "_" + filename + "." + file_extension
+    except Exception as error:
+        logger.network_logger.error("Error adding hostname & IP to filename" + str(error))
+        return_filename = f"{filename}.{file_extension}"
     return return_filename
 
 
@@ -241,11 +245,11 @@ def download_zipped_everything():
                         get_file_content(file_locations.sensor_checkin_database, open_type="rb"),
                         get_file_content(file_locations.mqtt_subscriber_database, open_type="rb"),
                         zipped_logs.read()]
-        return send_file(zip_files(return_names, return_files), attachment_filename=zip_name, as_attachment=True)
+        return send_file(zip_files(return_names, return_files), download_name=zip_name, as_attachment=True)
     except Exception as error:
         logger.primary_logger.error("* Download Everything Zip: " + str(error))
         return_zip = "Error Creating Zip on " + app_cached_variables.ip + " - " + app_cached_variables.hostname
-        return send_file(return_zip + " - " + str(error), attachment_filename=zip_name + ".txt", as_attachment=True)
+        return send_file(return_zip + " - " + str(error), download_name=zip_name + ".txt", as_attachment=True)
 
 
 @html_local_download_routes.route("/GetSQLDBSize")
@@ -285,7 +289,7 @@ def download_zipped_logs():
     zip_name = "Logs_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
     return_zip_file = _get_zipped_logs()
     if return_zip_file is not None:
-        return send_file(return_zip_file, as_attachment=True, attachment_filename=zip_name)
+        return send_file(return_zip_file, as_attachment=True, download_name=zip_name)
     return "None"
 
 

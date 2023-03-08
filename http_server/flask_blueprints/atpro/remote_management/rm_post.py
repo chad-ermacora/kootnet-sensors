@@ -101,7 +101,7 @@ def remote_management_main_post(request):
                     zip_file = rm_cached_variables.sc_in_memory_zip
                     zip_filename = rm_cached_variables.sc_reports_zip_name
                     rm_cached_variables.sc_reports_zip_name = ""
-                    return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+                    return send_file(zip_file, download_name=zip_filename, as_attachment=True)
         except Exception as error:
             logger.network_logger.error("Send Reports Zip Error: " + str(error))
             msg_1 = "Problem loading Zip"
@@ -120,7 +120,7 @@ def remote_management_main_post(request):
                     zip_filename = rm_cached_variables.sc_databases_zip_name
                     rm_cached_variables.sc_databases_zip_name = ""
                     rm_cached_variables.sc_databases_zip_in_memory = False
-                    return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+                    return send_file(zip_file, download_name=zip_filename, as_attachment=True)
                 except Exception as error:
                     logger.network_logger.error("Send Databases Zip Error: " + str(error))
                     rm_cached_variables.sc_databases_zip_name = ""
@@ -135,7 +135,7 @@ def remote_management_main_post(request):
                     zip_file = rm_cached_variables.sc_in_memory_zip
                     zip_filename = rm_cached_variables.sc_logs_zip_name
                     rm_cached_variables.sc_logs_zip_name = ""
-                    return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+                    return send_file(zip_file, download_name=zip_filename, as_attachment=True)
         except Exception as error:
             logger.network_logger.error("Send SC Logs Zip Error: " + str(error))
             msg_1 = "Problem loading Zip"
@@ -154,7 +154,7 @@ def remote_management_main_post(request):
                         zip_file = file_locations.html_sensor_control_big_zip
 
                     zip_filename = rm_cached_variables.sc_big_zip_name
-                    return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+                    return send_file(zip_file, download_name=zip_filename, as_attachment=True)
         except Exception as error:
             logger.network_logger.error("Send Big Zip Error: " + str(error))
             msg_1 = "Problem loading Zip"

@@ -226,7 +226,7 @@ def html_atpro_sensor_settings_database_management():
                 db_selected_name = sanitize_text(request.form.get("DatabaseBackupSelection"))
                 db_full_path = backup_db_folder + db_selected_name
                 if db_selected_name in app_cached_variables.zipped_db_backup_list:
-                    return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
+                    return send_file(db_full_path, as_attachment=True, download_name=db_selected_name)
             elif sanitize_text(request.form.get("db_management")) == "rename_db":
                 old_name = db_full_path.split("/")[-1]
                 new_name = get_clean_db_name(sanitize_text(request.form.get("rename_db")))
