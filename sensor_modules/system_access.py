@@ -33,16 +33,17 @@ def get_ram_space(return_type=0):
     """
     ram_space = None
     try:
+        ram_information = psutil.virtual_memory()
         if return_type == 0:
-            ram_space = psutil.virtual_memory().free
+            ram_space = ram_information.available
         elif return_type == 1:
-            ram_space = psutil.virtual_memory().used
+            ram_space = ram_information.total - ram_information.available
         elif return_type == 2:
             ram_space = app_cached_variables.total_ram_memory
         elif return_type == 3:
-            ram_space = psutil.virtual_memory().percent
+            ram_space = ram_information.percent
         if ram_space is not None and return_type != 3:
-            ram_space = round((ram_space / 1024 / 1024 / 1024), 3)
+            ram_space = round((ram_space / 1000 / 1000 / 1000), 3)
     except Exception as error:
         logger.primary_logger.warning("Get RAM Space: " + str(error))
     return ram_space
@@ -52,7 +53,7 @@ def get_program_mem_usage():
     memory_in_mb = 0.0
     try:
         ks_prog_mem = psutil.Process(os.getpid())
-        memory_in_mb = round(((ks_prog_mem.memory_info().rss / 1024) / 1024), 2)
+        memory_in_mb = round(((ks_prog_mem.memory_info().rss / 1000) / 1000), 2)
     except Exception as error:
         logger.sensors_logger.warning("Error caching program Memory Usage: " + str(error))
     return memory_in_mb
@@ -75,7 +76,7 @@ def get_disk_space(return_type=0):
             disk_space = psutil.disk_usage(file_locations.sensor_data_dir).percent
 
         if disk_space is not None:
-            disk_space = round((disk_space / 1024 / 1024 / 1024), 2)
+            disk_space = round((disk_space / 1000 / 1000 / 1000), 2)
     except Exception as error:
         logger.primary_logger.warning("Get Disk Space: " + str(error))
     return disk_space

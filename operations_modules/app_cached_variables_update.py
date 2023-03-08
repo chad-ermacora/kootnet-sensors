@@ -74,12 +74,12 @@ def update_cached_variables():
                 app_cached_variables.operating_system_name = "NA"
 
     try:
-        app_cached_variables.total_ram_memory = round(psutil.virtual_memory().total / 1024 / 1024 / 1024, 3)
+        app_cached_variables.total_ram_memory = round(psutil.virtual_memory().total / 1000 / 1000 / 1000, 3)
     except Exception as error:
         logger.primary_logger.warning("Error caching total RAM: " + str(error))
 
     try:
-        app_cached_variables.total_disk_space = round(psutil.disk_usage("/").total / 1024 / 1024 / 1024, 2)
+        app_cached_variables.total_disk_space = round(psutil.disk_usage("/").total / 1000 / 1000 / 1000, 2)
     except Exception as error:
         logger.primary_logger.warning("Error caching total Disk Space: " + str(error))
 
